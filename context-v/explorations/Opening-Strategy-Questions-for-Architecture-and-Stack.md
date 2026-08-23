@@ -7,7 +7,7 @@ authors:
   - Michael Staton
 augmented_with:
   - Claude Code on Claude Opus 5 (1M context)
-semantic_version: 0.0.0.9
+semantic_version: 0.0.1.0
 tags:
   - Exploration
   - Architecture
@@ -375,6 +375,36 @@ Three positions, and they are not equally reversible:
   into a platform project, on the toolkit's schedule.
 - **Defer.** The toolkit reads content directly, with a seam placed where the service would go, and
   the decision is made once a second consumer actually exists.
+
+**Position taken 2026-08-23 — defer, with the seam built and exercised**
+
+Of the three positions above, **defer** is chosen — but not by omission. The seam gets built now and
+exercised from day one:
+
+- **All content access goes through one module** (`src/lib/content-api.ts` or equivalent) exposing an
+  API-shaped interface: `listTools({tag, vertical, limit})`, `getTool(slug)`, `listTags()`,
+  `listVerticals()`.
+- **The implementation resolves local filesystem paths as its "endpoints"** rather than URLs. No
+  server, no HTTP, no network. The boundary is the deliverable, not the transport.
+- **Return shapes stay plain and serializable** — objects and arrays that would survive JSON over a
+  wire — so a local-path implementation and a future HTTP one are genuinely interchangeable.
+
+**Why this is the right shape rather than a fudge.** The expensive version of this question is not
+"should there be a service" but "how much has to change if the answer flips." Coding against an
+interface makes the flip a single implementation swap with no consumer edits. Scattering `fs` reads
+and `import.meta.glob` calls through pages and components answers the question by accident, in the
+direction that is hardest to reverse.
+
+**A second benefit that pays immediately.** The frontmatter is inconsistent enough that normalization
+has to happen somewhere — derived titles and slugs, the `publish !== false` rule, stripping
+`for_clients`. Putting it inside this module means normalization lives in exactly one place and every
+consumer receives clean data. In particular, `for_clients` stripping becomes one line in one file
+rather than a rule to remember at every render site.
+
+**For any variant that ships data to the browser**, the module also owns the client projection: an
+explicit narrow shape carrying only the fields client-side filtering needs. That keeps the bundle
+small and, more importantly, makes the server-to-client boundary the single enforcement point for
+the no-emit rule.
 
 **The scope hazard.** This is the question most likely to swallow the project. A toolkit rebuild is
 a bounded piece of work; a content platform for the whole family is not. Whatever we choose, the
