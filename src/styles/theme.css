@@ -1,0 +1,196 @@
+/* =====================================================================
+   theme.css — two-tier tokens, three modes, zero JavaScript.
+
+   TIER 1 — named colours. Private to this file. Never referenced by a
+   component. Naming follows the house `--color__<name>` convention
+   (BEM-ish double underscore), consolidating the three competing schemes
+   found across the family onto one.
+
+   TIER 2 — semantic tokens. Kebab-case, referenced by every component,
+   and defined EXCLUSIVELY as `var()` onto Tier 1. No raw value ever
+   appears in a Tier 2 declaration. A palette change is a re-point, not a
+   find-and-replace.
+
+   MODES — light / dark / vibrant. No Lossless site has ever shipped a
+   mode. The dark palette existed; light and vibrant did not, and are
+   designed here. Vibrant is DARK-BASED, per the house contract — the
+   recorded common error is vibrant inheriting light's white ground.
+
+   Mode selection is CSS-only: `prefers-color-scheme` by default, with an
+   explicit override driven by `:has()` over radio inputs in the page.
+   ===================================================================== */
+
+:root {
+  /* ---- Tier 1: the house palette, as catalogued (dark grounds) ---- */
+  --color__cyan-aqua-brightest: #04e5e5;
+  --color__purple-heart: hsl(272 73% 55%);
+  --color__aquamarine: #6fffd6;
+  --color__hippie-blue: #50a3b3;
+  --color__gunmetal: #283139;
+  --color__bastille-black: hsl(273 18% 10%);
+  --color__jaguar-black: hsl(288 100% 2%);
+  --color__bunker-black: hsl(218 22% 7%);
+  --color__white-catskill: hsl(184 35% 92%);
+
+  /* ---- Tier 1: NEW. Light-mode grounds and ink. Designed here,
+     because the catalogued palette is entirely dark and a light mode
+     cannot be derived from it by inversion. ---- */
+  --color__porcelain: hsl(184 33% 98%);
+  --color__catskill-mist: hsl(184 30% 94%);
+  --color__catskill-shade: hsl(184 22% 87%);
+  --color__slate-ink: hsl(273 20% 16%);
+  --color__slate-ink-soft: hsl(273 12% 36%);
+  --color__teal-deep: hsl(184 88% 25%);
+  --color__purple-deep: hsl(272 62% 42%);
+
+  /* ---- Tier 1: NEW. Vibrant. Dark-based, higher chroma, one extra
+     hue (magenta) so vibrant is a different chord and not merely
+     dark-with-the-saturation-up. ---- */
+  --color__void: hsl(288 65% 3%);
+  --color__void-raised: hsl(285 40% 8%);
+  --color__magenta-flare: hsl(320 100% 64%);
+  --color__cyan-flare: hsl(180 100% 62%);
+  --color__violet-flare: hsl(272 100% 70%);
+
+  /* ---- Typography (Tier 1) ---- */
+  --font__display: "Bodoni Moda", "Iowan Old Style", Georgia, serif;
+  --font__sans: "Figtree", ui-sans-serif, system-ui, -apple-system, sans-serif;
+  --font__mono: "JetBrains Mono", ui-monospace, "SF Mono", Menlo, monospace;
+
+  /* ---- Scale ---- */
+  --radius-sm: 4px;
+  --radius-md: 10px;
+  --radius-lg: 18px;
+  --measure: 68ch;
+  --rail: clamp(1rem, 4vw, 3.5rem);
+}
+
+/* =====================================================================
+   TIER 2 — dark is the default mode. "Dark by decision, not by mode."
+   ===================================================================== */
+
+:root,
+:root:has(#mode-dark:checked) {
+  color-scheme: dark;
+
+  --surface-page: var(--color__jaguar-black);
+  --surface-raised: var(--color__bastille-black);
+  --surface-sunken: var(--color__bunker-black);
+  --surface-inset: var(--color__gunmetal);
+
+  --border-subtle: color-mix(in oklab, var(--color__hippie-blue) 22%, transparent);
+  --border-strong: color-mix(in oklab, var(--color__cyan-aqua-brightest) 42%, transparent);
+
+  --text-primary: var(--color__white-catskill);
+  --text-secondary: color-mix(in oklab, var(--color__white-catskill) 72%, transparent);
+  --text-muted: color-mix(in oklab, var(--color__white-catskill) 48%, transparent);
+  --text-inverse: var(--color__jaguar-black);
+
+  --accent: var(--color__cyan-aqua-brightest);
+  --accent-soft: color-mix(in oklab, var(--color__cyan-aqua-brightest) 14%, transparent);
+  --accent-contrast: var(--color__jaguar-black);
+  --accent-2: var(--color__purple-heart);
+  --accent-3: var(--color__aquamarine);
+
+  --focus-ring: var(--color__aquamarine);
+  --shadow-card: 0 1px 0 color-mix(in oklab, var(--color__white-catskill) 6%, transparent) inset;
+  --glow: 0 0 0 1px var(--border-strong), 0 12px 40px -18px var(--color__cyan-aqua-brightest);
+  --hairline: color-mix(in oklab, var(--color__white-catskill) 9%, transparent);
+}
+
+/* ---------------------------------------------------------------------
+   LIGHT. Applies when the reader's OS asks for it AND they have not made
+   an explicit choice on this page, or when they pick it outright.
+   --------------------------------------------------------------------- */
+
+@media (prefers-color-scheme: light) {
+  :root:not(:has(.mode-explicit:checked)) {
+    color-scheme: light;
+
+    --surface-page: var(--color__porcelain);
+    --surface-raised: #fff;
+    --surface-sunken: var(--color__catskill-mist);
+    --surface-inset: var(--color__catskill-shade);
+
+    --border-subtle: color-mix(in oklab, var(--color__slate-ink) 12%, transparent);
+    --border-strong: color-mix(in oklab, var(--color__teal-deep) 38%, transparent);
+
+    --text-primary: var(--color__slate-ink);
+    --text-secondary: var(--color__slate-ink-soft);
+    --text-muted: color-mix(in oklab, var(--color__slate-ink) 48%, transparent);
+    --text-inverse: var(--color__porcelain);
+
+    --accent: var(--color__teal-deep);
+    --accent-soft: color-mix(in oklab, var(--color__teal-deep) 10%, transparent);
+    --accent-contrast: var(--color__porcelain);
+    --accent-2: var(--color__purple-deep);
+    --accent-3: var(--color__hippie-blue);
+
+    --focus-ring: var(--color__purple-deep);
+    --shadow-card: 0 1px 2px color-mix(in oklab, var(--color__slate-ink) 8%, transparent);
+    --glow: 0 0 0 1px var(--border-strong), 0 12px 40px -22px var(--color__teal-deep);
+    --hairline: color-mix(in oklab, var(--color__slate-ink) 10%, transparent);
+  }
+}
+
+:root:has(#mode-light:checked) {
+  color-scheme: light;
+
+  --surface-page: var(--color__porcelain);
+  --surface-raised: #fff;
+  --surface-sunken: var(--color__catskill-mist);
+  --surface-inset: var(--color__catskill-shade);
+
+  --border-subtle: color-mix(in oklab, var(--color__slate-ink) 12%, transparent);
+  --border-strong: color-mix(in oklab, var(--color__teal-deep) 38%, transparent);
+
+  --text-primary: var(--color__slate-ink);
+  --text-secondary: var(--color__slate-ink-soft);
+  --text-muted: color-mix(in oklab, var(--color__slate-ink) 48%, transparent);
+  --text-inverse: var(--color__porcelain);
+
+  --accent: var(--color__teal-deep);
+  --accent-soft: color-mix(in oklab, var(--color__teal-deep) 10%, transparent);
+  --accent-contrast: var(--color__porcelain);
+  --accent-2: var(--color__purple-deep);
+  --accent-3: var(--color__hippie-blue);
+
+  --focus-ring: var(--color__purple-deep);
+  --shadow-card: 0 1px 2px color-mix(in oklab, var(--color__slate-ink) 8%, transparent);
+  --glow: 0 0 0 1px var(--border-strong), 0 12px 40px -22px var(--color__teal-deep);
+  --hairline: color-mix(in oklab, var(--color__slate-ink) 10%, transparent);
+}
+
+/* ---------------------------------------------------------------------
+   VIBRANT. Dark-based. Never inherits a light ground.
+   --------------------------------------------------------------------- */
+
+:root:has(#mode-vibrant:checked) {
+  color-scheme: dark;
+
+  --surface-page: var(--color__void);
+  --surface-raised: var(--color__void-raised);
+  --surface-sunken: hsl(288 70% 2%);
+  --surface-inset: hsl(285 35% 12%);
+
+  --border-subtle: color-mix(in oklab, var(--color__violet-flare) 26%, transparent);
+  --border-strong: color-mix(in oklab, var(--color__magenta-flare) 55%, transparent);
+
+  --text-primary: hsl(300 40% 96%);
+  --text-secondary: color-mix(in oklab, hsl(300 40% 96%) 74%, transparent);
+  --text-muted: color-mix(in oklab, var(--color__violet-flare) 62%, transparent);
+  --text-inverse: var(--color__void);
+
+  --accent: var(--color__cyan-flare);
+  --accent-soft: color-mix(in oklab, var(--color__magenta-flare) 18%, transparent);
+  --accent-contrast: var(--color__void);
+  --accent-2: var(--color__magenta-flare);
+  --accent-3: var(--color__violet-flare);
+
+  --focus-ring: var(--color__magenta-flare);
+  --shadow-card: 0 1px 0 color-mix(in oklab, var(--color__violet-flare) 18%, transparent) inset;
+  --glow:
+    0 0 0 1px var(--border-strong),
+    0 0 28px -6px color-mix(in oklab, var(--color__magenta-flare) 60%, transparent);
+  --hairline: color-mix(in oklab, var(--color__violet-flare) 22%, transparent);
+}

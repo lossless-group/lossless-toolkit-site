@@ -1,0 +1,24 @@
+{
+  "name": "lossless-toolkit-site",
+  "type": "module",
+  "version": "0.1.0",
+  "private": true,
+  "scripts": {
+    "ingest": "node scripts/ingest-content.mjs",
+    "og:fallbacks": "node scripts/make-og-fallbacks.mjs",
+    "dev": "astro dev",
+    "build": "astro build",
+    "preview": "astro preview",
+    "astro": "astro",
+    "test": "vitest run",
+    "test:watch": "vitest"
+  },
+  "dependencies": {
+    "@astrojs/sitemap": "^3.6.0",
+    "astro": "^5.16.0"
+  },
+  "devDependencies": {
+    "vitest": "^4.1.11",
+    "yaml": "^2.9.0"
+  }
+}

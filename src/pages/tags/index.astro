@@ -1,0 +1,57 @@
+---
+import Base from "../../layouts/Base.astro";
+import { listTags, listTools } from "../../lib/content-api";
+import { abs } from "../../lib/site";
+
+const tags = await listTags();
+const tools = await listTools();
+const description = `All ${tags.length} capability tags in the Lossless Toolkit, each one a real landing page with its own share card.`;
+
+// Buckets give the index a shape without needing a script to sort it.
+const deep = tags.filter((t) => t.count >= 6);
+const middling = tags.filter((t) => t.count >= 2 && t.count < 6);
+const thin = tags.filter((t) => t.count === 1);
+
+const jsonLd = {
+  "@context": "https://schema.org",
+  "@type": "CollectionPage",
+  name: "Capability tags",
+  url: abs("/tags/"),
+  description,
+};
+---
+
+<Base title="Capability tags" description={description} path="/tags/" image="/og/fallback-3.jpg" jsonLd={jsonLd}>
+  <section class="hero" style="padding-block-end:1.5rem">
+    <p class="hero__eyebrow">{tags.length} tags · {tools.length} tools</p>
+    <h1>Browse by capability</h1>
+    <p>
+      Every tag below is materialized as a page at its own URL, with its own title, description and
+      unfurl card. That is the difference between a filter and a link you can send someone.
+    </p>
+  </section>
+
+  {
+    [
+      { label: "Well-populated", note: "Six or more tools.", list: deep },
+      { label: "Emerging", note: "Two to five tools.", list: middling },
+      { label: "Singletons", note: "One tool each — thin pages, kept because the URL is stable.", list: thin },
+    ]
+      .filter((g) => g.list.length)
+      .map((g) => (
+        <section class="section">
+          <div class="section__head">
+            <h2>{g.label}</h2>
+            <p>{g.note}</p>
+          </div>
+          <div class="tagcloud">
+            {g.list.map((t) => (
+              <a href={`/tags/${t.slug}/`}>
+                {t.tag} <b>{t.count}</b>
+              </a>
+            ))}
+          </div>
+        </section>
+      ))
+  }
+</Base>

@@ -1,0 +1,96 @@
+---
+/**
+ * Head.astro — the single place share metadata is emitted.
+ *
+ * The primary distribution channel for this site is a text message: one link,
+ * sent to one person. Until they tap it, the unfurl card IS the page. So the
+ * full sextet is mandatory, absolute URLs are mandatory, and every route —
+ * including tag and vertical landings — gets its own title, description and
+ * image rather than inheriting a site-wide default.
+ *
+ * JPEG over WebP: iMessage and WhatsApp have both shipped versions that
+ * silently ignore WebP. `og:image:type` therefore always declares image/jpeg,
+ * and the fallback family is authored as JPEG so the declaration matches the
+ * bytes actually served.
+ */
+import { SITE, abs } from "../lib/site";
+
+interface Props {
+  title: string;
+  description: string;
+  path: string;
+  image?: string;
+  imageAlt?: string;
+  type?: "website" | "article";
+  datePublished?: string;
+  dateModified?: string;
+  noindex?: boolean;
+  jsonLd?: Record<string, unknown>;
+}
+
+const {
+  title,
+  description,
+  path,
+  image,
+  imageAlt,
+  type = "website",
+  datePublished,
+  dateModified,
+  noindex = false,
+  jsonLd,
+} = Astro.props;
+
+const canonical = abs(path);
+const ogImage = abs(image ?? "/og/fallback-1.jpg");
+const fullTitle = path === "/" ? `${SITE.name} — ${SITE.tagline}` : `${title} · ${SITE.short}`;
+const alt = imageAlt ?? `${title} — ${SITE.name}`;
+---
+
+<meta charset="utf-8" />
+<meta name="viewport" content="width=device-width, initial-scale=1" />
+<title>{fullTitle}</title>
+<meta name="description" content={description} />
+<link rel="canonical" href={canonical} />
+{noindex && <meta name="robots" content="noindex, nofollow" />}
+<meta name="generator" content={Astro.generator} />
+
+<!-- OpenGraph: the full image sextet, absolute, JPEG, 1200x630 -->
+<meta property="og:site_name" content={SITE.name} />
+<meta property="og:type" content={type} />
+<meta property="og:url" content={canonical} />
+<meta property="og:title" content={title} />
+<meta property="og:description" content={description} />
+<meta property="og:locale" content="en_US" />
+<meta property="og:image" content={ogImage} />
+<meta property="og:image:secure_url" content={ogImage} />
+<meta property="og:image:type" content="image/jpeg" />
+<meta property="og:image:width" content="1200" />
+<meta property="og:image:height" content="630" />
+<meta property="og:image:alt" content={alt} />
+{datePublished && <meta property="article:published_time" content={datePublished} />}
+{dateModified && <meta property="article:modified_time" content={dateModified} />}
+
+<!-- Twitter / X -->
+<meta name="twitter:card" content="summary_large_image" />
+<meta name="twitter:site" content={SITE.twitter} />
+<meta name="twitter:title" content={title} />
+<meta name="twitter:description" content={description} />
+<meta name="twitter:image" content={ogImage} />
+<meta name="twitter:image:alt" content={alt} />
+
+<!-- Generative engines treat JSON-LD as ground truth more than OG tags. -->
+{
+  jsonLd && (
+    <script type="application/ld+json" set:html={JSON.stringify(jsonLd)} is:inline />
+  )
+}
+
+<link rel="sitemap" href="/sitemap-index.xml" />
+<link rel="alternate" type="text/plain" href="/llms.txt" title="llms.txt" />
+<link rel="preconnect" href="https://fonts.googleapis.com" />
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin />
+<link
+  rel="stylesheet"
+  href="https://fonts.googleapis.com/css2?family=Bodoni+Moda:ital,opsz,wght@0,6..96,400..600;1,6..96,400..500&family=Figtree:wght@400;500;600&family=JetBrains+Mono:wght@400;500&display=swap"
+/>

@@ -1,0 +1,42 @@
+---
+import type { ToolDTO } from "../lib/content-api";
+import { ogImageFor, tagSlug } from "../lib/site";
+
+interface Props {
+  tool: ToolDTO;
+  /** When true, emit the facet token list the CSS-only filter reads. */
+  facets?: boolean;
+  eager?: boolean;
+}
+const { tool, facets = false, eager = false } = Astro.props;
+const shot = ogImageFor(tool.slug, tool.ogImage);
+const shown = tool.tags.slice(0, 3);
+const overflow = tool.tags.length - shown.length;
+---
+
+<article
+  class="card"
+  data-tags={facets ? tool.tags.map(tagSlug).join(" ") : undefined}
+  data-outbound={tool.url || undefined}
+>
+  <div class="card__shot">
+    <img
+      src={shot}
+      alt=""
+      width="1200"
+      height="630"
+      loading={eager ? "eager" : "lazy"}
+      decoding="async"
+      referrerpolicy="no-referrer"
+    />
+  </div>
+  <div class="card__body">
+    <h3 class="card__title"><a href={tool.href}>{tool.title}</a></h3>
+    {tool.description && <p class="card__desc">{tool.description}</p>}
+    <div class="card__meta">
+      {shown.map((t) => <a class="chip" href={`/tags/${tagSlug(t)}/`}>{t}</a>)}
+      {overflow > 0 && <span class="chip">+{overflow}</span>}
+      {tool.fieldTested && <span class="chip chip--accent" title="Used on a client engagement">field-tested</span>}
+    </div>
+  </div>
+</article>

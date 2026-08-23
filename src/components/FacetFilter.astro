@@ -1,0 +1,56 @@
+---
+/**
+ * A multi-select, intersecting tag filter with zero JavaScript.
+ *
+ * Every card carries `data-tags="a b c"`. For each facet we emit one rule:
+ *
+ *   .facets:has(#f-x:checked) ~ .grid > .card:not([data-tags~="x"]) { display:none }
+ *
+ * Checking a box changes what the root matches; the browser re-runs selector
+ * matching and the grid narrows. Checking several boxes stacks the rules, so
+ * the semantics are AND — "tools carrying all of these". Unchecking restores.
+ * No state, no listeners, no hydration, and it works with JS disabled.
+ *
+ * The rule count is linear in the number of facets, which is why the facet set
+ * is the top N tags rather than all of them: N rules, not 2^N.
+ */
+import type { TagDTO } from "../lib/content-api";
+
+interface Props {
+  facets: TagDTO[];
+  resetHref?: string;
+  total: number;
+}
+const { facets, resetHref = Astro.url.pathname, total } = Astro.props;
+
+const css = facets
+  .map(
+    (f) =>
+      `.facets:has(#f-${f.slug}:checked) ~ .grid > .card:not([data-tags~="${f.slug}"]){display:none}`
+  )
+  .join("\n");
+---
+
+<details class="facets" open>
+  <summary>Narrow by capability — {facets.length} facets, {total} tools</summary>
+  <div class="facets__body">
+    <p class="facets__note">
+      Selecting more than one narrows to tools carrying <em>all</em> of them. This filter is CSS —
+      no script runs, and it works with JavaScript disabled. For a link you can send someone, use a
+      <a href="/tags/">tag page</a>: those are real URLs with their own share card.
+    </p>
+    {
+      facets.map((f) => (
+        <>
+          <input type="checkbox" id={`f-${f.slug}`} />
+          <label for={`f-${f.slug}`}>
+            {f.tag} <span style="opacity:.55">{f.count}</span>
+          </label>
+        </>
+      ))
+    }
+    <a class="facets__reset" href={resetHref}>Reset</a>
+  </div>
+</details>
+
+<style is:inline set:html={css}></style>

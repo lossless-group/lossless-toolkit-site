@@ -1,0 +1,41 @@
+---
+/**
+ * A three-mode theme switch with zero JavaScript.
+ *
+ * The radios live in the document; `theme.css` reads their state from the root
+ * element with `:has()`. "Auto" is the default and defers to the operating
+ * system via `prefers-color-scheme`; the other three are explicit overrides
+ * that outrank it.
+ *
+ * The honest cost of doing this without JavaScript: the choice does not
+ * persist across a navigation, because there is nowhere to persist it. See
+ * VARIANT-NOTES.md — this is the sharpest edge of the axis, stated rather
+ * than hidden.
+ */
+const modes = [
+  { id: "mode-auto", label: "Auto", explicit: false },
+  { id: "mode-light", label: "Light", explicit: true },
+  { id: "mode-dark", label: "Dark", explicit: true },
+  { id: "mode-vibrant", label: "Vibrant", explicit: true },
+];
+---
+
+<div class="modeswitch">
+  <fieldset>
+    <legend>Colour mode</legend>
+    {
+      modes.map((m) => (
+        <>
+          <input
+            type="radio"
+            name="colour-mode"
+            id={m.id}
+            class={m.explicit ? "mode-explicit" : "mode-auto"}
+            checked={!m.explicit}
+          />
+          <label for={m.id}>{m.label}</label>
+        </>
+      ))
+    }
+  </fieldset>
+</div>

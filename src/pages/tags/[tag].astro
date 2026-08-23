@@ -1,0 +1,88 @@
+---
+import type { GetStaticPaths } from "astro";
+import Base from "../../layouts/Base.astro";
+import ToolCard from "../../components/ToolCard.astro";
+import FacetFilter from "../../components/FacetFilter.astro";
+import { listTags, listTools, listCoTags, type ToolDTO, type TagDTO } from "../../lib/content-api";
+import { abs, ogImageFor } from "../../lib/site";
+
+/**
+ * Every tag becomes a page. This is the "materialize everything" thesis at its
+ * most literal: a tag is a query, and a query with a durable consumer should
+ * exist as a file with a URL — not as client state nobody can link to.
+ */
+export const getStaticPaths: GetStaticPaths = async () => {
+  const tags = await listTags();
+  const out = [];
+  for (const t of tags) {
+    out.push({
+      params: { tag: t.slug },
+      props: {
+        stat: t,
+        tools: await listTools({ tag: t.slug }),
+        facets: await listCoTags(t.slug),
+      },
+    });
+  }
+  return out;
+};
+
+const { stat, tools, facets } = Astro.props as {
+  stat: TagDTO;
+  tools: ToolDTO[];
+  facets: TagDTO[];
+};
+
+const description = `${tools.length} ${tools.length === 1 ? "tool" : "tools"} in the Lossless Toolkit tagged ${stat.tag}${
+  facets.length
+    ? `, most often alongside ${facets
+        .slice(0, 3)
+        .map((f) => f.tag)
+        .join(", ")}.`
+    : "."
+}`;
+
+const image = ogImageFor(`tag-${stat.slug}`);
+
+const jsonLd = {
+  "@context": "https://schema.org",
+  "@type": "CollectionPage",
+  name: `${stat.tag} tools`,
+  url: abs(`/tags/${stat.slug}/`),
+  description,
+  mainEntity: {
+    "@type": "ItemList",
+    numberOfItems: tools.length,
+    itemListElement: tools.map((t, i) => ({
+      "@type": "ListItem",
+      position: i + 1,
+      url: abs(t.href),
+      name: t.title,
+    })),
+  },
+};
+---
+
+<Base
+  title={`${stat.tag} tools`}
+  description={description}
+  path={`/tags/${stat.slug}/`}
+  image={image}
+  imageAlt={`${stat.tag} — Lossless Toolkit`}
+  jsonLd={jsonLd}
+  wide
+>
+  <section class="hero" style="padding-block-end:2rem">
+    <p class="hero__eyebrow">
+      <a href="/tags/" style="color:inherit">Tags</a> · {tools.length} entries
+    </p>
+    <h1>{stat.tag}</h1>
+    <p>{description}</p>
+  </section>
+
+  {facets.length > 0 && <FacetFilter facets={facets} total={tools.length} />}
+
+  <div class="grid">
+    {tools.map((t, i) => <ToolCard tool={t} facets eager={i < 6} />)}
+  </div>
+</Base>

@@ -1,0 +1,18 @@
+User-agent: *
+Allow: /
+
+# Generative engines are opted IN deliberately. Being cited requires it, and
+# the default posture is conservative.
+User-agent: GPTBot
+Allow: /
+
+User-agent: ClaudeBot
+Allow: /
+
+User-agent: PerplexityBot
+Allow: /
+
+User-agent: Google-Extended
+Allow: /
+
+Sitemap: https://lossless-toolkit.pages.dev/sitemap-index.xml

@@ -1,0 +1,49 @@
+---
+import Base from "../../layouts/Base.astro";
+import ToolCard from "../../components/ToolCard.astro";
+import FacetFilter from "../../components/FacetFilter.astro";
+import { listTools, listTags } from "../../lib/content-api";
+import { SITE, abs } from "../../lib/site";
+
+const tools = await listTools();
+const tags = await listTags();
+// Linear rule count: the facet set is the top slice, not the whole vocabulary.
+const facets = tags.filter((t) => t.count >= 2).slice(0, 32);
+
+const description = `All ${tools.length} entries in the Lossless Toolkit, filterable by ${facets.length} capability facets without a single line of JavaScript.`;
+
+const jsonLd = {
+  "@context": "https://schema.org",
+  "@type": "ItemList",
+  name: "The Lossless Toolkit — all tools",
+  url: abs("/tools/"),
+  numberOfItems: tools.length,
+  itemListElement: tools.slice(0, 100).map((t, i) => ({
+    "@type": "ListItem",
+    position: i + 1,
+    url: abs(t.href),
+    name: t.title,
+  })),
+};
+---
+
+<Base
+  title="Every tool in the kit"
+  description={description}
+  path="/tools/"
+  image="/og/fallback-2.jpg"
+  jsonLd={jsonLd}
+  wide
+>
+  <section class="hero" style="padding-block-end:2rem">
+    <p class="hero__eyebrow">{tools.length} entries</p>
+    <h1>Every tool in the kit</h1>
+    <p>{description}</p>
+  </section>
+
+  <FacetFilter facets={facets} total={tools.length} />
+
+  <div class="grid">
+    {tools.map((t, i) => <ToolCard tool={t} facets eager={i < 6} />)}
+  </div>
+</Base>

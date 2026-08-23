@@ -1,0 +1,6 @@
+# This site is NOT a workspace member of astro-knots — it installs and builds on
+# its own, which is what makes it independently deployable. This file exists
+# only because pnpm 11 moved the build-script allowlist here from package.json.
+allowBuilds:
+  esbuild: true
+  sharp: true

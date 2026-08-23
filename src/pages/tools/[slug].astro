@@ -1,0 +1,153 @@
+---
+import type { GetStaticPaths } from "astro";
+import { render } from "astro:content";
+import Base from "../../layouts/Base.astro";
+import ToolCard from "../../components/ToolCard.astro";
+import {
+  listTools,
+  listRelatedTools,
+  getToolSource,
+  type ToolDTO,
+} from "../../lib/content-api";
+import { SITE, abs, ogImageFor, tagSlug } from "../../lib/site";
+
+export const getStaticPaths: GetStaticPaths = async () => {
+  const tools = await listTools();
+  return tools.map((tool) => ({ params: { slug: tool.slug }, props: { tool } }));
+};
+
+const { tool } = Astro.props as { tool: ToolDTO };
+
+// The one non-serializable seam, named in content-api.ts: Astro compiles
+// markdown to a component at build time, and a component is not a wire shape.
+const source = await getToolSource(tool.slug);
+const rendered = source ? await render(source) : null;
+const Content = rendered?.Content;
+
+const related = await listRelatedTools(tool.slug);
+const description = tool.description || SITE.description;
+const image = ogImageFor(tool.slug, tool.ogImage);
+const host = (() => {
+  try {
+    return tool.url ? new URL(tool.url).hostname.replace(/^www\./, "") : "";
+  } catch {
+    return "";
+  }
+})();
+
+const jsonLd = {
+  "@context": "https://schema.org",
+  "@type": "Article",
+  headline: tool.title,
+  description,
+  image: [image],
+  url: abs(tool.href),
+  mainEntityOfPage: abs(tool.href),
+  ...(tool.dateModified ? { dateModified: tool.dateModified } : {}),
+  keywords: tool.tags.join(", "),
+  isPartOf: { "@type": "CollectionPage", name: SITE.name, url: abs("/tools/") },
+  publisher: { "@type": "Organization", name: "The Lossless Group", url: abs("/") },
+  ...(tool.url
+    ? { about: { "@type": "SoftwareApplication", name: tool.title, url: tool.url } }
+    : {}),
+};
+---
+
+<Base
+  title={tool.title}
+  description={description}
+  path={tool.href}
+  image={image}
+  imageAlt={`${tool.title} — Lossless Toolkit`}
+  type="article"
+  dateModified={tool.dateModified || undefined}
+  jsonLd={jsonLd}
+>
+  <div class="detail">
+    <article>
+      <p class="detail__eyebrow">
+        <a href="/tools/">Toolkit</a>
+        {tool.section && <span>· {tool.section}</span>}
+        {tool.fieldTested && <span style="color:var(--accent-2)">· field-tested</span>}
+      </p>
+      <h1>{tool.title}</h1>
+      {description && <p class="detail__lede">{description}</p>}
+
+      <div class="prose" style="margin-block-start:2.5rem">
+        {Content ? <Content /> : <p>No write-up yet.</p>}
+      </div>
+    </article>
+
+    <aside class="detail__aside stack" style="--gap:1.25rem">
+      <div class="aside-card">
+        <div class="aside-card__shot">
+          <img
+            src={image}
+            alt={`Share card for ${tool.title}`}
+            width="1200"
+            height="630"
+            loading="eager"
+            referrerpolicy="no-referrer"
+          />
+        </div>
+        <div class="aside-card__body">
+          {
+            tool.url && (
+              <a
+                class="btn"
+                href={tool.url}
+                rel="noopener nofollow external"
+                target="_blank"
+                data-track="outbound"
+              >
+                Visit {host || "site"} ↗
+              </a>
+            )
+          }
+          <dl>
+            {host && (<><dt>Site</dt><dd>{host}</dd></>)}
+            {tool.dateModified && (<><dt>Updated</dt><dd>{tool.dateModified}</dd></>)}
+            <dt>Tags</dt>
+            <dd>{tool.tags.length}</dd>
+            <dt>Share</dt>
+            <dd>{abs(tool.href).replace(/^https?:\/\//, "")}</dd>
+          </dl>
+        </div>
+      </div>
+
+      {
+        tool.tags.length > 0 && (
+          <div>
+            <h2 style="font-family:var(--font__mono);font-size:.68rem;letter-spacing:.14em;text-transform:uppercase;color:var(--text-muted);margin-block-end:.6rem">
+              Capabilities
+            </h2>
+            <div class="tagcloud">
+              {tool.tags.map((t) => (
+                <a href={`/tags/${tagSlug(t)}/`}>{t}</a>
+              ))}
+            </div>
+          </div>
+        )
+      }
+    </aside>
+  </div>
+
+  {
+    related.length > 0 && (
+      <section class="section">
+        <div class="section__head">
+          <h2>Adjacent in the kit</h2>
+          <p>
+            Computed at build time from shared-tag overlap, weighted so a rare tag counts for more
+            than a ubiquitous one.
+          </p>
+        </div>
+        <div class="grid">
+          {related.map((r) => (
+            <ToolCard tool={r} />
+          ))}
+        </div>
+      </section>
+    )
+  }
+</Base>

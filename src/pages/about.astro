@@ -1,0 +1,98 @@
+---
+import Base from "../layouts/Base.astro";
+import { listTools, listTags, listVerticals } from "../lib/content-api";
+
+const tools = await listTools();
+const tags = await listTags();
+const verticals = await listVerticals();
+const pages = 1 + 1 + 1 + 1 + tools.length + tags.length + verticals.length;
+---
+
+<Base
+  title="How this was built"
+  description="Variant A of the Lossless Toolkit rebuild: every view prerendered, zero client-side JavaScript, and the client-name suppression enforced at the ingest boundary rather than in templates."
+  path="/about/"
+  image="/og/fallback-6.jpg"
+>
+  <section class="hero">
+    <p class="hero__eyebrow">Variant A</p>
+    <h1>Materialize everything. <em>Ship no JavaScript.</em></h1>
+    <p>
+      This is one of three parallel attempts at the Lossless Toolkit rebuild, each pushing a
+      different hypothesis to its limit. This one takes the static-first position as far as it goes.
+    </p>
+    <dl class="statbar">
+      <div><dt>Pages on disk</dt><dd>{pages}</dd></div>
+      <div><dt>JS shipped</dt><dd>0</dd></div>
+      <div><dt>Runtime deps</dt><dd>0</dd></div>
+      <div><dt>Build deps</dt><dd>2</dd></div>
+    </dl>
+  </section>
+
+  <section class="section">
+    <div class="section__head"><h2>The thesis</h2></div>
+    <div class="prose">
+      <p>
+        A tag is a query. A vertical is a query. "Tools like this one" is a query. The usual move is
+        to run those queries in the reader's browser — ship the whole index, ship a filter, and let
+        the client compute. That is fast to build and it produces a site where nothing you are
+        looking at has an address.
+      </p>
+      <p>
+        The house vocabulary already names the alternative: <strong>content materialization</strong>.
+        A query with a stable URL and a durable consumer should exist as a file. So every tag here is
+        a page. Every vertical is a page. Every tool is a page. Adjacency is computed once, at build
+        time, and written into the HTML.
+      </p>
+      <p>
+        This matters more than usual for this particular site, because the primary way it gets used
+        is someone sending one link to one person. A link is only worth sending if the thing it
+        points at exists, has a title, and unfurls. Client-side state cannot be texted.
+      </p>
+    </div>
+  </section>
+
+  <section class="section">
+    <div class="section__head"><h2>What replaced the JavaScript</h2></div>
+    <div class="prose">
+      <ul>
+        <li>
+          <strong>Tag filtering</strong> — <a href="/tools/">the tools index</a> has a multi-select
+          facet filter built from <code>:has()</code> and checkbox state. Each facet contributes one
+          CSS rule; checking several intersects them. Works with JS disabled.
+        </li>
+        <li>
+          <strong>Shareable filters</strong> — the CSS filter cannot be linked to, so every tag also
+          gets a real route at <code>/tags/&lt;tag&gt;/</code> with its own title, description and
+          share card. Ephemeral narrowing is CSS; linkable narrowing is a URL.
+        </li>
+        <li>
+          <strong>Theme modes</strong> — light, dark and vibrant, switched by radio inputs the root
+          element reads with <code>:has()</code>. No Lossless site had ever shipped a mode; the dark
+          palette existed and the other two are designed here.
+        </li>
+        <li>
+          <strong>Disclosure</strong> — <code>&lt;details&gt;</code>, which has been a native element
+          for a decade.
+        </li>
+        <li>
+          <strong>Whole-card click targets</strong> — a stretched <code>::after</code> pseudo-element
+          on the title link, not a click handler.
+        </li>
+      </ul>
+    </div>
+  </section>
+
+  <section class="section">
+    <div class="section__head"><h2>What it cost</h2></div>
+    <div class="prose">
+      <p>
+        Honestly: the mode choice does not survive a navigation, because there is nowhere to persist
+        it without script. Free-text search is absent — Pagefind is the house answer and Pagefind
+        ships a WASM index. Analytics is absent for the same reason. Those are real, and they are
+        the boundary this variant exists to find. The full accounting is in
+        <code>VARIANT-NOTES.md</code> at the repo root.
+      </p>
+    </div>
+  </section>
+</Base>

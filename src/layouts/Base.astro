@@ -1,0 +1,76 @@
+---
+import MetaTags from "../components/MetaTags.astro";
+import ModeSwitch from "../components/ModeSwitch.astro";
+import { SITE } from "../lib/site";
+import "../styles/app.css";
+
+interface Props {
+  title: string;
+  description: string;
+  path: string;
+  image?: string;
+  imageAlt?: string;
+  type?: "website" | "article";
+  datePublished?: string;
+  dateModified?: string;
+  jsonLd?: Record<string, unknown>;
+  wide?: boolean;
+}
+const { wide = false, ...head } = Astro.props;
+const here = Astro.url.pathname;
+const nav = [
+  { href: "/tools/", label: "Tools" },
+  { href: "/tags/", label: "Tags" },
+  { href: "/verticals/", label: "Verticals" },
+  { href: "/about/", label: "About" },
+];
+---
+
+<html lang="en">
+  <head>
+    <MetaTags {...head} />
+  </head>
+  <body>
+    <a class="skiplink" href="#main">Skip to content</a>
+    <header class="masthead">
+      <div class:list={["shell", wide && "shell--wide", "masthead__inner"]}>
+        <a class="wordmark" href="/">
+          <b>Lossless</b> Toolkit <span>Variant A</span>
+        </a>
+        <nav class="navlinks" aria-label="Primary">
+          {
+            nav.map((n) => (
+              <a href={n.href} aria-current={here.startsWith(n.href) ? "page" : undefined}>
+                {n.label}
+              </a>
+            ))
+          }
+        </nav>
+        <ModeSwitch />
+      </div>
+    </header>
+
+    <main id="main">
+      <div class:list={["shell", wide && "shell--wide"]}>
+        <slot />
+      </div>
+    </main>
+
+    <footer class="colophon">
+      <div class:list={["shell", wide && "shell--wide"]}>
+        <p>
+          <strong>{SITE.name}</strong> — {SITE.tagline}
+        </p>
+        <p style="margin-block-start:.6rem;max-width:64ch">
+          Every route on this site is a file on disk, written at build time. There is no server, no
+          hydration, and no client-side JavaScript: filtering, browsing, disclosure and the theme
+          switch above are HTML and CSS.
+        </p>
+        <p style="margin-block-start:.9rem">
+          <a href="/llms.txt">llms.txt</a> · <a href="/llms-full.txt">llms-full.txt</a> ·
+          <a href="/sitemap-index.xml">sitemap</a> · <a href="/about/">how this was built</a>
+        </p>
+      </div>
+    </footer>
+  </body>
+</html>

@@ -1,0 +1,118 @@
+---
+import Base from "../layouts/Base.astro";
+import ToolCard from "../components/ToolCard.astro";
+import { listTools, listTags, listVerticals, listSections } from "../lib/content-api";
+import { SITE, abs } from "../lib/site";
+
+const tools = await listTools();
+const tags = await listTags();
+const verticals = await listVerticals();
+const sections = await listSections();
+
+const featured = tools.filter((t) => t.ogImage && t.description).slice(0, 8);
+const fieldTested = tools.filter((t) => t.fieldTested).length;
+
+const jsonLd = {
+  "@context": "https://schema.org",
+  "@type": "CollectionPage",
+  name: SITE.name,
+  description: SITE.description,
+  url: abs("/"),
+  isPartOf: { "@type": "WebSite", name: SITE.name, url: abs("/") },
+  about: tags.slice(0, 12).map((t) => ({ "@type": "Thing", name: t.tag })),
+};
+---
+
+<Base
+  title={SITE.name}
+  description={SITE.description}
+  path="/"
+  image="/og/fallback-1.jpg"
+  imageAlt="The Lossless Toolkit"
+  jsonLd={jsonLd}
+>
+  <section class="hero">
+    <p class="hero__eyebrow">Variant A · materialize everything, zero JS</p>
+    <h1>A catalogue of the tools <em>we actually reach for.</em></h1>
+    <p>
+      {tools.length} entries, {tags.length} capability tags, {verticals.length} vertical toolkits — every
+      one of them a real URL, written to disk before you asked for it. Nothing on this site is fetched,
+      hydrated, or computed in your browser.
+    </p>
+
+    <dl class="statbar">
+      <div><dt>Tools</dt><dd>{tools.length}</dd></div>
+      <div><dt>Tags</dt><dd>{tags.length}</dd></div>
+      <div><dt>Verticals</dt><dd>{verticals.length}</dd></div>
+      <div><dt>Field-tested</dt><dd>{fieldTested}</dd></div>
+      <div><dt>KB of JS</dt><dd>0</dd></div>
+    </dl>
+  </section>
+
+  <section class="section">
+    <div class="section__head">
+      <h2>Start with a capability</h2>
+      <p>
+        Each tag is a landing page with its own title, description and share card — the unit you send
+        someone.
+      </p>
+      <a class="more" href="/tags/">All {tags.length} tags →</a>
+    </div>
+    <div class="tagcloud">
+      {
+        tags.slice(0, 28).map((t) => (
+          <a href={`/tags/${t.slug}/`}>
+            {t.tag} <b>{t.count}</b>
+          </a>
+        ))
+      }
+    </div>
+  </section>
+
+  <section class="section">
+    <div class="section__head">
+      <h2>In the kit</h2>
+      <p>A sample of entries with the fullest metadata in the corpus.</p>
+      <a class="more" href="/tools/">Browse all {tools.length} →</a>
+    </div>
+    <div class="grid">
+      {featured.map((t, i) => <ToolCard tool={t} eager={i < 4} />)}
+    </div>
+  </section>
+
+  <section class="section">
+    <div class="section__head">
+      <h2>By vertical</h2>
+      <p>Toolkits assembled for a specific industry rather than a specific capability.</p>
+      <a class="more" href="/verticals/">All verticals →</a>
+    </div>
+    <div class="ledger">
+      {
+        verticals.slice(0, 10).map((v) => (
+          <a href={v.href}>
+            <strong>{v.title}</strong>
+            <span>{v.section || "toolkit"}</span>
+          </a>
+        ))
+      }
+    </div>
+  </section>
+
+  {
+    sections.length > 0 && (
+      <section class="section">
+        <div class="section__head">
+          <h2>By shelf</h2>
+          <p>Where each entry sits in the source corpus.</p>
+        </div>
+        <div class="tagcloud">
+          {sections.map((s) => (
+            <a href={`/tools/#shelf-${s.section.toLowerCase().replace(/[^a-z0-9]+/g, "-")}`}>
+              {s.section} <b>{s.count}</b>
+            </a>
+          ))}
+        </div>
+      </section>
+    )
+  }
+</Base>

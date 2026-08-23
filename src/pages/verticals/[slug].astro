@@ -1,0 +1,121 @@
+---
+import type { GetStaticPaths } from "astro";
+import { render } from "astro:content";
+import Base from "../../layouts/Base.astro";
+import ToolCard from "../../components/ToolCard.astro";
+import {
+  listVerticals,
+  listTools,
+  getVerticalSource,
+  type VerticalDTO,
+  type ToolDTO,
+} from "../../lib/content-api";
+import { abs, ogImageFor, tagSlug } from "../../lib/site";
+
+export const getStaticPaths: GetStaticPaths = async () => {
+  const verticals = await listVerticals();
+  const out = [];
+  for (const v of verticals) {
+    out.push({
+      params: { slug: v.slug },
+      props: { vertical: v, kit: (await listTools({ vertical: v.slug })).slice(0, 9) },
+    });
+  }
+  return out;
+};
+
+const { vertical, kit } = Astro.props as { vertical: VerticalDTO; kit: ToolDTO[] };
+
+const source = await getVerticalSource(vertical.slug);
+const rendered = source ? await render(source) : null;
+const Content = rendered?.Content;
+
+const image = ogImageFor(vertical.slug, vertical.ogImage);
+const description = vertical.description;
+---
+
+<Base
+  title={vertical.title}
+  description={description}
+  path={vertical.href}
+  image={image}
+  imageAlt={`${vertical.title} — Lossless Toolkit`}
+  type="article"
+  dateModified={vertical.dateModified || undefined}
+  jsonLd={{
+    "@context": "https://schema.org",
+    "@type": "Article",
+    headline: vertical.title,
+    description,
+    image: [image],
+    url: abs(vertical.href),
+    keywords: vertical.tags.join(", "),
+  }}
+>
+  <div class="detail">
+    <article>
+      <p class="detail__eyebrow">
+        <a href="/verticals/">Verticals</a>
+        {vertical.section && <span>· {vertical.section}</span>}
+      </p>
+      <h1>{vertical.title}</h1>
+      {description && <p class="detail__lede">{description}</p>}
+      <div class="prose" style="margin-block-start:2.5rem">
+        {Content ? <Content /> : <p>No write-up yet.</p>}
+      </div>
+    </article>
+
+    <aside class="detail__aside stack" style="--gap:1.25rem">
+      <div class="aside-card">
+        <div class="aside-card__shot">
+          <img
+            src={image}
+            alt={`Share card for ${vertical.title}`}
+            width="1200"
+            height="630"
+            referrerpolicy="no-referrer"
+          />
+        </div>
+        <div class="aside-card__body">
+          {
+            vertical.url && (
+              <a
+                class="btn btn--ghost"
+                href={vertical.url}
+                rel="noopener nofollow external"
+                target="_blank"
+              >
+                Source ↗
+              </a>
+            )
+          }
+          {
+            vertical.tags.length > 0 && (
+              <div class="tagcloud">
+                {vertical.tags.map((t) => (
+                  <a href={`/tags/${tagSlug(t)}/`}>{t}</a>
+                ))}
+              </div>
+            )
+          }
+        </div>
+      </div>
+    </aside>
+  </div>
+
+  {
+    kit.length > 0 && (
+      <section class="section">
+        <div class="section__head">
+          <h2>Tools in this vertical</h2>
+          <p>Matched on shared tags at build time.</p>
+        </div>
+        <div class="grid">
+          {kit.map((t) => (
+            <ToolCard tool={t} />
+          ))}
+        </div>
+      </section>
+    )
+  }
+</Base>

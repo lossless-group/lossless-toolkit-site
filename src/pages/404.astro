@@ -1,0 +1,24 @@
+---
+import Base from "../layouts/Base.astro";
+import { listTags } from "../lib/content-api";
+const tags = (await listTags()).slice(0, 16);
+---
+
+<Base
+  title="Not found"
+  description="That page is not in the kit."
+  path="/404/"
+  image="/og/fallback-5.jpg"
+>
+  <section class="hero">
+    <p class="hero__eyebrow">404</p>
+    <h1>Not in the kit.</h1>
+    <p>
+      Every page on this site exists as a file, so if this one is missing it was never written. Try a
+      capability instead.
+    </p>
+    <div class="tagcloud" style="margin-block-start:2rem">
+      {tags.map((t) => <a href={`/tags/${t.slug}/`}>{t.tag}</a>)}
+    </div>
+  </section>
+</Base>

@@ -1,0 +1,11 @@
+node_modules/
+dist/
+.astro/
+.DS_Store
+*.log
+
+# Build artifacts. `reports/content-anomalies.md` is the one exception —
+# a single generated sample is committed so the shape of the report is
+# reviewable without running the ingest. Regenerate with `pnpm ingest`.
+reports/*
+!reports/content-anomalies.md

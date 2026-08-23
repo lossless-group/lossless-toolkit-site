@@ -1,0 +1,57 @@
+---
+import Base from "../../layouts/Base.astro";
+import { listVerticals, type VerticalDTO } from "../../lib/content-api";
+import { abs } from "../../lib/site";
+
+const verticals = await listVerticals();
+
+const grouped = new Map<string, VerticalDTO[]>();
+for (const v of verticals) {
+  const k = v.section || "General";
+  if (!grouped.has(k)) grouped.set(k, []);
+  grouped.get(k)!.push(v);
+}
+
+const description = `${verticals.length} vertical toolkits — tools assembled around an industry rather than a capability.`;
+---
+
+<Base
+  title="Vertical toolkits"
+  description={description}
+  path="/verticals/"
+  image="/og/fallback-4.jpg"
+  jsonLd={{
+    "@context": "https://schema.org",
+    "@type": "CollectionPage",
+    name: "Vertical toolkits",
+    url: abs("/verticals/"),
+    description,
+  }}
+>
+  <section class="hero" style="padding-block-end:1.5rem">
+    <p class="hero__eyebrow">{verticals.length} toolkits</p>
+    <h1>Assembled by vertical</h1>
+    <p>{description}</p>
+  </section>
+
+  {
+    [...grouped.entries()].map(([section, list]) => (
+      <section class="section">
+        <div class="section__head">
+          <h2>{section}</h2>
+          <p>
+            {list.length} {list.length === 1 ? "entry" : "entries"}
+          </p>
+        </div>
+        <div class="ledger">
+          {list.map((v) => (
+            <a href={v.href}>
+              <strong>{v.title}</strong>
+              <span>{v.tags.slice(0, 2).join(" · ") || "toolkit"}</span>
+            </a>
+          ))}
+        </div>
+      </section>
+    ))
+  }
+</Base>
