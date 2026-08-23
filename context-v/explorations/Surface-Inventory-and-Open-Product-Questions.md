@@ -7,7 +7,7 @@ authors:
   - Michael Staton
 augmented_with:
   - Claude Code on Claude Opus 5 (1M context)
-semantic_version: 0.0.0.9
+semantic_version: 0.0.1.0
 tags:
   - Exploration
   - Product-Scope
@@ -43,6 +43,68 @@ Today, getting a content change live requires:
 option below should be judged partly on how completely it deletes steps 2 through 5. This is not a
 convenience concern — a five-step ritual is a tax on publishing, and taxed publishing means less
 publishing.
+
+## The corpus is loose by convention — never validate it hard
+
+**Standing rule, restated here because it constrains every technical choice below.** Content
+frontmatter gets **no hard validation**, ever. This corpus has accumulated for two years; property
+conventions and assumed types are loose by nature rather than by neglect. A strict schema converts
+one author's typo into a site-wide build failure, and normalizing 1,764 files to satisfy a validator
+is a day nobody is spending. **A nonconforming file must never fail the build** — drop the bad key,
+keep the document, warn if useful.
+
+The canonical statement lives at
+[[YAML-Frontmatter-Parsing-Must-Be-Lenient]] (`astro-knots/context-v/reminders/`). What follows is
+the measured variance in *this* corpus, counted 2026-08-23, which that reminder does not carry.
+
+### The Astro trap
+
+`defineCollection({ schema: z.object({...}) })` hard-validates and fails the build on mismatch. The
+default behaviour of the framework is the opposite of the house rule, so this needs deliberate
+handling every time a collection is defined:
+
+- every field `.optional()`, wrapped in `.catch()` so a bad value yields a fallback rather than
+  throwing — `z.string().optional().catch(undefined)`
+- unknown keys allowed through rather than stripped
+- or no schema validation at all, with normalization in the content-api module
+
+**The schema's job here is documentation and typing, not enforcement.**
+
+### Measured variance across the 1,764 tooling files
+
+**Tag syntax is genuinely mixed within the same corpus** — both forms are correct YAML and both are
+in active use:
+
+| Style | Files |
+|---|---|
+| inline flow — `tags: [Foo, Bar]` | 895 |
+| block list — `tags:` then `  - Foo` | 810 |
+| no tags at all | 61 |
+
+A real YAML parser handles both natively. A hand-rolled regex will silently mangle one of them —
+which is why the reminder exists.
+
+**Titles come from four different fields, none reliable, and some files carry several:**
+
+| Field | Files |
+|---|---|
+| `title` | 1232 |
+| `site_name` | 970 |
+| `og_title` | 821 |
+| `og_site_name` | 92 |
+
+Some files have none. This needs **one precedence chain applied in one place** — proposed:
+`title → og_title → site_name → og_site_name → derived from filename`. Never render an empty
+heading.
+
+Same shape of problem for `slug` (468 of 1764 — derive the rest) and `og_image` (1277, and six files
+contain the literal string `"[]"`, which must not be treated as a URL).
+
+**Why this belongs in the content-api module.** Every one of these — the precedence chain, the
+derived slug, the `publish !== false` rule, the `for_clients` strip, the `"[]"` guard — is
+normalization. Putting it behind the single content access module means it happens once and every
+consumer receives clean data. Spread across templates, it becomes a rule to remember at each render
+site, and it will be forgotten at one of them.
 
 ## The primary distribution channel is a text message
 
