@@ -1,0 +1,58 @@
+---
+import { tagLabel, tagSlug, type Tool } from '../lib/content-api';
+
+interface Props {
+  tool: Tool;
+  /** Override the destination. Vertical entries are not in the tool routes. */
+  href?: string;
+  external?: boolean;
+}
+const { tool, href, external = false } = Astro.props;
+const dest = href ?? `/tools/${tool.slug}/`;
+---
+
+<article class="card">
+  <a class="card__link" href={dest} rel={external ? 'noopener nofollow' : undefined}>
+    <div class={`card__media${tool.imageIsFallback ? ' card__media--fallback' : ''}`}>
+      <img src={tool.image} alt="" loading="lazy" decoding="async" width="1200" height="630" />
+    </div>
+    <div class="card__body">
+      <h3 class="card__title">{tool.title}</h3>
+      {tool.domain && <span class="card__host">{tool.domain}</span>}
+      <p class="card__sum">{tool.summary}</p>
+    </div>
+  </a>
+  {
+    tool.tags.length > 0 && (
+      <div class="card__tags card__tags--links">
+        {tool.tags.slice(0, 3).map((t) =>
+          // Vertical entries carry tags that have no page in the tool tag index,
+          // so they render as labels rather than links that would 404.
+          external ? (
+            <span class="chip">{tagLabel(t)}</span>
+          ) : (
+            <a class="chip" href={`/tags/${tagSlug(t)}/`}>
+              {tagLabel(t)}
+            </a>
+          )
+        )}
+      </div>
+    )
+  }
+</article>
+
+<style>
+  .card__link {
+    display: flex;
+    flex-direction: column;
+    flex: 1;
+    color: inherit;
+    text-decoration: none;
+  }
+  .card__tags--links {
+    padding: 0 0.95rem 0.9rem;
+    display: flex;
+    flex-wrap: wrap;
+    gap: 0.3rem;
+  }
+</style>

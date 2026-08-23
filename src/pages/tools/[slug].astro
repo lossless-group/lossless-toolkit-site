@@ -1,0 +1,244 @@
+---
+import Base from '../../layouts/Base.astro';
+import ToolCard from '../../components/ToolCard.astro';
+import { listTools, tagLabel, tagSlug, type Tool } from '../../lib/content-api';
+import { renderMarkdown } from '../../lib/markdown';
+import { abs, clamp } from '../../lib/seo';
+
+export function getStaticPaths() {
+  return listTools().map((tool) => ({ params: { slug: tool.slug }, props: { tool } }));
+}
+
+interface Props {
+  tool: Tool;
+}
+const { tool } = Astro.props;
+
+const { html, headings } = renderMarkdown(tool.body);
+
+// Related: shared-tag overlap, then same category. Computed at build; cheap.
+const related = listTools()
+  .filter((t) => t.slug !== tool.slug)
+  .map((t) => ({ t, score: t.tags.filter((g) => tool.tags.includes(g)).length + (t.category === tool.category ? 0.5 : 0) }))
+  .filter((r) => r.score > 0)
+  .sort((a, b) => b.score - a.score || b.t.depth - a.t.depth)
+  .slice(0, 4)
+  .map((r) => r.t);
+
+const description = clamp(
+  tool.summary || `${tool.title} — catalogued in the Lossless Toolkit under ${tool.category}.`
+);
+
+const jsonLd = {
+  '@context': 'https://schema.org',
+  '@type': 'SoftwareApplication',
+  name: tool.title,
+  description,
+  url: abs(`/tools/${tool.slug}/`),
+  applicationCategory: tool.category,
+  ...(tool.url ? { sameAs: [tool.url] } : {}),
+  keywords: tool.tags.join(', '),
+  isPartOf: { '@type': 'WebSite', name: 'Lossless Toolkit', url: abs('/') },
+  // NOTE: `for_clients` is deliberately absent and unreachable — it never
+  // survives the parse in content-api.ts, so it cannot appear here by accident.
+};
+---
+
+<Base title={tool.title} description={description} category={tool.category} jsonLd={jsonLd} ogType="article">
+  <article class="shell tool">
+    <nav class="crumbs" aria-label="Breadcrumb">
+      <a href="/tools/">Catalogue</a> <span aria-hidden="true">/</span>
+      <a href={`/tools/?cat=${encodeURIComponent(tool.category)}`}>{tool.category}</a>
+      {tool.subcategory && <><span aria-hidden="true">/</span> <span>{tool.subcategory}</span></>}
+    </nav>
+
+    <header class="tool__head">
+      <div class="tool__intro">
+        <h1>{tool.title}</h1>
+        <p class="lede">{tool.summary}</p>
+        <div class="tool__actions">
+          {
+            tool.url && (
+              <a
+                class="btn btn--primary"
+                href={tool.url}
+                rel="noopener nofollow"
+                data-track="outbound"
+                data-tool={tool.slug}
+              >
+                Visit {tool.domain} ↗
+              </a>
+            )
+          }
+          <a class="btn" href={`/tools/?cat=${encodeURIComponent(tool.category)}`}>
+            More in {tool.category}
+          </a>
+        </div>
+        {
+          tool.tags.length > 0 && (
+            <div class="tool__tags">
+              {tool.tags.map((t) => (
+                <a class="chip" href={`/tags/${tagSlug(t)}/`}>
+                  {tagLabel(t)}
+                </a>
+              ))}
+            </div>
+          )
+        }
+      </div>
+
+      <figure class={`tool__shot${tool.imageIsFallback ? ' tool__shot--fallback' : ''}`}>
+        <img
+          src={tool.image}
+          alt={tool.imageIsFallback ? '' : `${tool.title} — site preview`}
+          width="1200"
+          height="630"
+          loading="eager"
+          decoding="async"
+        />
+        {tool.imageIsFallback && <figcaption>No vendor image on record.</figcaption>}
+      </figure>
+    </header>
+
+    <div class="tool__body">
+      {
+        headings.length > 2 && (
+          <aside class="toc" aria-label="On this page">
+            <p class="eyebrow">On this page</p>
+            <ul>
+              {headings
+                .filter((h) => h.depth <= 2)
+                .map((h) => (
+                  <li>
+                    <a href={`#${h.id}`}>{h.text}</a>
+                  </li>
+                ))}
+            </ul>
+          </aside>
+        )
+      }
+      <div class="prose" set:html={html} />
+    </div>
+
+    {
+      related.length > 0 && (
+        <section class="related">
+          <h2>Related in the catalogue</h2>
+          <div class="card-grid">
+            {related.map((t) => (
+              <ToolCard tool={t} />
+            ))}
+          </div>
+        </section>
+      )
+    }
+  </article>
+</Base>
+
+<style>
+  .tool {
+    padding-block: 1.5rem 0;
+  }
+  .crumbs {
+    font-family: var(--font-mono);
+    font-size: var(--step--1);
+    color: var(--clr-ink-faint);
+    margin-block-end: 1.5rem;
+  }
+  .crumbs a {
+    color: var(--clr-ink-muted);
+    text-decoration: none;
+  }
+  .crumbs a:hover {
+    color: var(--clr-accent);
+  }
+
+  .tool__head {
+    display: grid;
+    gap: 2rem;
+    align-items: start;
+  }
+  @media (min-width: 880px) {
+    .tool__head {
+      grid-template-columns: 1fr minmax(320px, 42%);
+    }
+  }
+  .tool__head h1 {
+    font-size: var(--step-3);
+  }
+  .tool__actions {
+    display: flex;
+    gap: 0.6rem;
+    flex-wrap: wrap;
+    margin-block: 1.2rem;
+  }
+  .tool__tags {
+    display: flex;
+    flex-wrap: wrap;
+    gap: 0.3rem;
+  }
+
+  .tool__shot {
+    margin: 0;
+    border: 1px solid var(--clr-line);
+    border-radius: var(--radius);
+    overflow: hidden;
+    background: var(--clr-surface);
+    box-shadow: var(--glow);
+  }
+  .tool__shot img {
+    width: 100%;
+    aspect-ratio: 1200 / 630;
+    object-fit: cover;
+  }
+  .tool__shot--fallback img {
+    object-fit: contain;
+  }
+  .tool__shot figcaption {
+    padding: 0.4rem 0.7rem;
+    font-size: var(--step--1);
+    color: var(--clr-ink-faint);
+    font-family: var(--font-mono);
+  }
+
+  .tool__body {
+    display: grid;
+    gap: 2.5rem;
+    margin-block-start: 3rem;
+  }
+  @media (min-width: 980px) {
+    .tool__body {
+      grid-template-columns: 15rem 1fr;
+    }
+    .toc {
+      position: sticky;
+      top: 5rem;
+      align-self: start;
+    }
+  }
+  .toc ul {
+    list-style: none;
+    margin: 0;
+    padding: 0;
+    display: grid;
+    gap: 0.3rem;
+    border-inline-start: 1px solid var(--clr-line);
+  }
+  .toc li a {
+    display: block;
+    padding: 0.15rem 0 0.15rem 0.8rem;
+    font-size: var(--step--1);
+    color: var(--clr-ink-muted);
+    text-decoration: none;
+  }
+  .toc li a:hover {
+    color: var(--clr-accent);
+  }
+
+  .related {
+    margin-block-start: 4rem;
+  }
+  .related h2 {
+    font-size: var(--step-1);
+  }
+</style>

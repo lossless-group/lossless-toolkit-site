@@ -1,0 +1,76 @@
+---
+import Base from '../../layouts/Base.astro';
+import ToolCard from '../../components/ToolCard.astro';
+import { listVerticals, type Vertical } from '../../lib/content-api';
+import { abs } from '../../lib/seo';
+
+export function getStaticPaths() {
+  return listVerticals().map((vertical) => ({ params: { slug: vertical.slug }, props: { vertical } }));
+}
+
+interface Props {
+  vertical: Vertical;
+}
+const { vertical } = Astro.props;
+
+const description = `${vertical.entries.length} companies and tools catalogued under ${vertical.title} — ${vertical.entries
+  .slice(0, 6)
+  .map((e) => e.title)
+  .join(', ')}.`;
+
+const jsonLd = {
+  '@context': 'https://schema.org',
+  '@type': 'CollectionPage',
+  name: `${vertical.title} toolkit`,
+  url: abs(`/verticals/${vertical.slug}/`),
+  description,
+  mainEntity: {
+    '@type': 'ItemList',
+    numberOfItems: vertical.entries.length,
+    itemListElement: vertical.entries.slice(0, 30).map((t, i) => ({
+      '@type': 'ListItem',
+      position: i + 1,
+      name: t.title,
+      url: abs(`/tools/${t.slug}/`),
+    })),
+  },
+};
+---
+
+<Base
+  title={`${vertical.title} toolkit`}
+  description={description}
+  category="verticals"
+  jsonLd={jsonLd}
+>
+  <div class="shell page">
+    <p class="eyebrow"><a href="/verticals/">Verticals</a></p>
+    <h1>{vertical.title}</h1>
+    <p class="lede">{vertical.entries.length} catalogued companies and tools in this vertical.</p>
+
+    <div class="card-grid">
+      {
+        vertical.entries.map((t) => (
+          <ToolCard tool={t} href={t.url ?? `/verticals/${vertical.slug}/`} external={!!t.url} />
+        ))
+      }
+    </div>
+  </div>
+</Base>
+
+<style>
+  .page {
+    padding-block: 2.5rem 1rem;
+  }
+  .page h1 {
+    text-transform: capitalize;
+    margin-block-end: 0.3rem;
+  }
+  .page .lede {
+    margin-block-end: 2rem;
+  }
+  .eyebrow a {
+    color: inherit;
+    text-decoration: none;
+  }
+</style>

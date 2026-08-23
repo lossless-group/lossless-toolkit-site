@@ -1,0 +1,233 @@
+---
+import Base from '../layouts/Base.astro';
+import ToolCard from '../components/ToolCard.astro';
+import ToolExplorer from '../components/ToolExplorer.svelte';
+import {
+  listTools,
+  listTags,
+  listCategories,
+  listVerticals,
+  stats,
+  tagSlug,
+} from '../lib/content-api';
+import { abs } from '../lib/seo';
+
+const s = stats();
+const featured = listTools({ limit: 6 });
+const tags = listTags();
+const categories = listCategories();
+const verticals = listVerticals().slice(0, 6);
+
+const jsonLd = {
+  '@context': 'https://schema.org',
+  '@type': 'CollectionPage',
+  name: 'Lossless Toolkit',
+  url: abs('/'),
+  description: `A catalogue of ${s.tools} tools across ${s.tags} tags and ${s.verticals} verticals.`,
+  isPartOf: { '@type': 'WebSite', name: 'Lossless Toolkit', url: abs('/') },
+};
+---
+
+<Base
+  title="Lossless Toolkit"
+  description={`A working catalogue of ${s.tools} tools across ${s.tags} tags and ${s.verticals} industry verticals — the ones we actually put in front of clients.`}
+  jsonLd={jsonLd}
+>
+  <section class="hero">
+    <div class="shell">
+      <p class="eyebrow">The Lossless Group</p>
+      <h1>
+        The tools we <em>actually</em> use.
+      </h1>
+      <p class="lede">
+        {s.tools} catalogued tools, {s.tags} tags, {s.verticals} industry verticals. Not a directory
+        scraped from a list — a working record of what we put in front of clients, why, and where it
+        fits.
+      </p>
+
+      <dl class="stats">
+        <div><dt>Tools</dt><dd>{s.tools}</dd></div>
+        <div><dt>Tags</dt><dd>{s.tags}</dd></div>
+        <div><dt>Categories</dt><dd>{s.categories}</dd></div>
+        <div><dt>Verticals</dt><dd>{s.verticals}</dd></div>
+      </dl>
+
+      <div class="hero__cta">
+        <a class="btn btn--primary" href="/tools/">Explore the catalogue →</a>
+        <a class="btn" href="/verticals/">Browse by vertical</a>
+      </div>
+    </div>
+  </section>
+
+  <section class="shell block">
+    <header class="block__head">
+      <h2>Best documented</h2>
+      <p class="dim">
+        Ranked by how much there is to actually read — a real writeup, tags, a working link.
+      </p>
+    </header>
+    <div class="card-grid">
+      {featured.map((t) => <ToolCard tool={t} />)}
+    </div>
+  </section>
+
+  <section class="shell block" id="explore">
+    <header class="block__head">
+      <h2>Find it by narrowing</h2>
+      <p class="dim">
+        Multi-select tags, search as you type, compare up to four side by side. Every state you reach
+        is a link you can send someone.
+      </p>
+    </header>
+    {/* client:visible — below the fold, so the bundle is not fetched until it is nearly seen. */}
+    <ToolExplorer client:visible />
+  </section>
+
+  <section class="shell block">
+    <header class="block__head">
+      <h2>Categories</h2>
+      <p class="dim">The corpus's own shape, taken from how the files are organised.</p>
+    </header>
+    <div class="pills">
+      {
+        categories.map((c) => (
+          <a class="pill" href={`/tools/?cat=${encodeURIComponent(c.label)}`}>
+            <span>{c.label}</span>
+            <b>{c.count}</b>
+          </a>
+        ))
+      }
+    </div>
+  </section>
+
+  <section class="shell block">
+    <header class="block__head">
+      <h2>Verticals</h2>
+      <p class="dim">Toolkits assembled for a specific industry.</p>
+    </header>
+    <div class="pills">
+      {
+        verticals.map((v) => (
+          <a class="pill" href={`/verticals/${v.slug}/`}>
+            <span>{v.title}</span>
+            <b>{v.entries.length}</b>
+          </a>
+        ))
+      }
+    </div>
+  </section>
+
+  <section class="shell block">
+    <header class="block__head">
+      <h2>Most used tags</h2>
+    </header>
+    <div class="tagrow">
+      {
+        tags.slice(0, 40).map((t) => (
+          <a class="chip" href={`/tags/${tagSlug(t.tag)}/`}>
+            {t.label}
+            <span class="chip__n">{t.count}</span>
+          </a>
+        ))
+      }
+    </div>
+    <p><a href="/tags/">All {tags.length} tags →</a></p>
+  </section>
+</Base>
+
+<style>
+  .hero {
+    padding-block: clamp(3rem, 9vw, 6.5rem) 2rem;
+  }
+  .hero h1 {
+    font-size: var(--step-4);
+    max-width: 14ch;
+  }
+  .hero h1 em {
+    font-style: italic;
+    color: var(--clr-accent);
+  }
+  .hero__cta {
+    display: flex;
+    gap: 0.7rem;
+    flex-wrap: wrap;
+    margin-block-start: 1.6rem;
+  }
+
+  .stats {
+    display: flex;
+    flex-wrap: wrap;
+    gap: 0 2.5rem;
+    margin-block: 2rem 0;
+    padding-block-start: 1.2rem;
+    border-block-start: 1px solid var(--clr-line);
+    max-width: 40rem;
+  }
+  .stats div {
+    display: flex;
+    flex-direction: column-reverse;
+  }
+  .stats dt {
+    font-family: var(--font-mono);
+    font-size: var(--step--1);
+    color: var(--clr-ink-faint);
+    letter-spacing: 0.1em;
+    text-transform: uppercase;
+  }
+  .stats dd {
+    margin: 0;
+    font-family: var(--font-display);
+    font-size: var(--step-2);
+    color: var(--clr-accent);
+  }
+
+  .block {
+    margin-block-start: clamp(2.5rem, 6vw, 4.5rem);
+  }
+  .block__head {
+    margin-block-end: 1.2rem;
+  }
+  .block__head h2 {
+    margin-block-end: 0.2rem;
+  }
+  .dim {
+    color: var(--clr-ink-faint);
+    margin: 0;
+    max-width: var(--measure);
+    font-size: var(--step--1);
+  }
+
+  .pills {
+    display: grid;
+    gap: 0.55rem;
+    grid-template-columns: repeat(auto-fill, minmax(min(100%, 210px), 1fr));
+  }
+  .pill {
+    display: flex;
+    justify-content: space-between;
+    align-items: baseline;
+    gap: 0.6rem;
+    padding: 0.7rem 0.9rem;
+    border: 1px solid var(--clr-line);
+    border-radius: var(--radius-sm);
+    background: var(--clr-ground-raised);
+    color: var(--clr-ink);
+    text-decoration: none;
+  }
+  .pill:hover {
+    border-color: var(--clr-line-strong);
+    background: var(--clr-surface-hover);
+  }
+  .pill b {
+    font-family: var(--font-mono);
+    color: var(--clr-accent);
+    font-size: var(--step--1);
+  }
+
+  .tagrow {
+    display: flex;
+    flex-wrap: wrap;
+    gap: 0.35rem;
+    margin-block-end: 1rem;
+  }
+</style>

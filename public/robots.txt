@@ -1,0 +1,18 @@
+User-agent: *
+Allow: /
+
+# Answer engines are opted in deliberately — the default posture is that they
+# are not, and being cited requires saying so.
+User-agent: GPTBot
+Allow: /
+
+User-agent: ClaudeBot
+Allow: /
+
+User-agent: PerplexityBot
+Allow: /
+
+User-agent: Google-Extended
+Allow: /
+
+Sitemap: https://lossless-toolkit.vercel.app/sitemap-index.xml

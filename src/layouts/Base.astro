@@ -1,0 +1,110 @@
+---
+import '../styles/global.css';
+import MetaTags from '../components/MetaTags.astro';
+import ThemeToggle from '../components/ThemeToggle.svelte';
+import type { OgImage } from '../lib/seo';
+
+interface Props {
+  title: string;
+  description: string;
+  image?: OgImage;
+  category?: string;
+  jsonLd?: Record<string, unknown>;
+  noindex?: boolean;
+  ogType?: 'website' | 'article';
+}
+
+const { title, description, image, category, jsonLd, noindex, ogType } = Astro.props;
+---
+
+<!doctype html>
+<html lang="en" data-mode="dark">
+  <head>
+    <meta charset="utf-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1" />
+
+    <MetaTags
+      title={title}
+      description={description}
+      pathname={Astro.url.pathname}
+      image={image}
+      category={category}
+      jsonLd={jsonLd}
+      noindex={noindex}
+      ogType={ogType}
+    />
+
+    <link rel="sitemap" href="/sitemap-index.xml" />
+    <link rel="preconnect" href="https://fonts.googleapis.com" />
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin />
+    <link
+      rel="stylesheet"
+      href="https://fonts.googleapis.com/css2?family=Bodoni+Moda:opsz,wght@6..96,500;6..96,600;6..96,700&family=Figtree:wght@400;500;650;800&family=JetBrains+Mono:wght@400;500&display=swap"
+    />
+
+    <script is:inline>
+      // Mode is applied before first paint. A Svelte island cannot do this — it
+      // hydrates after paint, which guarantees a flash of the wrong theme on
+      // every navigation. This is the case where 12 inline lines beat an island.
+      (() => {
+        const KEY = 'ltk:mode';
+        let m = null;
+        try {
+          m = localStorage.getItem(KEY);
+        } catch {}
+        if (m !== 'light' && m !== 'dark' && m !== 'vibrant') {
+          m = window.matchMedia('(prefers-color-scheme: light)').matches ? 'light' : 'dark';
+        }
+        document.documentElement.dataset.mode = m;
+      })();
+    </script>
+  </head>
+
+  <body>
+    <a class="skip" href="#main">Skip to content</a>
+
+    <header class="site-head">
+      <div class="shell site-head__inner">
+        <a class="wordmark" href="/">Lossless<b>·</b>Toolkit</a>
+        <nav class="site-nav" aria-label="Primary">
+          <a href="/tools/">Explore</a>
+          <a href="/verticals/">Verticals</a>
+          <a href="/tags/">Tags</a>
+          <ThemeToggle client:idle />
+        </nav>
+      </div>
+    </header>
+
+    <main id="main">
+      <slot />
+    </main>
+
+    <footer class="site-foot">
+      <div class="shell">
+        <p>
+          The Lossless Toolkit — a catalogue of the tools we actually use with clients. Static by
+          default; interactive where interactivity earns it.
+        </p>
+        <p>
+          <a href="/llms.txt">llms.txt</a> · <a href="/sitemap-index.xml">sitemap</a> ·
+          <a href="/tools/">full index</a>
+        </p>
+      </div>
+    </footer>
+
+    <style>
+      .skip {
+        position: absolute;
+        inset-inline-start: -9999px;
+        top: 0;
+        background: var(--clr-accent);
+        color: var(--clr-accent-ink);
+        padding: 0.6rem 1rem;
+        z-index: 100;
+      }
+      .skip:focus {
+        inset-inline-start: 0;
+      }
+    </style>
+  </body>
+</html>

@@ -1,0 +1,64 @@
+---
+import Base from '../../layouts/Base.astro';
+import ToolExplorer from '../../components/ToolExplorer.svelte';
+import ToolCard from '../../components/ToolCard.astro';
+import { listTools, stats } from '../../lib/content-api';
+import { abs } from '../../lib/seo';
+
+const s = stats();
+// Server-rendered fallback list. The island replaces it on hydration, but this
+// is what a crawler, an unfurler, or a JS-off reader actually receives — the
+// route must be a real page before it is an app.
+const noscriptTools = listTools({ limit: 60 });
+
+const jsonLd = {
+  '@context': 'https://schema.org',
+  '@type': 'ItemList',
+  name: 'Lossless Toolkit — full catalogue',
+  url: abs('/tools/'),
+  numberOfItems: s.tools,
+  itemListElement: noscriptTools.slice(0, 20).map((t, i) => ({
+    '@type': 'ListItem',
+    position: i + 1,
+    name: t.title,
+    url: abs(`/tools/${t.slug}/`),
+  })),
+};
+---
+
+<Base
+  title="Explore the catalogue"
+  description={`Filter ${s.tools} tools by tag, category, and free text. Every filter state is a shareable link.`}
+  jsonLd={jsonLd}
+>
+  <div class="shell page">
+    <p class="eyebrow">Explore</p>
+    <h1>The whole catalogue</h1>
+    <p class="lede">
+      Narrow by any combination of tags, search across names, descriptions and domains, and compare
+      up to four side by side. The URL follows your filters, so whatever you are looking at is
+      something you can send to someone.
+    </p>
+
+    {/* client:visible: the explorer IS this page, so it hydrates as soon as it scrolls in. */}
+    <ToolExplorer client:visible />
+
+    <noscript>
+      <div class="card-grid" style="margin-block-start:1.5rem">
+        {noscriptTools.map((t) => <ToolCard tool={t} />)}
+      </div>
+    </noscript>
+  </div>
+</Base>
+
+<style>
+  .page {
+    padding-block: 2.5rem 1rem;
+  }
+  .page h1 {
+    margin-block-end: 0.3rem;
+  }
+  .page .lede {
+    margin-block-end: 2rem;
+  }
+</style>

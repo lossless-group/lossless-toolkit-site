@@ -1,0 +1,38 @@
+---
+import Base from '../layouts/Base.astro';
+import { listTags } from '../lib/content-api';
+const tags = listTags().slice(0, 12);
+---
+
+<Base title="Not found" description="That page is not in the catalogue." noindex>
+  <div class="shell page">
+    <p class="eyebrow">404</p>
+    <h1>Not in the catalogue.</h1>
+    <p class="lede">
+      The link may predate a re-slug, or the tool may not have been copied into this build. Start
+      from the explorer, or pick a tag.
+    </p>
+    <p><a class="btn btn--primary" href="/tools/">Explore the catalogue →</a></p>
+    <div class="tagrow">
+      {
+        tags.map((t) => (
+          <a class="chip" href={`/tags/${t.slug}/`}>
+            {t.label}
+          </a>
+        ))
+      }
+    </div>
+  </div>
+</Base>
+
+<style>
+  .page {
+    padding-block: 5rem 3rem;
+  }
+  .tagrow {
+    display: flex;
+    flex-wrap: wrap;
+    gap: 0.35rem;
+    margin-block-start: 2rem;
+  }
+</style>

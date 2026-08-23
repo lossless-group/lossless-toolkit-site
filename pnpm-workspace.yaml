@@ -1,0 +1,6 @@
+# Not a workspace — this site installs and builds on its own, per the
+# astro-knots convention that sites are NOT pnpm workspace members.
+# pnpm 11 moved build-script approval out of package.json and into this file.
+allowBuilds:
+  esbuild: true
+  sharp: true

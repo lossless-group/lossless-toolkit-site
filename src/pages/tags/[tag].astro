@@ -1,0 +1,92 @@
+---
+import Base from '../../layouts/Base.astro';
+import ToolExplorer from '../../components/ToolExplorer.svelte';
+import ToolCard from '../../components/ToolCard.astro';
+import { listTags, listTools, type TagFacet } from '../../lib/content-api';
+import { abs } from '../../lib/seo';
+
+/**
+ * This route is the answer to the sharpest tension in this variant: a view that
+ * exists only in client state has no URL, so it cannot be texted and cannot
+ * unfurl — and texting one precise link is how this site is actually used.
+ *
+ * So every single tag gets a REAL prerendered page: its own <title>, its own
+ * description, its own OG card, its own JSON-LD, indexed in the sitemap. The
+ * island then treats `/tags/<slug>/` as the canonical URL for a one-tag filter
+ * and rewrites to it, so the link a user copies is always the server-rendered
+ * one rather than a query string that unfurls generically.
+ */
+export function getStaticPaths() {
+  return listTags().map((facet) => ({
+    params: { tag: facet.slug },
+    props: { facet },
+  }));
+}
+
+interface Props {
+  facet: TagFacet;
+}
+const { facet } = Astro.props;
+
+const tools = listTools({ tag: facet.tag });
+const description = `${tools.length} ${tools.length === 1 ? 'tool' : 'tools'} tagged ${facet.label} in the Lossless Toolkit — ${tools
+  .slice(0, 5)
+  .map((t) => t.title)
+  .join(', ')}.`;
+
+const jsonLd = {
+  '@context': 'https://schema.org',
+  '@type': 'CollectionPage',
+  name: `${facet.label} tools`,
+  url: abs(`/tags/${facet.slug}/`),
+  description,
+  mainEntity: {
+    '@type': 'ItemList',
+    numberOfItems: tools.length,
+    itemListElement: tools.slice(0, 25).map((t, i) => ({
+      '@type': 'ListItem',
+      position: i + 1,
+      name: t.title,
+      url: abs(`/tools/${t.slug}/`),
+    })),
+  },
+};
+---
+
+<Base title={`${facet.label} tools`} description={description} category="tags" jsonLd={jsonLd}>
+  <div class="shell page">
+    <p class="eyebrow"><a href="/tags/">Tags</a></p>
+    <h1>{facet.label}</h1>
+    <p class="lede">
+      {tools.length}
+      {tools.length === 1 ? 'tool carries' : 'tools carry'} this tag. Narrow further below — adding a
+      second tag moves you to a query-string URL that still restores exactly this state.
+    </p>
+
+    {/* Seeded with this page's tag, so the island opens where the page already is. */}
+    <ToolExplorer client:visible initial={{ tags: [facet.tag] }} />
+
+    <noscript>
+      <div class="card-grid" style="margin-block-start:1.5rem">
+        {tools.map((t) => <ToolCard tool={t} />)}
+      </div>
+    </noscript>
+  </div>
+</Base>
+
+<style>
+  .page {
+    padding-block: 2.5rem 1rem;
+  }
+  .page h1 {
+    margin-block-end: 0.3rem;
+    text-transform: capitalize;
+  }
+  .page .lede {
+    margin-block-end: 2rem;
+  }
+  .eyebrow a {
+    color: inherit;
+    text-decoration: none;
+  }
+</style>

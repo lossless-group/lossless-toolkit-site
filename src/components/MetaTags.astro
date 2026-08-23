@@ -1,0 +1,64 @@
+---
+/**
+ * MetaTags.astro — the canonical name for this component across Astro Knots
+ * sites (see lossless-changelog, fullstack-vc, twf_site).
+ *
+ * Everything here is emitted server-side into the first HTTP response.
+ * Unfurlers do not execute JavaScript, so nothing load-bearing may be deferred
+ * to hydration.
+ */
+import { canonical, clamp, cardFor, type OgImage } from '../lib/seo';
+
+interface Props {
+  title: string;
+  description: string;
+  pathname: string;
+  image?: OgImage;
+  category?: string;
+  jsonLd?: Record<string, unknown>;
+  noindex?: boolean;
+  ogType?: 'website' | 'article';
+}
+
+const {
+  title,
+  description,
+  pathname,
+  image,
+  category,
+  jsonLd,
+  noindex = false,
+  ogType = 'website',
+} = Astro.props;
+
+const url = canonical(pathname);
+const desc = clamp(description);
+const og: OgImage = image ?? cardFor(category, `Lossless Toolkit — ${title}`);
+const fullTitle = title === 'Lossless Toolkit' ? title : `${title} · Lossless Toolkit`;
+---
+
+<title>{fullTitle}</title>
+<meta name="description" content={desc} />
+<link rel="canonical" href={url} />
+{noindex && <meta name="robots" content="noindex, nofollow" />}
+
+<meta property="og:site_name" content="Lossless Toolkit" />
+<meta property="og:type" content={ogType} />
+<meta property="og:locale" content="en_US" />
+<meta property="og:url" content={url} />
+<meta property="og:title" content={fullTitle} />
+<meta property="og:description" content={desc} />
+<meta property="og:image" content={og.url} />
+<meta property="og:image:secure_url" content={og.url} />
+<meta property="og:image:type" content={og.type} />
+<meta property="og:image:width" content={String(og.width)} />
+<meta property="og:image:height" content={String(og.height)} />
+<meta property="og:image:alt" content={og.alt} />
+
+<meta name="twitter:card" content="summary_large_image" />
+<meta name="twitter:title" content={fullTitle} />
+<meta name="twitter:description" content={desc} />
+<meta name="twitter:image" content={og.url} />
+<meta name="twitter:image:alt" content={og.alt} />
+
+{jsonLd && <script type="application/ld+json" set:html={JSON.stringify(jsonLd)} />}
