@@ -19,7 +19,8 @@
    *    reaches is a link they can text to someone. See `syncUrl` below.
    */
 
-  import { toolkit } from '../lib/toolkit-state.svelte.js';
+  import { toolkit, registerSlugs, writeUrl, shareUrl, toggleTag as toggleShared } from '../lib/toolkit-state.svelte.js';
+  import TagChip from './TagChip.svelte';
 
   let { endpoint = '/api/tools.json', initial = {} } = $props();
 
@@ -30,6 +31,20 @@
 
   const slugToTag = $derived(new Map(tagIndex.map((t) => [t.slug, t.tag])));
   const tagToSlug = $derived(new Map(tagIndex.map((t) => [t.tag, t.slug])));
+  // Register the slug map exactly once.
+  //
+  // The first version of this wrote toolkit.slugs AND called writeUrl() inside
+  // one effect — and writeUrl reads the atom, so the effect depended on the very
+  // thing it was writing. Svelte spun until effect_update_depth_exceeded, which
+  // took the whole component render down with it. Writing state an effect also
+  // reads is a loop, not a sync.
+  let slugsRegistered = false;
+  $effect(() => {
+    if (!slugsRegistered && tagIndex.length) {
+      slugsRegistered = true;
+      registerSlugs(tagIndex.map((t) => [t.tag, t.slug]));
+    }
+  });
 
   // One fetch, cached by the browser across every page that mounts this island.
   $effect(() => {
@@ -189,19 +204,11 @@
     return `/tools/${qs ? `?${qs}` : ''}`;
   }
 
-  $effect(() => {
-    if (loading || failed) return;
-    const next = currentPath();
-    if (location.pathname + location.search !== next) {
-      history.replaceState(null, '', next);
-    }
-    limit;
-  });
 
   function toggleTag(tag) {
-    const s = new Set(selected);
-    s.has(tag) ? s.delete(tag) : s.add(tag);
-    selected = s;
+    // Through the atom, not local state: the header bar is a different Svelte
+    // root reading the same object, and a tag picked here has to reach it.
+    toggleShared(tag);
     limit = 48;
   }
 
@@ -221,7 +228,7 @@
   }
 
   async function share() {
-    const url = new URL(currentPath(), location.origin).href;
+    const url = shareUrl();
     try {
       await navigator.clipboard.writeText(url);
       copied = true;
@@ -357,11 +364,21 @@
               <h3 class="card__title">{t.t}</h3>
               {#if t.h}<span class="card__host">{t.h}</span>{/if}
               <p class="card__sum">{t.d}</p>
-              <div class="card__tags">
-                {#each t.g.slice(0, 3) as g}<span class="chip">{g.replace(/-/g, ' ')}</span>{/each}
-              </div>
+
             </div>
           </a>
+          <!-- Outside the anchor deliberately: these are controls, and an
+               interactive element nested in a link is invalid markup — which is
+               exactly why the old decorative <span> did nothing when clicked. -->
+          <div class="card__tags">
+            {#each t.g.slice(0, 3) as g}
+              <TagChip
+                tagString={g}
+                isSelected={toolkit.tags.includes(g)}
+                onclick={() => toggleTag(g)}
+              />
+            {/each}
+          </div>
           <button
             class="pin"
             class:on={compare.has(t.s)}

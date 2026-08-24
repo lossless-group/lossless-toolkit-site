@@ -49,7 +49,7 @@ const jsonLd = {
     <nav class="crumbs" aria-label="Breadcrumb">
       <a href="/tools/">Catalogue</a> <span aria-hidden="true">/</span>
       <a href={`/tools/?cat=${encodeURIComponent(tool.category)}`}>{tool.category}</a>
-      {tool.subcategory && <><span aria-hidden="true">/</span> <span>{tool.subcategory}</span></>}
+      {tool.subcategory && <Fragment><span aria-hidden="true">/</span> <span>{tool.subcategory}</span></Fragment>}
     </nav>
 
     <header class="tool__head">
@@ -78,7 +78,7 @@ const jsonLd = {
           tool.tags.length > 0 && (
             <div class="tool__tags">
               {tool.tags.map((t) => (
-                <a class="chip" href={`/tags/${tagSlug(t)}/`} data-pagefind-filter="tag">
+                <a class="chip" href={`/tags/${tagSlug(t)}/`} data-tag={t} data-pagefind-filter="tag[data-tag]">
                   {tagLabel(t)}
                 </a>
               ))}
