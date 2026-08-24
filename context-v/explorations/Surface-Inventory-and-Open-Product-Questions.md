@@ -7,7 +7,7 @@ authors:
   - Michael Staton
 augmented_with:
   - Claude Code on Claude Opus 5 (1M context)
-semantic_version: 0.0.1.0
+semantic_version: 0.0.1.1
 tags:
   - Exploration
   - Product-Scope
@@ -342,6 +342,42 @@ worth arriving at from search or a shared link.
   computed at request, or authored.
 - Open: how many tags and paths produce a landing page? All of them, or only those above some
   threshold of content? Thin pages are an SEO liability.
+
+### Who filters — and the tag join that follows
+
+**Settled 2026-08-23.** Filtering has two audiences, and they arrive in sequence:
+
+1. **The author, primarily.** Filtering is how the right link gets *found* before it is texted. This
+   makes it an **authoring tool** first — optimize it for someone hunting a specific tool among
+   ~1,900, not for casual browsing.
+2. **The recipient, secondarily.** Someone who clicks through will very likely narrow further from
+   wherever they landed. They are not a passive reader of one page.
+
+**Therefore a tag join is required in the long run** — filtering by more than one tag at once, with
+the intersection as a first-class view. **Not needed now.** Recorded here so it is pursued
+deliberately later rather than discovered as a gap.
+
+**Why this matters more than it looks: a join is the case where materialization provably breaks.**
+
+A single tag is a materializable route — 255 tags, 255 pages, done. A *join* is combinatorial. Two-way
+joins across 255 tags are already 32,385 pages, and n-way is unbounded. There is no version of
+"materialize everything" that survives this.
+
+So the tag join is the concrete instance of the warning in [[Content Materialization]] about
+over-materialization — pre-rendering every possible query is waste, and here it is not merely wasteful
+but impossible. The long-run answer has to be a view that is **JIT yet still URL-bearing**: query
+parameters on a prerendered shell, or a server-rendered route. It cannot be a client-only state with
+no address, because a joined view someone wants to send must be sendable.
+
+That gives a rule the eventual design has to satisfy:
+
+| View | Strategy |
+|---|---|
+| all tools, one tag, one vertical, one tool | materialized route |
+| **two or more tags joined** | **JIT, but addressable** — query params or SSR |
+
+This is also the strongest argument yet that Q2 and Q4 must be answered together: the join is
+simultaneously the thing that cannot be prerendered and the thing that must stay shareable.
 
 ### Client pages
 
