@@ -1,0 +1,8 @@
+---
+// Search is not a separate destination. The palette in the header is for
+// jumping; /tools/ is for browsing — and both share the same ?q= & ?tags=
+// state, so this route simply forwards, preserving whatever was asked for.
+const u = new URL(Astro.request.url);
+const qs = u.search ? u.search : '';
+return Astro.redirect(`/tools/${qs}`, 308);
+---

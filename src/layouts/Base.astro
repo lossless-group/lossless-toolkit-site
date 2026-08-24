@@ -2,6 +2,7 @@
 import '../styles/global.css';
 import MetaTags from '../components/MetaTags.astro';
 import ThemeToggle from '../components/ThemeToggle.svelte';
+import PagefindSearch from '../components/PagefindSearch.svelte';
 import type { OgImage } from '../lib/seo';
 
 interface Props {
@@ -58,6 +59,10 @@ const { title, description, image, category, jsonLd, noindex, ogType } = Astro.p
         document.documentElement.dataset.mode = m;
       })();
     </script>
+    <style>
+      .site-head__search { flex: 1 1 22rem; max-width: 30rem; margin-inline: 1rem; }
+      @media (max-width: 860px) { .site-head__search { order: 3; flex-basis: 100%; margin: .5rem 0 0; } }
+    </style>
   </head>
 
   <body>
@@ -66,6 +71,9 @@ const { title, description, image, category, jsonLd, noindex, ogType } = Astro.p
     <header class="site-head">
       <div class="shell site-head__inner">
         <a class="wordmark" href="/">Lossless<b>·</b>Toolkit</a>
+        <div class="site-head__search">
+          <PagefindSearch client:idle placeholder="Search…" />
+        </div>
         <nav class="site-nav" aria-label="Primary">
           <a href="/tools/">Explore</a>
           <a href="/verticals/">Verticals</a>
@@ -75,7 +83,7 @@ const { title, description, image, category, jsonLd, noindex, ogType } = Astro.p
       </div>
     </header>
 
-    <main id="main">
+    <main id="main" data-pagefind-body>
       <slot />
     </main>
 

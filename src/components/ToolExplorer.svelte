@@ -19,6 +19,8 @@
    *    reaches is a link they can text to someone. See `syncUrl` below.
    */
 
+  import { toolkit } from '../lib/toolkit-state.svelte.js';
+
   let { endpoint = '/api/tools.json', initial = {} } = $props();
 
   let tools = $state([]);
@@ -85,6 +87,32 @@
   let compare = $state(new Set());
   let limit = $state(48);
   let copied = $state(false);
+
+  /**
+   * Bridge to the shared atom — ONE DIRECTION ONLY.
+   *
+   * This explorer and the header bar mount as separate Svelte roots, but they
+   * are one piece of state. Shared is the source of truth; this component
+   * follows it and never blind-writes back.
+   *
+   * The previous version mirrored both ways, and the two effects raced: typing
+   * in the header set toolkit.query, then the local->shared effect fired first
+   * and pushed this component's stale empty query back over it, eating every
+   * keystroke. Mirroring without an owner is not synchronisation, it is a race.
+   *
+   * Local interactions call push() explicitly, so writes are intentional.
+   */
+  $effect(() => {
+    const incoming = toolkit.tags.join(',');
+    if (incoming !== [...selected].join(',')) selected = new Set(toolkit.tags);
+    if (toolkit.query !== query) query = toolkit.query;
+  });
+
+  /** Called from this component's own controls when the user acts here. */
+  function push() {
+    if ([...selected].join(',') !== toolkit.tags.join(',')) toolkit.tags = [...selected];
+    if (query !== toolkit.query) toolkit.query = query;
+  }
 
   const categories = $derived([...new Set(tools.map((t) => t.c))].sort());
 
@@ -224,25 +252,28 @@
 
   <div class="bar" aria-busy={loading}>
     <label class="search">
-      <span class="sr">Search the toolkit</span>
-      <svg viewBox="0 0 24 24" aria-hidden="true" width="18" height="18">
-        <circle cx="11" cy="11" r="7" fill="none" stroke="currentColor" stroke-width="2" />
-        <path d="M16.5 16.5 21 21" stroke="currentColor" stroke-width="2" stroke-linecap="round" />
-      </svg>
+      <span class="sr">Filter these results</span>
+      <!-- Funnel, not a magnifier: the header bar searches the whole corpus, this
+             one narrows what is already on the page. Two magnifiers on one screen is
+             the ambiguity, not two bars. -->
+        <svg viewBox="0 0 24 24" aria-hidden="true" width="18" height="18">
+          <path d="M3 5h18l-7 8v6l-4 2v-8L3 5Z" fill="none" stroke="currentColor"
+                stroke-width="2" stroke-linejoin="round" />
+        </svg>
       <input
         type="search"
         bind:value={query}
         placeholder={loading
           ? 'Loading the catalogue…'
-          : `Search ${tools.length} tools — name, description, tag, domain…`}
+          : `Filter these ${tools.length} tools — name, description, tag, domain…`}
         autocomplete="off"
-        oninput={() => (limit = 48)}
+        oninput={() => { limit = 48; push(); }}
       />
     </label>
 
     <label class="sel">
       <span class="sr">Category</span>
-      <select bind:value={category} onchange={() => (limit = 48)}>
+      <select bind:value={category} onchange={() => { limit = 48; push(); }}>
         <option value="">All categories</option>
         {#each categories as c}<option value={c}>{c}</option>{/each}
       </select>

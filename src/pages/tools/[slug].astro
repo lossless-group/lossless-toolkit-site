@@ -78,7 +78,7 @@ const jsonLd = {
           tool.tags.length > 0 && (
             <div class="tool__tags">
               {tool.tags.map((t) => (
-                <a class="chip" href={`/tags/${tagSlug(t)}/`}>
+                <a class="chip" href={`/tags/${tagSlug(t)}/`} data-pagefind-filter="tag">
                   {tagLabel(t)}
                 </a>
               ))}
