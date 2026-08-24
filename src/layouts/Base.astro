@@ -1,6 +1,7 @@
 ---
 import MetaTags from "../components/MetaTags.astro";
 import ModeSwitch from "../components/ModeSwitch.astro";
+import SearchBox from "../components/SearchBox.astro";
 import { SITE } from "../lib/site";
 import "../styles/app.css";
 
@@ -23,6 +24,7 @@ const nav = [
   { href: "/tags/", label: "Tags" },
   { href: "/verticals/", label: "Verticals" },
   { href: "/about/", label: "About" },
+  { href: "/search/", label: "Search" },
 ];
 ---
 
@@ -46,11 +48,12 @@ const nav = [
             ))
           }
         </nav>
+        <SearchBox variant="compact" />
         <ModeSwitch />
       </div>
     </header>
 
-    <main id="main">
+    <main id="main" data-pagefind-body>
       <div class:list={["shell", wide && "shell--wide"]}>
         <slot />
       </div>

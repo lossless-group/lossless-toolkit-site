@@ -1,0 +1,28 @@
+---
+import Base from "../layouts/Base.astro";
+import SearchBox from "../components/SearchBox.astro";
+---
+
+<Base
+  title="Search"
+  description="Full-text search across every tool, tag and vertical in the Lossless Toolkit."
+  path="/search/"
+>
+  <div data-pagefind-ignore>
+    <h1>Search</h1>
+    <p class="lede">
+      Full-text search across the kit. Narrow by tag using the filters — the
+      index carries every tag a tool declares, so two or more can be combined.
+    </p>
+
+    <SearchBox variant="full" autoFocus={true} />
+
+    <noscript>
+      <p>
+        Search needs JavaScript. Every tool is also reachable by
+        <a href="/tags/">tag</a> and <a href="/verticals/">vertical</a>, which
+        work without it.
+      </p>
+    </noscript>
+  </div>
+</Base>

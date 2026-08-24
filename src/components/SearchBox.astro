@@ -1,0 +1,150 @@
+---
+/**
+ * SearchBox — Pagefind UI mount.
+ *
+ * Ported from ai-labs/context-vigilance-kit/splash/src/components/SearchBox.astro,
+ * the house reference for rich Pagefind search.
+ *
+ * The index is written by the `pagefind --site dist` step in `pnpm build`, so it
+ * does not exist under `astro dev` — the box renders but returns nothing.
+ * Use `pnpm build && pnpm preview` to exercise it.
+ *
+ * Variants:
+ *   compact — header popover, "/" to open
+ *   full    — permanent panel for /search/
+ *
+ * Facets come from `data-pagefind-filter` in the indexed markup. Tool pages tag
+ * themselves with `tag`, so multi-tag narrowing is handled by the index rather
+ * than by bespoke filter code.
+ */
+interface Props {
+  variant?: "compact" | "full";
+  autoFocus?: boolean;
+}
+const { variant = "compact", autoFocus = false } = Astro.props;
+const id = `search-${Math.random().toString(36).slice(2, 9)}`;
+---
+
+{variant === "compact" && (
+  <details class="search-compact" data-search-compact>
+    <summary class="search-compact__trigger" aria-label="Open search">
+      <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" aria-hidden="true">
+        <circle cx="11" cy="11" r="7" /><line x1="21" y1="21" x2="16.65" y2="16.65" />
+      </svg>
+      <span class="search-compact__hint">Search</span>
+      <kbd class="search-compact__kbd">/</kbd>
+    </summary>
+    <div class="search-compact__panel"><div id={id} class="search-pagefind"></div></div>
+  </details>
+)}
+
+{variant === "full" && (
+  <div class="search-full">
+    <div id={id} class="search-pagefind" data-autofocus={autoFocus ? "true" : "false"}></div>
+    <p class="search-examples">
+      Try:
+      <button type="button" data-q="agent">agent</button>
+      <button type="button" data-q="observability">observability</button>
+      <button type="button" data-q="open source">open source</button>
+    </p>
+  </div>
+)}
+
+<link rel="stylesheet" href="/pagefind/pagefind-ui.css" />
+
+<script define:vars={{ id, autoFocus, variant }}>
+  function init() {
+    const mount = document.getElementById(id);
+    if (!mount || mount.dataset.bound === "true") return;
+    if (typeof window.PagefindUI !== "function") return;
+
+    new window.PagefindUI({
+      element: `#${id}`,
+      bundlePath: "/pagefind/",
+      showImages: false,
+      showSubResults: true,
+      resetStyles: false,
+      showEmptyFilters: false,
+      excerptLength: 24,
+      processTerm: (t) => t.toLowerCase(),
+      placeholder: variant === "full" ? "Search every tool in the kit…" : "Search…",
+    });
+    mount.dataset.bound = "true";
+
+    if (autoFocus) {
+      requestAnimationFrame(() => {
+        const i = mount.querySelector("input.pagefind-ui__search-input");
+        if (i instanceof HTMLInputElement) i.focus();
+      });
+    }
+
+    const root = mount.closest(".search-full");
+    if (root) {
+      root.querySelectorAll("[data-q]").forEach((chip) => {
+        chip.addEventListener("click", () => {
+          const i = mount.querySelector("input.pagefind-ui__search-input");
+          if (i instanceof HTMLInputElement) {
+            i.value = chip.getAttribute("data-q") || "";
+            i.dispatchEvent(new Event("input", { bubbles: true }));
+            i.focus();
+          }
+        });
+      });
+    }
+  }
+
+  function loadScript() {
+    if (window.PagefindUI) return Promise.resolve();
+    return new Promise((res, rej) => {
+      const s = document.createElement("script");
+      s.src = "/pagefind/pagefind-ui.js";
+      s.onload = () => res(undefined);
+      s.onerror = rej;
+      document.head.appendChild(s);
+    });
+  }
+
+  const boot = () => loadScript().then(init).catch(() => {});
+  if (document.readyState !== "loading") boot();
+  else window.addEventListener("DOMContentLoaded", boot);
+
+  // "/" opens the compact popover, unless the user is typing somewhere.
+  document.addEventListener("keydown", (e) => {
+    if (e.key !== "/" || e.metaKey || e.ctrlKey || e.altKey) return;
+    const t = e.target;
+    if (t instanceof HTMLElement && /^(INPUT|TEXTAREA)$/.test(t.tagName)) return;
+    const d = document.querySelector("[data-search-compact]");
+    if (d instanceof HTMLDetailsElement && !d.open) {
+      e.preventDefault();
+      d.open = true;
+      boot();
+      requestAnimationFrame(() => {
+        const i = d.querySelector("input.pagefind-ui__search-input");
+        if (i instanceof HTMLInputElement) i.focus();
+      });
+    }
+  });
+</script>
+
+<style>
+  /* Stock pagefind-ui.css paints result highlights bright yellow. Override with
+     the house accent — :global because the widget renders outside this scope. */
+  :global(.pagefind-ui mark),
+  :global(.pagefind-ui__result mark) {
+    background: color-mix(in oklab, var(--clr-lossless-accent--brightest, #04e5e5) 22%, transparent);
+    color: inherit;
+    border-radius: 2px;
+    padding: 0 .15em;
+    font-weight: 600;
+  }
+
+  .search-compact { position: relative; display: inline-block; }
+  .search-compact__trigger { display: inline-flex; align-items: center; gap: .4rem; cursor: pointer; list-style: none; font-size: .85rem; opacity: .8; }
+  .search-compact__trigger::-webkit-details-marker { display: none; }
+  .search-compact__kbd { border: 1px solid currentColor; border-radius: 3px; padding: 0 .3rem; font-size: .7rem; opacity: .6; }
+  .search-compact__panel { position: absolute; right: 0; top: calc(100% + .5rem); width: min(90vw, 30rem); z-index: 50; padding: .75rem; border-radius: 8px; background: var(--color-surface, #11141c); border: 1px solid rgba(255,255,255,.12); box-shadow: 0 12px 40px rgba(0,0,0,.45); }
+  .search-full { margin-block: 1.5rem; }
+  .search-examples { margin-top: .75rem; font-size: .85rem; opacity: .75; display: flex; gap: .4rem; align-items: center; flex-wrap: wrap; }
+  .search-examples button { cursor: pointer; border: 1px solid currentColor; background: none; color: inherit; border-radius: 999px; padding: .15rem .6rem; font: inherit; font-size: .8rem; opacity: .85; }
+  .search-examples button:hover { opacity: 1; }
+</style>
