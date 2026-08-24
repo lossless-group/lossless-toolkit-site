@@ -7,7 +7,7 @@ authors:
   - Michael Staton
 augmented_with:
   - Claude Code on Claude Opus 5 (1M context)
-semantic_version: 0.0.0.1
+semantic_version: 0.0.0.2
 tags:
   - Issue
   - Wikilinks
@@ -83,7 +83,9 @@ Port 4322 (Variant B) returns byte-identical output. The rendered page shows the
 **Result:** ✅ — confirmed, and it is significant.
 **Learned:** `Tooling/` appears 3,591 times against `tooling/` 38 times; `Vocabulary/` 1,526 against `vocabulary/` 22; `lost-in-public/` 179 against `Lost in Public/` 8. Matching must fold case *and* treat space / hyphen / underscore as equivalent, or a few thousand links miss.
 
-Separately: **there are zero literal `../` or `./` wikilinks in the corpus.** Relative-path support is a plausible authoring future, not a present source of breakage. Worth recording so nobody prioritises it off intuition.
+Separately, on relative paths — and this correction matters because an earlier draft of this issue got it backwards. **Every wikilink here is a relative path**, in the sense that counts: relative to the vault root. `[[Vocabulary/Build Systems]]` means *vault-root/Vocabulary/Build Systems*. Mapping vault-relative paths onto site routes is the entire job.
+
+What the corpus contains zero of is **document-relative** links — `../concepts/Foo`, resolved against the file doing the linking rather than the vault root. Obsidian emits those when its *new link format* setting is configured for relative paths, so their absence is a property of this vault's settings, not of the format. Any resolver has to handle them, which means **it has to know which document a link was written in** — see the note under Fix.
 
 ## Root cause
 
@@ -102,11 +104,25 @@ A prototype of the LFM half exists on disk — staged and uncommitted in `lossle
 
 The decision this issue is waiting on is not technical: it is whether wikilink resolution is in scope for the toolkit rebuild at all, or a separate piece of shared-library work that happens on its own schedule.
 
+## Decided — what an unresolved wikilink must do
+
+Settled 2026-08-23, correcting an earlier draft of this issue that floated failing the build. **It should never fail loudly.** Three requirements:
+
+1. **Never break the build.** An unresolvable link is a content problem, not a compile error. A vault of 4,702 hand-edited files will always contain some.
+2. **Log the path that could not be resolved, and the document it is referenced in.** One without the other is close to useless — knowing `[[Atomic Design]]` failed does not tell you which of a thousand pages to open.
+3. **Render as plain text, not a hyperlink.** No anchor, no bracket syntax. The reader sees ordinary prose.
+
+Points 1 and 3 are already what `remarkLfmWikilinks` does. **Point 2 is not currently possible through its API**, which is the concrete finding this issue produces:
+
+- `onUnresolved` receives `WikilinkResolverInput` — `{ path, anchor, display, raw }`. No source document.
+- The plugin's transformer is declared `function transformer(tree)`. Remark hands transformers `(tree, file)`, and that `VFile` carries the path — the plugin simply does not take the second argument.
+
+So the log line everyone actually wants — *`[[Atomic Design]]` unresolved in `tooling/.../Bazel.md`* — cannot be produced by any consumer today, no matter how they write their resolver. Fixing it is additive and small, and it is arguably worth more than the resolution logic itself, because it turns an invisible failure into a worklist.
+
 ## Prevention
 
-Open question rather than a resolved one — worth a reminder if the answer lands:
-
-- Should a site that consumes Obsidian-authored content **fail loudly** when wikilinks are unresolved, rather than silently rendering bracket syntax to readers? A build-time count of unresolved links, surfaced as a warning, would have caught this on day one of both variants instead of on a spot-check of one page.
+- A per-build count of unresolved links, logged rather than thrown, would have surfaced this on day one of both variants instead of on a spot-check of one page.
+- Worth a reminder once the behaviour above is implemented, so the next site does not rediscover that unresolved links are silent.
 
 ## Related
 
