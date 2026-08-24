@@ -105,8 +105,8 @@ const jsonLd = {
             )
           }
           <dl>
-            {host && (<><dt>Site</dt><dd>{host}</dd></>)}
-            {tool.dateModified && (<><dt>Updated</dt><dd>{tool.dateModified}</dd></>)}
+            {host && (<Fragment><dt>Site</dt><dd>{host}</dd></Fragment>)}
+            {tool.dateModified && (<Fragment><dt>Updated</dt><dd>{tool.dateModified}</dd></Fragment>)}
             <dt>Tags</dt>
             <dd>{tool.tags.length}</dd>
             <dt>Share</dt>

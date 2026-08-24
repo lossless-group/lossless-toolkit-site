@@ -41,12 +41,12 @@ const css = facets
     </p>
     {
       facets.map((f) => (
-        <>
+        <Fragment>
           <input type="checkbox" id={`f-${f.slug}`} />
           <label for={`f-${f.slug}`}>
             {f.tag} <span style="opacity:.55">{f.count}</span>
           </label>
-        </>
+        </Fragment>
       ))
     }
     <a class="facets__reset" href={resetHref}>Reset</a>

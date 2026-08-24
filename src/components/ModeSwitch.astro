@@ -25,7 +25,7 @@ const modes = [
     <legend>Colour mode</legend>
     {
       modes.map((m) => (
-        <>
+        <Fragment>
           <input
             type="radio"
             name="colour-mode"
@@ -34,7 +34,7 @@ const modes = [
             checked={!m.explicit}
           />
           <label for={m.id}>{m.label}</label>
-        </>
+        </Fragment>
       ))
     }
   </fieldset>
