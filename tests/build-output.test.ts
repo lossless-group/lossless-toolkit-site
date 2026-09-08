@@ -24,7 +24,7 @@ before(() => {
 });
 
 test('1. `publish: false` is excluded from the site entirely', () => {
-  assert.ok(!exists('tools/publish-false-test/index.html'), 'a publish:false entry rendered');
+  assert.ok(!exists('toolkit/publish-false-test/index.html'), 'a publish:false entry rendered');
   const payload = read('api/tools.json');
   assert.ok(!payload.includes('Publish False Test'), 'a publish:false entry reached the client');
 });
@@ -54,14 +54,14 @@ test('2. missing `publish` is INCLUDED — the silent-drop trap', () => {
 });
 
 test('3. an empty file still yields a page with a filename-derived title', () => {
-  const html = read('tools/empty-tool-test/index.html');
+  const html = read('toolkit/empty-tool-test/index.html');
   assert.match(html, /<h1[^>]*>Empty Tool Test<\/h1>/);
   assert.match(html, /<title>Empty Tool Test · Lossless Toolkit<\/title>/);
   assert.match(html, /og:image" content="https:\/\//);
 });
 
 test('4. title precedence resolves title > og_title > site_name', () => {
-  const html = read('tools/precedence-test/index.html');
+  const html = read('toolkit/precedence-test/index.html');
   assert.match(html, /<h1[^>]*>Precedence Test Winner<\/h1>/);
   assert.ok(!html.includes('Should Lose To Title'));
   assert.ok(!html.includes('Should Also Lose'));
@@ -123,7 +123,7 @@ test('every shipped item has a non-empty label and a real URL', () => {
 });
 
 test('share metadata: the full sextet plus the twitter pair, absolute', () => {
-  const html = read('tools/precedence-test/index.html');
+  const html = read('toolkit/precedence-test/index.html');
   for (const prop of [
     'og:image',
     'og:image:secure_url',

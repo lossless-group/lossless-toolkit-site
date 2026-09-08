@@ -2,7 +2,7 @@
  * One reactive atom for the whole toolkit surface.
  *
  * Why this exists: every `client:` directive mounts a SEPARATE Svelte root with
- * its own state. The header search bar and the explorer on /tools/ were two
+ * its own state. The header search bar and the explorer on /toolkit/ were two
  * disconnected apps that happened to read the same query params, so selecting a
  * tag in one could only reach the other by navigating. That is islands used
  * where an application was wanted.
@@ -15,6 +15,8 @@
  * The URL stays the serialisation of this atom rather than its source of truth:
  * hydrate from it once, write back on change, so any state reached is sendable.
  */
+
+import { EXPLORER } from './content-map';
 
 export const toolkit = $state({
   query: '',
@@ -40,7 +42,7 @@ export function registerSlugs(pairs) {
  *
  * This previously existed twice — here and in ToolExplorer — and the two raced,
  * so whichever wrote last won and the canonical path kept getting clobbered back
- * to /tools/. Copy-shareable-link then read one and the address bar showed the
+ * to /toolkit/. Copy-shareable-link then read one and the address bar showed the
  * other. One owner, one answer.
  */
 export function canonicalPath() {
@@ -57,7 +59,7 @@ export function canonicalPath() {
   if (toolkit.category) p.set('cat', toolkit.category);
   if (toolkit.sort !== 'depth') p.set('sort', toolkit.sort);
   const qs = p.toString();
-  return `/tools/${qs ? `?${qs}` : ''}`;
+  return `${EXPLORER}${qs ? `?${qs}` : ''}`;
 }
 
 export function shareUrl() {

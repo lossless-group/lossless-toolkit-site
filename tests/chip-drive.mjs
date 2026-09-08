@@ -18,7 +18,7 @@ const p = await b.newPage();
 const errs=[]; p.on('pageerror',e=>errs.push(e.message));
 const out=[]; const ok=(n,v)=>out.push(`  ${v?'PASS':'FAIL'}  ${n}`);
 
-await p.goto('http://localhost:4322/tools/', { waitUntil:'networkidle' });
+await p.goto('http://localhost:4322/toolkit/', { waitUntil:'networkidle' });
 await p.waitForTimeout(1300);
 
 // --- chip design 1: the facet row ---
@@ -28,11 +28,11 @@ const before = await p.locator('.card').count();
 await facet.click(); await p.waitForTimeout(1200);
 const afterUrl = p.url().replace('http://localhost:4322','');
 const afterCards = await p.locator('.card').count();
-ok(`facet chip "${fLabel}" changes the URL (${afterUrl})`, afterUrl !== '/tools/');
+ok(`facet chip "${fLabel}" changes the URL (${afterUrl})`, afterUrl !== '/toolkit/');
 ok(`facet chip narrows results (${before} -> ${afterCards})`, afterCards !== before);
 
 // reset
-await p.goto('http://localhost:4322/tools/', { waitUntil:'networkidle' });
+await p.goto('http://localhost:4322/toolkit/', { waitUntil:'networkidle' });
 await p.waitForTimeout(1300);
 
 // --- chip design 2: the tag chips on a card ---
@@ -45,7 +45,7 @@ if (n) {
   await cardChip.click(); await p.waitForTimeout(1200);
   const u2 = p.url().replace('http://localhost:4322','');
   const a2 = await p.locator('.card').count();
-  ok(`card chip "${cLabel}" changes the URL (${u2})`, u2 !== '/tools/');
+  ok(`card chip "${cLabel}" changes the URL (${u2})`, u2 !== '/toolkit/');
   ok(`card chip narrows results (${b2} -> ${a2})`, a2 !== b2);
   ok(`card chip did not navigate to a tool page`, !/^\/tools\/[a-z0-9-]+\/$/.test(u2));
 }

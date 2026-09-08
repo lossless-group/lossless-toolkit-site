@@ -250,3 +250,28 @@ a.chip:hover { border-color: var(--clr-line-strong); color: var(--clr-ink); }
   *, *::before, *::after { animation-duration: 0.01ms !important; transition-duration: 0.01ms !important; }
   html { scroll-behavior: auto; }
 }
+
+/* ---- Wikilinks ---------------------------------------------------------- *
+ * Resolved links read as ordinary prose links with a subtler underline — they
+ * are internal navigation, not citations. Unresolved ones are deliberately
+ * NOT styled as errors: a vault link whose target this site does not publish
+ * is normal (the site carries a curated subset), so it reads as plain emphasis
+ * rather than something broken the reader should worry about.
+ * Semantic tokens only — never --color__* from a component. */
+a.wikilink {
+  color: var(--clr-ink);
+  text-decoration: underline;
+  text-decoration-color: var(--clr-line-strong);
+  text-underline-offset: 0.18em;
+}
+
+a.wikilink:hover,
+a.wikilink:focus-visible {
+  color: var(--clr-accent);
+  text-decoration-color: var(--clr-accent);
+}
+
+.wikilink--unresolved {
+  color: var(--clr-ink-muted);
+  border-bottom: 1px dotted var(--clr-line);
+}

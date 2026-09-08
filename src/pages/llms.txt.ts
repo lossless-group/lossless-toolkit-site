@@ -29,7 +29,7 @@ export const GET: APIRoute = () => {
   lines.push('');
   for (const t of tools) {
     const desc = t.summary.replace(/\s+/g, ' ').slice(0, 200);
-    lines.push(`- [${t.title}](${abs(`/tools/${t.slug}/`)}): ${desc}${t.url ? ` — ${t.url}` : ''}`);
+    lines.push(`- [${t.title}](${abs(`/toolkit/${t.slug}/`)}): ${desc}${t.url ? ` — ${t.url}` : ''}`);
   }
   lines.push('');
 

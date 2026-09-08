@@ -8,6 +8,8 @@
  * tree. When LFM lands, this is the seam it replaces.
  */
 
+import { resolveWikilink } from './wikilinks';
+
 const esc = (s: string) =>
   s.replace(/&/g, '&amp;').replace(/</g, '&lt;').replace(/>/g, '&gt;').replace(/"/g, '&quot;');
 
@@ -20,13 +22,34 @@ export const headingId = (text: string) =>
 
 function inline(s: string): string {
   let out = esc(s);
-  out = out.replace(/`([^`]+)`/g, '<code>$1</code>');
+
+  // Code spans are lifted out FIRST and restored LAST, so nothing below can
+  // reach inside them. Without this, a documented `[[Wikilink]]` in backticks
+  // becomes a real link — the exact bug the string-preprocessor approach on
+  // mpstaton-site was rewritten as an MDAST plugin to avoid.
+  const spans: string[] = [];
+  out = out.replace(/`([^`]+)`/g, (_m, code: string) => {
+    spans.push(`<code>${code}</code>`);
+    return `\u0000CODE${spans.length - 1}\u0000`;
+  });
+
+  // Wikilinks resolve through content-map; an unresolvable one degrades to its
+  // display text with no anchor, never to a broken or guessed href.
+  out = out.replace(/\[\[([^\]]+)\]\]/g, (_m, raw: string) => {
+    const hit = resolveWikilink(raw);
+    const fallback = raw.split('|').pop()!.split('#')[0].split('/').pop()!.trim();
+    if (!hit) return `<span class="wikilink wikilink--unresolved">${fallback}</span>`;
+    const ext = hit.isLocal ? '' : ' target="_blank" rel="noopener"';
+    return `<a class="wikilink" href="${hit.url}" data-via="${hit.via}"${ext}>${hit.display}</a>`;
+  });
+
   out = out.replace(/\[([^\]]+)\]\((https?:[^)\s]+)\)/g, '<a href="$2" rel="noopener nofollow">$1</a>');
   out = out.replace(/\*\*([^*]+)\*\*/g, '<strong>$1</strong>');
   out = out.replace(/(^|\W)\*([^*\n]+)\*/g, '$1<em>$2</em>');
   // bare citation markers like [1][4] — the corpus is full of them
   out = out.replace(/\[(\d+)\]/g, '<sup class="cite">$1</sup>');
-  return out;
+
+  return out.replace(/\u0000CODE(\d+)\u0000/g, (_m, i: string) => spans[Number(i)]);
 }
 
 export interface Heading {
@@ -65,7 +88,16 @@ export function renderMarkdown(md: string): { html: string; headings: Heading[] 
       const depth = h[1].length;
       const text = h[2].replace(/[*`]/g, '').trim();
       const id = headingId(text);
-      if (depth <= 3) headings.push({ depth, text, id });
+      // The TOC renders `text` as plain text, so a wikilink left intact shows
+      // up as literal `[[...]]` in the sidebar. The heading itself still goes
+      // through inline() below and links normally.
+      const tocText = text
+        .replace(/!\[\[[^\]]*\]\]/g, '')
+        .replace(/\[\[([^\]]+)\]\]/g, (_m, raw: string) =>
+          raw.split('|').pop()!.split('#')[0].split('/').pop()!.trim(),
+        )
+        .trim();
+      if (depth <= 3) headings.push({ depth, text: tocText, id });
       out.push(`<h${depth} id="${id}">${inline(text)}</h${depth}>`);
       i++;
       continue;
@@ -74,12 +106,15 @@ export function renderMarkdown(md: string): { html: string; headings: Heading[] 
     // table
     if (t.startsWith('|') && /^\|[\s:|-]+\|$/.test((lines[i + 1] ?? '').trim())) {
       closeList();
+      // Obsidian escapes a pipe inside a cell as `\|`, which is exactly how
+      // every `[[Path\|Display]]` wikilink in a table is written. Splitting on
+      // a bare `|` tears those in half and the wikilink never reaches inline().
       const cells = (row: string) =>
         row
           .trim()
           .replace(/^\||\|$/g, '')
-          .split('|')
-          .map((c) => c.trim());
+          .split(/(?<!\\)\|/)
+          .map((c) => c.trim().replace(/\\\|/g, '|'));
       const head = cells(t);
       i += 2;
       const body: string[][] = [];

@@ -1,4 +1,5 @@
 import { parseFrontmatter, str, list, type Frontmatter } from './frontmatter';
+import { slugify } from './content-map';
 
 /**
  * content-api.ts — THE ONLY module in this codebase that touches content.
@@ -72,15 +73,7 @@ export interface Vertical {
 
 export const FALLBACK_OG = '/og/toolkit-card.jpg';
 
-const slugify = (s: string) =>
-  s
-    .normalize('NFKD')
-    .replace(/[̀-ͯ]/g, '')
-    .toLowerCase()
-    .replace(/['’.]/g, '')
-    .replace(/[^a-z0-9]+/g, '-')
-    .replace(/^-+|-+$/g, '')
-    .slice(0, 80) || 'untitled';
+// slugify lives in content-map.ts — see the note there on why it is shared.
 
 /** Human-facing tag label. Corpus tags are Pascal-Kebab: `LLM-Gateways`. */
 export const tagLabel = (t: string) => t.replace(/-/g, ' ').trim();
@@ -104,6 +97,13 @@ function firstParagraph(body: string): string {
   }
   return buf
     .join(' ')
+    // Summaries are PLAIN TEXT — they render inside the card's own <a>, so a
+    // resolved wikilink here would nest an anchor. Embeds (`![[file.png]]`)
+    // drop entirely; links collapse to their display text.
+    .replace(/!\[\[[^\]]*\]\]/g, '')
+    .replace(/\[\[([^\]]+)\]\]/g, (_m, raw) =>
+      raw.split('|').pop().split('#')[0].split('/').pop().trim(),
+    )
     .replace(/\[\^?\d+\]/g, '')
     .replace(/\*\*/g, '')
     .replace(/\[([^\]]+)\]\([^)]*\)/g, '$1')
@@ -232,7 +232,7 @@ function build(path: string, raw: string, rootSegment: string): Tool | null {
       file: contentPath,
       field: 'slug',
       found: 'absent',
-      assumed: `/tools/${slug}/`,
+      assumed: `/toolkit/${slug}/`,
     });
   }
   if (!url) {

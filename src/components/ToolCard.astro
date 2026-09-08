@@ -8,7 +8,7 @@ interface Props {
   external?: boolean;
 }
 const { tool, href, external = false } = Astro.props;
-const dest = href ?? `/tools/${tool.slug}/`;
+const dest = href ?? `/toolkit/${tool.slug}/`;
 ---
 
 <article class="card">

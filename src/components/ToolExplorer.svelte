@@ -76,8 +76,8 @@
 
   /**
    * Initial state comes from the URL, not from props, because these pages are
-   * prerendered: the same static HTML is served for `/tools/` and
-   * `/tools/?tags=llm-gateways,open-source`. Reading the query string on hydrate
+   * prerendered: the same static HTML is served for `/toolkit/` and
+   * `/toolkit/?tags=llm-gateways,open-source`. Reading the query string on hydrate
    * is what makes a filtered link restore the filter it advertises.
    *
    * `initial` from the server still wins where it exists — `/tags/<slug>/` is a
@@ -187,7 +187,7 @@
    *      its own <title>, description and OG card. When the filter collapses to
    *      exactly one tag we swap the URL to that route, so the shared link is
    *      the server-rendered one and unfurls properly.
-   *   2. Everything richer becomes `/tools/?q=&tags=&cat=`. `/tools/` is itself
+   *   2. Everything richer becomes `/toolkit/?q=&tags=&cat=`. `/toolkit/` is itself
    *      prerendered, so the link still unfurls (with the index card) and still
    *      restores the exact filter state on arrival. The card is generic; the
    *      page is not.
@@ -201,7 +201,7 @@
     if (category) p.set('cat', category);
     if (sort !== 'depth') p.set('sort', sort);
     const qs = p.toString();
-    return `/tools/${qs ? `?${qs}` : ''}`;
+    return `/toolkit/${qs ? `?${qs}` : ''}`;
   }
 
 
@@ -339,7 +339,7 @@
           <tbody>
             {#each compared as t (t.s)}
               <tr>
-                <th scope="row"><a href={`/tools/${t.s}/`}>{t.t}</a></th>
+                <th scope="row"><a href={`/toolkit/${t.s}/`}>{t.t}</a></th>
                 <td>{t.c}</td>
                 <td class="dim">{t.g.slice(0, 4).map((g) => g.replace(/-/g, ' ')).join(', ') || '—'}</td>
                 <td class="dim">{t.h ?? '—'}</td>
@@ -356,7 +356,7 @@
     <div class="card-grid">
       {#each visible as t (t.s)}
         <article class="card">
-          <a class="card__link" href={`/tools/${t.s}/`}>
+          <a class="card__link" href={`/toolkit/${t.s}/`}>
             <div class="card__media">
               <img src={t.i} alt="" loading="lazy" decoding="async" width="1200" height="630" />
             </div>

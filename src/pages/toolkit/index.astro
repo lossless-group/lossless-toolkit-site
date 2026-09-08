@@ -15,13 +15,13 @@ const jsonLd = {
   '@context': 'https://schema.org',
   '@type': 'ItemList',
   name: 'Lossless Toolkit — full catalogue',
-  url: abs('/tools/'),
+  url: abs('/toolkit/'),
   numberOfItems: s.tools,
   itemListElement: noscriptTools.slice(0, 20).map((t, i) => ({
     '@type': 'ListItem',
     position: i + 1,
     name: t.title,
-    url: abs(`/tools/${t.slug}/`),
+    url: abs(`/toolkit/${t.slug}/`),
   })),
 };
 ---

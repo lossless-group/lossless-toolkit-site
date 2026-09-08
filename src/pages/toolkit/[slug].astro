@@ -34,7 +34,7 @@ const jsonLd = {
   '@type': 'SoftwareApplication',
   name: tool.title,
   description,
-  url: abs(`/tools/${tool.slug}/`),
+  url: abs(`/toolkit/${tool.slug}/`),
   applicationCategory: tool.category,
   ...(tool.url ? { sameAs: [tool.url] } : {}),
   keywords: tool.tags.join(', '),
@@ -47,8 +47,8 @@ const jsonLd = {
 <Base title={tool.title} description={description} category={tool.category} jsonLd={jsonLd} ogType="article">
   <article class="shell tool">
     <nav class="crumbs" aria-label="Breadcrumb">
-      <a href="/tools/">Catalogue</a> <span aria-hidden="true">/</span>
-      <a href={`/tools/?cat=${encodeURIComponent(tool.category)}`}>{tool.category}</a>
+      <a href="/toolkit/">Catalogue</a> <span aria-hidden="true">/</span>
+      <a href={`/toolkit/?cat=${encodeURIComponent(tool.category)}`}>{tool.category}</a>
       {tool.subcategory && <Fragment><span aria-hidden="true">/</span> <span>{tool.subcategory}</span></Fragment>}
     </nav>
 
@@ -70,7 +70,7 @@ const jsonLd = {
               </a>
             )
           }
-          <a class="btn" href={`/tools/?cat=${encodeURIComponent(tool.category)}`}>
+          <a class="btn" href={`/toolkit/?cat=${encodeURIComponent(tool.category)}`}>
             More in {tool.category}
           </a>
         </div>

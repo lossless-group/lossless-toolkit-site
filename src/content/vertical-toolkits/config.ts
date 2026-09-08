@@ -1,5 +1,6 @@
 import { defineCollection } from 'astro:content';
 import { glob } from 'astro/loaders';
+import { collectionBase } from '../../lib/content-map';
 import { toolingSchema } from '../tooling/config';
 
 /**
@@ -14,6 +15,6 @@ import { toolingSchema } from '../tooling/config';
  * Same rule as the sibling: this is documentation and typing, not enforcement.
  */
 export const verticalToolkits = defineCollection({
-  loader: glob({ pattern: '**/*.md', base: './src/content/vertical-toolkits' }),
+  loader: glob({ pattern: '**/*.md', base: collectionBase('vertical-toolkits') }),
   schema: toolingSchema,
 });

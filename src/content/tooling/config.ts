@@ -1,5 +1,6 @@
 import { defineCollection, z } from 'astro:content';
 import { glob } from 'astro/loaders';
+import { collectionBase } from '../../lib/content-map';
 
 /**
  * The `tooling` collection config, colocated with the content it governs
@@ -57,6 +58,8 @@ export const toolingSchema = z
   .passthrough();
 
 export const tooling = defineCollection({
-  loader: glob({ pattern: '**/*.md', base: './src/content/tooling' }),
+  // Directory comes from content-map.ts — the same declaration that supplies
+  // the /toolkit/ route base and the wikilink route template.
+  loader: glob({ pattern: '**/*.md', base: collectionBase('tooling') }),
   schema: toolingSchema,
 });

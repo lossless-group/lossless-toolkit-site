@@ -137,11 +137,11 @@
 
   function onDocClick(e) { if (rootEl && !rootEl.contains(e.target)) open = false; }
 
-  // The palette and /tools/ share one state model (?q= & ?tags=), so handing off
+  // The palette and /toolkit/ share one state model (?q= & ?tags=), so handing off
   // is a link, not a re-query. Convergence rather than two search paradigms:
   // the palette is for jumping, the explorer is for browsing, same URL either way.
   function handoff() {
-    const u = new URL('/tools/', window.location.origin);
+    const u = new URL('/toolkit/', window.location.origin);
     if (toolkit.query.trim()) u.searchParams.set('q', toolkit.query.trim());
     if (toolkit.tags.length) u.searchParams.set('tags', toolkit.tags.join(','));
     return u.pathname + u.search;
