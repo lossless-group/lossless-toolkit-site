@@ -306,6 +306,36 @@ function dedupe(tools: Tool[]): Tool[] {
   return [...seen.values()];
 }
 
+/**
+ * Vault path (no extension, lowercased) → the slug the page is ACTUALLY built
+ * at. The wikilink resolver needs this and cannot derive it: a page's slug
+ * comes from frontmatter `slug` when present and only falls back to the
+ * filename, so `Beam.ai.md` publishes at `/toolkit/beam-ai/` while any
+ * filename-derived guess produces `beamai`.
+ *
+ * Sixteen links pointed at pages that did not exist before this map was wired
+ * in. Deriving the slug twice, in two places, from two different inputs is the
+ * bug; this is the single source.
+ */
+let _slugByPath: Map<string, string> | null = null;
+
+export function slugByVaultPath(): Map<string, string> {
+  if (_slugByPath) return _slugByPath;
+  const m = new Map<string, string>();
+  const add = (files: Record<string, string>, root: string) => {
+    for (const [path, raw] of Object.entries(files)) {
+      const t = build(path, raw, root);
+      if (!t) continue;
+      const rel = path.replace(/^\.\.\/content\//, '').replace(/\.mdx?$/i, '');
+      m.set(rel.toLowerCase(), t.slug);
+    }
+  };
+  add(TOOL_FILES, 'tooling');
+  add(VERTICAL_FILES, 'vertical-toolkits');
+  _slugByPath = m;
+  return m;
+}
+
 let _tools: Tool[] | null = null;
 
 export function allTools(): Tool[] {

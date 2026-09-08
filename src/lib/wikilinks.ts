@@ -23,7 +23,8 @@
  * thrown, so one bad link cannot fail a build of ~1,900 hand-maintained files.
  */
 import { createPathResolver } from '@lossless-group/lfm';
-import { wikilinkRoutes, slugify } from './content-map';
+import { wikilinkRoutes, wikilinkTokens, slugify } from './content-map';
+import { slugByVaultPath } from './content-api';
 
 /** Raw vault paths, keyed as `tooling/AI-Toolkit/Zod.md`. */
 const FILES = import.meta.glob('../content/**/*.md', {
@@ -46,9 +47,15 @@ export const diagnostics: WikilinkDiagnostic[] = [];
 export const resolver = createPathResolver({
   index: vaultIndex,
   routes: wikilinkRoutes,
+  tokens: wikilinkTokens,
   // Same slug function the pages are generated with. Without this the
   // resolver invents its own and links miss by a hyphen.
   slugify,
+  // …but the function alone is not enough. A page's slug can come from
+  // frontmatter rather than its filename, and only content-api knows that.
+  // Look the real slug up per file, and fall back to the filename only when
+  // the path is not a published entry.
+  slugFrom: (parts) => slugByVaultPath().get(parts.path.toLowerCase()) ?? slugify(parts.name),
   // `suffix` stays in: a rebuild IS a reorganisation, and links written against
   // the old shape should survive it. Every hit reports `via`, so speculative
   // tiers can be audited rather than trusted blindly.

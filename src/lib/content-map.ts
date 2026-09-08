@@ -76,10 +76,30 @@ export const EXPLORER = routeBase('tooling');
  * case-insensitively and separator-insensitively, so `Tooling/`, `tooling/`
  * and `Tooling ` all land on the same rule.
  */
-export const wikilinkRoutes = AREAS.map((a) => ({
-  match: a.vault as string | string[],
-  to: `${a.route}{slug}`,
-}));
+export const wikilinkRoutes = [
+  { match: area('tooling').vault as string | string[], to: `${area('tooling').route}{slug}` },
+  {
+    // Verticals do NOT publish one page per file — `allVerticals()` groups them
+    // by their top-level folder into 11 group pages. A per-entry destination
+    // would 404 for every one of them, which is exactly what it did: seven
+    // links pointed at /verticals/<company>/ pages that are not built.
+    // The group page is the real destination, and it has no per-entry anchors
+    // to aim at, so the link stops at the group.
+    match: area('vertical-toolkits').vault as string | string[],
+    to: `${area('vertical-toolkits').route}{group}`,
+  },
+];
+
+/**
+ * Custom `{token}` expansions for the route templates above, passed straight to
+ * `createPathResolver`. `{group}` mirrors the grouping rule in
+ * `allVerticals()`: the folder directly under the collection root, or
+ * `Cross-Vertical` for a file sitting loose at the top.
+ */
+export const wikilinkTokens = {
+  group: (parts: { segments: string[] }) =>
+    slugify(parts.segments.length > 2 ? parts.segments[1] : 'Cross-Vertical'),
+};
 
 /**
  * THE slug function. Page URLs and wikilink destinations must agree, and they
