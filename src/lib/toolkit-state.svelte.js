@@ -24,6 +24,7 @@ export const toolkit = $state({
   category: '',
   sort: 'depth',
   slugs: new Map(),  // Train-Case -> url slug, registered once by whoever knows
+  pathTagSlug: '',   // slug from a /tags/<slug>/ path, resolved when the index lands
 });
 
 /** The explorer loads the tag index; it teaches the atom how to build paths. */
@@ -96,10 +97,21 @@ export function hydrateFromUrl() {
   if (typeof window === 'undefined') return;
   const p = new URL(window.location.href).searchParams;
   toolkit.query = p.get('q') ?? '';
-  toolkit.tags = (p.get('tags') ?? '').split(',').filter(Boolean);
-  // A canonical /tags/<slug>/ URL carries the selection in the path, not a param.
-  const m = window.location.pathname.match(/^\/tags\/([^/]+)\/?$/);
-  if (m && !toolkit.tags.length) toolkit.pendingSlug = decodeURIComponent(m[1]);
+
+  // A canonical /tags/<slug>/ URL carries the selection in the PATH, not a
+  // param — and a slug cannot become a tag name until the tag index has
+  // loaded. So record it for whoever can resolve it, and DO NOT clear an
+  // existing selection on such a page.
+  //
+  // Clearing here is precisely what broke the tag pages: the server seeded the
+  // island with its tag, this ran, set tags to [], and the atom->local bridge
+  // then wiped the seed — so /tags/must-have/ rendered the unfiltered first 48
+  // of the whole catalogue instead of its 47 tools.
+  const paramTags = (p.get('tags') ?? '').split(',').filter(Boolean);
+  const onTagPage = window.location.pathname.match(/^\/tags\/([^/]+)\/?$/);
+  if (paramTags.length) toolkit.tags = paramTags;
+  else if (!onTagPage) toolkit.tags = [];
+  toolkit.pathTagSlug = onTagPage ? decodeURIComponent(onTagPage[1]) : '';
   toolkit.category = p.get('cat') ?? '';
   toolkit.sort = p.get('sort') ?? 'depth';
 }

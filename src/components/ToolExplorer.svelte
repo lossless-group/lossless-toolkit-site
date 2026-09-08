@@ -56,11 +56,22 @@
         tools = d.tools ?? [];
         tagIndex = d.tags ?? [];
         // Tag slugs from the URL can only be resolved once the index has landed.
+        // A /tags/<slug>/ visit with no server prop — the header bar mounting on
+        // that page — can only turn its slug into a tag name now that the index
+        // has arrived. This is what consumes toolkit.pathTagSlug.
+        const pathTag = toolkit.pathTagSlug
+          ? d.tags?.find((t) => t.slug === toolkit.pathTagSlug)?.tag
+          : undefined;
         const pending = [
           ...(initial.tags ?? []),
           ...(fromUrl.tagSlugs ?? []).map((s) => d.tags?.find((t) => t.slug === s)?.tag),
+          pathTag,
         ].filter(Boolean);
-        if (pending.length) selected = new Set(pending);
+        if (pending.length) {
+          selected = new Set(pending);
+          // Push to the atom too, or the bridge undoes this on its next run.
+          if ([...selected].join(',') !== toolkit.tags.join(',')) toolkit.tags = [...selected];
+        }
         loading = false;
       })
       .catch(() => {
@@ -94,6 +105,18 @@
       tagSlugs,
     };
   })();
+
+  /**
+   * The bridge below treats the shared atom as the OWNER, so a server-seeded
+   * selection has to be in the atom before the first effect runs. Seeding only
+   * this component's local state is not enough: the effect reads an empty atom
+   * and immediately wipes the seed, which is why /tags/<slug>/ rendered the
+   * unfiltered catalogue.
+   *
+   * Guarded on the atom being empty so a live selection — the user already
+   * filtering via the header — is never stomped by a remount.
+   */
+  if (initial.tags?.length && !toolkit.tags.length) toolkit.tags = [...initial.tags];
 
   let query = $state(initial.q ?? fromUrl.q ?? '');
   let selected = $state(new Set(initial.tags ?? []));
