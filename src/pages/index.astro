@@ -18,6 +18,31 @@ const tags = listTags();
 const categories = listCategories();
 const verticals = listVerticals().slice(0, 6);
 
+/**
+ * Curated entry points. These five tags are the filters worth leading with, so
+ * they get real calls to action rather than being buried in a 745-tag list.
+ *
+ * Looked up BY SLUG against the live facets, never hardcoded with a count: the
+ * corpus drifts in casing (`Check-It-Out` 256 vs `Check-it-Out` 2), the facets
+ * already fold those together, and a hand-typed number would be wrong by the
+ * next sync. A tag that disappears from the corpus drops out of the row rather
+ * than rendering a dead link.
+ */
+const FEATURED_TAGS: { slug: string; blurb: string }[] = [
+  { slug: 'ai-toolkit', blurb: 'The whole AI surface, from models to interfaces.' },
+  { slug: 'agentic-ai', blurb: 'Tools that act, not just answer.' },
+  { slug: 'founder-toolkit', blurb: 'What we hand a founder on day one.' },
+  { slug: 'must-have', blurb: "The short list we'd argue for." },
+  { slug: 'check-it-out', blurb: 'Worth a look this quarter.' },
+];
+
+const featuredTags = FEATURED_TAGS
+  .map((f) => {
+    const facet = tags.find((t) => t.slug === f.slug);
+    return facet ? { ...facet, blurb: f.blurb } : null;
+  })
+  .filter((f): f is NonNullable<typeof f> => f !== null);
+
 const jsonLd = {
   '@context': 'https://schema.org',
   '@type': 'CollectionPage',
@@ -37,7 +62,7 @@ const jsonLd = {
     <div class="shell">
       <p class="eyebrow">The Lossless Group</p>
       <h1>
-        The tools we <em>actually</em> use.
+        The tools we've found <em>worth saving</em>…
       </h1>
       <p class="lede">
         {s.tools} catalogued tools, {s.tags} tags, {s.verticals} industry verticals. Not a directory
@@ -56,6 +81,23 @@ const jsonLd = {
         <a class="btn btn--primary" href="/toolkit/">Explore the catalogue →</a>
         <a class="btn" href="/verticals/">Browse by vertical</a>
       </div>
+
+      {featuredTags.length > 0 && (
+        <nav class="featured-tags" aria-label="Featured filters">
+          <p class="featured-tags__label">Start with a filter</p>
+          <ul class="featured-tags__list">
+            {featuredTags.map((t) => (
+              <li>
+                <a class="featured-tag" href={`/tags/${t.slug}/`}>
+                  <span class="featured-tag__name">{t.label}</span>
+                  <span class="featured-tag__count">{t.count}</span>
+                  <span class="featured-tag__blurb">{t.blurb}</span>
+                </a>
+              </li>
+            ))}
+          </ul>
+        </nav>
+      )}
     </div>
   </section>
 
@@ -229,5 +271,69 @@ const jsonLd = {
     flex-wrap: wrap;
     gap: 0.35rem;
     margin-block-end: 1rem;
+  }
+
+  /* ---- Featured tag calls-to-action ------------------------------------ *
+   * Five curated filters, sized between a button and a card: enough room for
+   * a count and a line of context, not so much that they compete with the
+   * primary CTA above them. Semantic tokens only — never --color__* here. */
+  .featured-tags {
+    margin-top: 2rem;
+  }
+
+  .featured-tags__label {
+    font-size: 0.78rem;
+    letter-spacing: 0.08em;
+    text-transform: uppercase;
+    color: var(--clr-ink-faint);
+    margin: 0 0 0.65rem;
+  }
+
+  .featured-tags__list {
+    list-style: none;
+    margin: 0;
+    padding: 0;
+    display: grid;
+    grid-template-columns: repeat(auto-fit, minmax(15rem, 1fr));
+    gap: 0.6rem;
+  }
+
+  .featured-tag {
+    display: grid;
+    grid-template-columns: 1fr auto;
+    gap: 0.15rem 0.6rem;
+    padding: 0.7rem 0.85rem;
+    border: 1px solid var(--clr-line);
+    border-radius: 0.6rem;
+    background: var(--clr-surface);
+    text-decoration: none;
+    color: inherit;
+    transition: border-color 120ms ease, background 120ms ease;
+  }
+
+  .featured-tag:hover,
+  .featured-tag:focus-visible {
+    border-color: var(--clr-line-strong);
+    background: var(--clr-surface-hover);
+  }
+
+  .featured-tag__name {
+    font-weight: 600;
+    color: var(--clr-ink);
+  }
+
+  /* The count is the reason to click one of these rather than another, so it
+     is legible rather than decorative. */
+  .featured-tag__count {
+    font-variant-numeric: tabular-nums;
+    font-size: 0.85rem;
+    color: var(--clr-accent);
+    align-self: center;
+  }
+
+  .featured-tag__blurb {
+    grid-column: 1 / -1;
+    font-size: 0.85rem;
+    color: var(--clr-ink-muted);
   }
 </style>

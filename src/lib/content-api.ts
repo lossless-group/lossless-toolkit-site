@@ -386,11 +386,41 @@ export interface TagFacet {
 }
 
 export function tagFacets(minCount = 1): TagFacet[] {
-  const counts = new Map<string, number>();
-  for (const t of allTools()) for (const tag of t.tags) counts.set(tag, (counts.get(tag) ?? 0) + 1);
-  return [...counts.entries()]
-    .filter(([, c]) => c >= minCount)
-    .map(([tag, count]) => ({ tag, slug: tagSlug(tag), label: tagLabel(tag), count }))
+  /**
+   * Tags are folded BY SLUG, not by their literal string.
+   *
+   * The corpus is hand-maintained and drifts in casing: `Check-It-Out` (256)
+   * and `Check-it-Out` (2) are the same tag typed twice, as are `Agentic-AI`
+   * (127) and `Agentic-Ai` (8). Keyed by the raw string they became separate
+   * facets that then collided on an identical slug, and `getStaticPaths` built
+   * one page per slug — so the LAST variant won and /tags/check-it-out/
+   * rendered 2 tools instead of 258.
+   *
+   * The label shown is the most frequent spelling, so the majority form wins
+   * the display and the minority is absorbed rather than dropped.
+   */
+  const groups = new Map<string, { count: number; variants: Map<string, number> }>();
+  for (const t of allTools()) {
+    // Count each TOOL once per slug. Seven entries carry both `Agentic-AI` and
+    // `Agentic-Ai`; counting occurrences would report 135 for a tag whose page
+    // lists 128, and a facet count that disagrees with its own page is worse
+    // than no count.
+    const seen = new Set<string>();
+    for (const tag of t.tags) {
+      const slug = tagSlug(tag);
+      if (!slug) continue;
+      let g = groups.get(slug);
+      if (!g) groups.set(slug, (g = { count: 0, variants: new Map() }));
+      if (!seen.has(slug)) { g.count++; seen.add(slug); }
+      g.variants.set(tag, (g.variants.get(tag) ?? 0) + 1);
+    }
+  }
+  return [...groups.entries()]
+    .filter(([, g]) => g.count >= minCount)
+    .map(([slug, g]) => {
+      const dominant = [...g.variants.entries()].sort((a, b) => b[1] - a[1])[0][0];
+      return { tag: dominant, slug, label: tagLabel(dominant), count: g.count };
+    })
     .sort((a, b) => b.count - a.count || a.label.localeCompare(b.label));
 }
 
@@ -458,8 +488,11 @@ export interface ListToolsQuery {
 export function listTools(q: ListToolsQuery = {}): Tool[] {
   let pool = q.vertical ? (getVertical(q.vertical)?.entries ?? []) : allTools();
 
-  const tag = q.tag ?? (q.tagSlug ? listTags().find((f) => f.slug === q.tagSlug)?.tag : undefined);
-  if (tag) pool = pool.filter((t) => t.tags.includes(tag));
+  // Match on the slug, for the same casing-drift reason tagFacets folds on it:
+  // an exact string compare against `Agentic-AI` silently drops the 8 entries
+  // that spell it `Agentic-Ai`.
+  const wantSlug = q.tagSlug ?? (q.tag ? tagSlug(q.tag) : undefined);
+  if (wantSlug) pool = pool.filter((t) => t.tags.some((g) => tagSlug(g) === wantSlug));
   if (q.category) pool = pool.filter((t) => t.category === q.category);
   if (q.query) {
     const words = q.query.toLowerCase().split(/\s+/).filter(Boolean);
