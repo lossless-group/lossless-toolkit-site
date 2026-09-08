@@ -15,8 +15,8 @@ importers:
         specifier: ^7.2.0
         version: 7.2.5(@types/node@24.13.3)(astro@5.18.2(@types/node@24.13.3)(rollup@4.62.5)(typescript@5.9.3))(svelte@5.56.10)(typescript@5.9.3)
       '@lossless-group/lfm':
-        specifier: file:../lossless-monorepo/lfm
-        version: file:../lossless-monorepo/lfm
+        specifier: npm:@jsr/lossless-group__lfm@0.6.0
+        version: '@jsr/lossless-group__lfm@0.6.0'
       astro:
         specifier: ^5.16.0
         version: 5.18.2(@types/node@24.13.3)(rollup@4.62.5)(typescript@5.9.3)
@@ -566,8 +566,8 @@ packages:
   '@jridgewell/trace-mapping@0.3.31':
     resolution: {integrity: sha512-zzNR+SdQSDJzc8joaeP8QQoCQr8NuYx2dIIytl1QeBEZHJ9uW6hebsrYgbz8hJwUQao3TWCMtmfV8Nu1twOLAw==}
 
-  '@lossless-group/lfm@file:../lossless-monorepo/lfm':
-    resolution: {directory: ../lossless-monorepo/lfm, type: directory}
+  '@jsr/lossless-group__lfm@0.6.0':
+    resolution: {integrity: sha512-xydkE+zkFHpcr05KfSDz9am4qihiYLrGVQIBKA0cRQiE+vsNjrXHyFaZxwU0GJlsgehWcbdb6NFRc5cQb45vqA==, tarball: https://npm.jsr.io/~/11/@jsr/lossless-group__lfm/0.6.0.tgz}
 
   '@napi-rs/lzma-linux-x64-gnu@1.5.1':
     resolution: {integrity: sha512-oTXEIha4SsuXdTA4Iyskj0kpdx2yVXdhd75c2v3xGrHFfVMsbhTPZU/nMPL4sWKo4pBHm3aucLaqGlF696dTyQ==}
@@ -2278,8 +2278,9 @@ snapshots:
       '@jridgewell/resolve-uri': 3.1.2
       '@jridgewell/sourcemap-codec': 1.5.5
 
-  '@lossless-group/lfm@file:../lossless-monorepo/lfm':
+  '@jsr/lossless-group__lfm@0.6.0':
     dependencies:
+      '@types/mdast': 4.0.4
       remark-directive: 3.0.1
       remark-gfm: 4.0.1
       remark-parse: 11.0.0
