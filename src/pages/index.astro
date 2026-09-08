@@ -1,0 +1,339 @@
+---
+import Base from '../layouts/Base.astro';
+import ToolCard from '../components/ToolCard.astro';
+import ToolExplorer from '../components/ToolExplorer.svelte';
+import {
+  listTools,
+  listTags,
+  listCategories,
+  listVerticals,
+  stats,
+  tagSlug,
+} from '../lib/content-api';
+import { abs } from '../lib/seo';
+
+const s = stats();
+const featured = listTools({ limit: 6 });
+const tags = listTags();
+const categories = listCategories();
+const verticals = listVerticals().slice(0, 6);
+
+/**
+ * Curated entry points. These five tags are the filters worth leading with, so
+ * they get real calls to action rather than being buried in a 745-tag list.
+ *
+ * Looked up BY SLUG against the live facets, never hardcoded with a count: the
+ * corpus drifts in casing (`Check-It-Out` 256 vs `Check-it-Out` 2), the facets
+ * already fold those together, and a hand-typed number would be wrong by the
+ * next sync. A tag that disappears from the corpus drops out of the row rather
+ * than rendering a dead link.
+ */
+const FEATURED_TAGS: { slug: string; blurb: string }[] = [
+  { slug: 'ai-toolkit', blurb: 'The whole AI surface, from models to interfaces.' },
+  { slug: 'agentic-ai', blurb: 'Tools that act, not just answer.' },
+  { slug: 'founder-toolkit', blurb: 'What we hand a founder on day one.' },
+  { slug: 'must-have', blurb: "The short list we'd argue for." },
+  { slug: 'check-it-out', blurb: 'Worth a look this quarter.' },
+];
+
+const featuredTags = FEATURED_TAGS
+  .map((f) => {
+    const facet = tags.find((t) => t.slug === f.slug);
+    return facet ? { ...facet, blurb: f.blurb } : null;
+  })
+  .filter((f): f is NonNullable<typeof f> => f !== null);
+
+const jsonLd = {
+  '@context': 'https://schema.org',
+  '@type': 'CollectionPage',
+  name: 'Lossless Toolkit',
+  url: abs('/'),
+  description: `A catalogue of ${s.tools} tools across ${s.tags} tags and ${s.verticals} verticals.`,
+  isPartOf: { '@type': 'WebSite', name: 'Lossless Toolkit', url: abs('/') },
+};
+---
+
+<Base
+  title="Lossless Toolkit"
+  description={`A working catalogue of ${s.tools} tools across ${s.tags} tags and ${s.verticals} industry verticals — the ones we actually put in front of clients.`}
+  jsonLd={jsonLd}
+>
+  <section class="hero">
+    <div class="shell">
+      <p class="eyebrow">The Lossless Group</p>
+      <h1>
+        The tools we've found <em>worth saving</em>…
+      </h1>
+      <p class="lede">
+        {s.tools} catalogued tools, {s.tags} tags, {s.verticals} industry verticals. Not a directory
+        scraped from a list — a working record of what we put in front of clients, why, and where it
+        fits.
+      </p>
+
+      <dl class="stats">
+        <div><dt>Tools</dt><dd>{s.tools}</dd></div>
+        <div><dt>Tags</dt><dd>{s.tags}</dd></div>
+        <div><dt>Categories</dt><dd>{s.categories}</dd></div>
+        <div><dt>Verticals</dt><dd>{s.verticals}</dd></div>
+      </dl>
+
+      <div class="hero__cta">
+        <a class="btn btn--primary" href="/toolkit/">Explore the catalogue →</a>
+        <a class="btn" href="/verticals/">Browse by vertical</a>
+      </div>
+
+      {featuredTags.length > 0 && (
+        <nav class="featured-tags" aria-label="Featured filters">
+          <p class="featured-tags__label">Start with a filter</p>
+          <ul class="featured-tags__list">
+            {featuredTags.map((t) => (
+              <li>
+                <a class="featured-tag" href={`/tags/${t.slug}/`}>
+                  <span class="featured-tag__name">{t.label}</span>
+                  <span class="featured-tag__count">{t.count}</span>
+                  <span class="featured-tag__blurb">{t.blurb}</span>
+                </a>
+              </li>
+            ))}
+          </ul>
+        </nav>
+      )}
+    </div>
+  </section>
+
+  <section class="shell block">
+    <header class="block__head">
+      <h2>Best documented</h2>
+      <p class="dim">
+        Ranked by how much there is to actually read — a real writeup, tags, a working link.
+      </p>
+    </header>
+    <div class="card-grid">
+      {featured.map((t) => <ToolCard tool={t} />)}
+    </div>
+  </section>
+
+  <section class="shell block" id="explore">
+    <header class="block__head">
+      <h2>Find it by narrowing</h2>
+      <p class="dim">
+        Multi-select tags, search as you type, compare up to four side by side. Every state you reach
+        is a link you can send someone.
+      </p>
+    </header>
+    <!-- client:visible — below the fold, so the bundle is not fetched until it is nearly seen. -->
+    <ToolExplorer client:visible />
+  </section>
+
+  <section class="shell block">
+    <header class="block__head">
+      <h2>Categories</h2>
+      <p class="dim">The corpus's own shape, taken from how the files are organised.</p>
+    </header>
+    <div class="pills">
+      {
+        categories.map((c) => (
+          <a class="pill" href={`/toolkit/?cat=${encodeURIComponent(c.label)}`}>
+            <span>{c.label}</span>
+            <b>{c.count}</b>
+          </a>
+        ))
+      }
+    </div>
+  </section>
+
+  <section class="shell block">
+    <header class="block__head">
+      <h2>Verticals</h2>
+      <p class="dim">Toolkits assembled for a specific industry.</p>
+    </header>
+    <div class="pills">
+      {
+        verticals.map((v) => (
+          <a class="pill" href={`/verticals/${v.slug}/`}>
+            <span>{v.title}</span>
+            <b>{v.entries.length}</b>
+          </a>
+        ))
+      }
+    </div>
+  </section>
+
+  <section class="shell block">
+    <header class="block__head">
+      <h2>Most used tags</h2>
+    </header>
+    <div class="tagrow">
+      {
+        tags.slice(0, 40).map((t) => (
+          <a class="chip" href={`/tags/${tagSlug(t.tag)}/`}>
+            {t.label}
+            <span class="chip__n">{t.count}</span>
+          </a>
+        ))
+      }
+    </div>
+    <p><a href="/tags/">All {tags.length} tags →</a></p>
+  </section>
+</Base>
+
+<style>
+  .hero {
+    padding-block: clamp(3rem, 9vw, 6.5rem) 2rem;
+  }
+  .hero h1 {
+    font-size: var(--step-4);
+    max-width: 14ch;
+  }
+  .hero h1 em {
+    font-style: italic;
+    color: var(--clr-accent);
+  }
+  .hero__cta {
+    display: flex;
+    gap: 0.7rem;
+    flex-wrap: wrap;
+    margin-block-start: 1.6rem;
+  }
+
+  .stats {
+    display: flex;
+    flex-wrap: wrap;
+    gap: 0 2.5rem;
+    margin-block: 2rem 0;
+    padding-block-start: 1.2rem;
+    border-block-start: 1px solid var(--clr-line);
+    max-width: 40rem;
+  }
+  .stats div {
+    display: flex;
+    flex-direction: column-reverse;
+  }
+  .stats dt {
+    font-family: var(--font-mono);
+    font-size: var(--step--1);
+    color: var(--clr-ink-faint);
+    letter-spacing: 0.1em;
+    text-transform: uppercase;
+  }
+  .stats dd {
+    margin: 0;
+    font-family: var(--font-display);
+    font-size: var(--step-2);
+    color: var(--clr-accent);
+  }
+
+  .block {
+    margin-block-start: clamp(2.5rem, 6vw, 4.5rem);
+  }
+  .block__head {
+    margin-block-end: 1.2rem;
+  }
+  .block__head h2 {
+    margin-block-end: 0.2rem;
+  }
+  .dim {
+    color: var(--clr-ink-faint);
+    margin: 0;
+    max-width: var(--measure);
+    font-size: var(--step--1);
+  }
+
+  .pills {
+    display: grid;
+    gap: 0.55rem;
+    grid-template-columns: repeat(auto-fill, minmax(min(100%, 210px), 1fr));
+  }
+  .pill {
+    display: flex;
+    justify-content: space-between;
+    align-items: baseline;
+    gap: 0.6rem;
+    padding: 0.7rem 0.9rem;
+    border: 1px solid var(--clr-line);
+    border-radius: var(--radius-sm);
+    background: var(--clr-ground-raised);
+    color: var(--clr-ink);
+    text-decoration: none;
+  }
+  .pill:hover {
+    border-color: var(--clr-line-strong);
+    background: var(--clr-surface-hover);
+  }
+  .pill b {
+    font-family: var(--font-mono);
+    color: var(--clr-accent);
+    font-size: var(--step--1);
+  }
+
+  .tagrow {
+    display: flex;
+    flex-wrap: wrap;
+    gap: 0.35rem;
+    margin-block-end: 1rem;
+  }
+
+  /* ---- Featured tag calls-to-action ------------------------------------ *
+   * Five curated filters, sized between a button and a card: enough room for
+   * a count and a line of context, not so much that they compete with the
+   * primary CTA above them. Semantic tokens only — never --color__* here. */
+  .featured-tags {
+    margin-top: 2rem;
+  }
+
+  .featured-tags__label {
+    font-size: 0.78rem;
+    letter-spacing: 0.08em;
+    text-transform: uppercase;
+    color: var(--clr-ink-faint);
+    margin: 0 0 0.65rem;
+  }
+
+  .featured-tags__list {
+    list-style: none;
+    margin: 0;
+    padding: 0;
+    display: grid;
+    grid-template-columns: repeat(auto-fit, minmax(15rem, 1fr));
+    gap: 0.6rem;
+  }
+
+  .featured-tag {
+    display: grid;
+    grid-template-columns: 1fr auto;
+    gap: 0.15rem 0.6rem;
+    padding: 0.7rem 0.85rem;
+    border: 1px solid var(--clr-line);
+    border-radius: 0.6rem;
+    background: var(--clr-surface);
+    text-decoration: none;
+    color: inherit;
+    transition: border-color 120ms ease, background 120ms ease;
+  }
+
+  .featured-tag:hover,
+  .featured-tag:focus-visible {
+    border-color: var(--clr-line-strong);
+    background: var(--clr-surface-hover);
+  }
+
+  .featured-tag__name {
+    font-weight: 600;
+    color: var(--clr-ink);
+  }
+
+  /* The count is the reason to click one of these rather than another, so it
+     is legible rather than decorative. */
+  .featured-tag__count {
+    font-variant-numeric: tabular-nums;
+    font-size: 0.85rem;
+    color: var(--clr-accent);
+    align-self: center;
+  }
+
+  .featured-tag__blurb {
+    grid-column: 1 / -1;
+    font-size: 0.85rem;
+    color: var(--clr-ink-muted);
+  }
+</style>

@@ -1,0 +1,82 @@
+---
+import Base from '../../layouts/Base.astro';
+import { listTags } from '../../lib/content-api';
+
+const tags = listTags();
+const max = tags[0]?.count ?? 1;
+
+// Bucket by order of magnitude so the page reads as a shape, not a list.
+const buckets = [
+  { name: 'Load-bearing', min: Math.max(6, max * 0.4) },
+  { name: 'Well populated', min: 4 },
+  { name: 'A handful', min: 2 },
+  { name: 'One of one', min: 1 },
+];
+const grouped = buckets.map((b, i) => ({
+  ...b,
+  tags: tags.filter((t) => t.count >= b.min && (i === 0 || t.count < buckets[i - 1].min)),
+}));
+---
+
+<Base
+  title="Every tag"
+  description={`All ${tags.length} tags in the Lossless Toolkit, grouped by how much sits under each one.`}
+  category="tags"
+>
+  <div class="shell page">
+    <p class="eyebrow">Index</p>
+    <h1>Every tag</h1>
+    <p class="lede">
+      {tags.length} tags across the catalogue. Each one is a real page with its own share card —
+      grouped here by how much actually sits under it, because a tag with one entry and a tag with
+      forty are not the same kind of thing.
+    </p>
+
+    {
+      grouped
+        .filter((g) => g.tags.length)
+        .map((g) => (
+          <section class="group">
+            <h2>
+              {g.name} <span class="dim">{g.tags.length}</span>
+            </h2>
+            <div class="tagrow">
+              {g.tags.map((t) => (
+                <a class="chip" href={`/tags/${t.slug}/`}>
+                  {t.label}
+                  <span class="chip__n">{t.count}</span>
+                </a>
+              ))}
+            </div>
+          </section>
+        ))
+    }
+  </div>
+</Base>
+
+<style>
+  .page {
+    padding-block: 2.5rem 1rem;
+  }
+  .page .lede {
+    margin-block-end: 2.5rem;
+  }
+  .group {
+    margin-block-end: 2.5rem;
+  }
+  .group h2 {
+    font-size: var(--step-1);
+    border-block-end: 1px solid var(--clr-line);
+    padding-block-end: 0.4rem;
+  }
+  .dim {
+    color: var(--clr-ink-faint);
+    font-family: var(--font-mono);
+    font-size: var(--step--1);
+  }
+  .tagrow {
+    display: flex;
+    flex-wrap: wrap;
+    gap: 0.35rem;
+  }
+</style>

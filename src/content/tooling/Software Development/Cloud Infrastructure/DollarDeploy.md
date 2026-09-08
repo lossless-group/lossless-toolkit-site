@@ -1,0 +1,88 @@
+---
+site_uuid: 4f576cee-33c0-4371-bd1e-db5e3b536f59
+image: https://dollardeploy.com/cover.jpg
+site_name: DollarDeploy
+title: Self-host with one-click deployments on a budget.
+favicon: https://dollardeploy.com/icon-dark.png
+og_errors: true
+og_last_error: '2025-03-07T05:36:40.167Z'
+og_error_message: Error occurred
+jina_last_request: '2025-03-09T06:45:17.515Z'
+jina_error: Error occurred
+og_last_fetch: '2025-03-07T05:19:02.929Z'
+date_modified: '2025-04-12'
+date_created: '2025-03-30T05:44:14.858Z'
+tags:
+  - Software-Development
+  - Cloud-Infrastructure
+  - Self-Hosting-Cloud
+url: 'https://dollardeploy.com'
+---
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+##### [[DollarDeploy]] Hero
+![[Screenshot 2025-02-18 at 1.07.02 PM_DollarDeploy--Hero.png]]
+
+##### DollarDeploy enables [[One-Click Deployments]]
+[[DollarDeploy]] is one of several services that makes simple deploying [[Vocabulary/Open Source Software]] web applications. It has a [[One-Click Integrations]] with [[Tooling/Software Development/Cloud Infrastructure/DigitalOcean]].
+
+
+![[Screenshot 2025-02-18 at 1.12.41 PM_DollarDeploy_One-Click.png]]
+
+2025, Jan 04. [How to Deploy Twenty CRM Using DollarDeploy - Launch Your CRM Fast - Step-by-Step Deployment Guide](https://youtu.be/nYXAqRZgyJo?si=KjCVcQ7GUSHzGMI9) [[DollarDeploy]], [[YouTube]]

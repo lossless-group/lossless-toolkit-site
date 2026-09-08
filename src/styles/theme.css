@@ -1,0 +1,146 @@
+/*
+  Lossless Toolkit — theme.css
+
+  Two tiers, per the house `theme-system` convention:
+    Tier 1  --color__*   named colours, BEM-ish `__`, raw values live ONLY here.
+    Tier 2  --clr-*      semantic tokens, kebab-case, values are always var().
+
+  Three modes: light, dark (default), vibrant (dark-based, never light-based).
+  Per `Opening-Strategy-Questions`, no Lossless site has ever shipped modes and
+  the house palette is a *dark* palette. Light and vibrant grounds therefore had
+  to be designed rather than catalogued; they are noted inline where that is the
+  case, so the invented values are visible as invented.
+*/
+
+:root {
+  /* ---- Tier 1: the house palette (catalogued, do not invent) ------------- */
+  --color__cyan-aqua-brightest: #04e5e5;
+  --color__purple-heart: hsl(272 73% 55%);
+  --color__aquamarine: #6fffd6;
+  --color__hippie-blue: #50a3b3;
+  --color__gunmetal: #283139;
+  --color__bastille-black: hsl(273 18% 10%);
+  --color__jaguar-black: hsl(288 100% 2%);
+  --color__bunker-black: hsl(218 22% 7%);
+  --color__white-catskill: hsl(184 35% 92%);
+
+  /* ---- Tier 1: designed here — light grounds did not exist ---------------- */
+  --color__catskill-paper: hsl(184 38% 98%);
+  --color__catskill-card: hsl(184 30% 95%);
+  --color__catskill-line: hsl(184 20% 86%);
+  --color__slate-ink: hsl(216 22% 20%);
+  --color__purple-heart-deep: hsl(272 66% 40%);
+  --color__hippie-blue-deep: hsl(190 42% 30%);
+
+  /* ---- Tier 1: designed here — vibrant is dark-based, never light-based --- */
+  --color__vibrant-ground: hsl(288 60% 4%);
+  --color__vibrant-card: hsl(283 44% 9%);
+  --color__vibrant-line: hsl(180 90% 40%);
+  --color__magenta-flare: hsl(320 95% 62%);
+
+  /* ---- Type ------------------------------------------------------------- */
+  --font-display: 'Bodoni Moda', 'Iowan Old Style', Georgia, serif;
+  --font-sans: 'Figtree', ui-sans-serif, system-ui, -apple-system, 'Segoe UI', sans-serif;
+  --font-mono: 'JetBrains Mono', ui-monospace, 'SF Mono', Menlo, monospace;
+
+  /* ---- Scale ------------------------------------------------------------ */
+  --step--1: clamp(0.78rem, 0.75rem + 0.15vw, 0.86rem);
+  --step-0: clamp(0.95rem, 0.92rem + 0.2vw, 1.05rem);
+  --step-1: clamp(1.18rem, 1.1rem + 0.4vw, 1.4rem);
+  --step-2: clamp(1.5rem, 1.3rem + 1vw, 2.1rem);
+  --step-3: clamp(2rem, 1.6rem + 2.2vw, 3.4rem);
+  --step-4: clamp(2.6rem, 1.9rem + 3.6vw, 5rem);
+
+  --radius-sm: 6px;
+  --radius: 12px;
+  --radius-lg: 20px;
+  --gap: 1rem;
+  --measure: 68ch;
+}
+
+/* ============================ DARK (default) ============================== */
+:root,
+:root[data-mode='dark'] {
+  color-scheme: dark;
+  --clr-ground: var(--color__jaguar-black);
+  --clr-ground-raised: var(--color__bunker-black);
+  --clr-surface: var(--color__bastille-black);
+  --clr-surface-hover: var(--color__gunmetal);
+  --clr-line: color-mix(in oklab, var(--color__hippie-blue) 26%, transparent);
+  --clr-line-strong: color-mix(in oklab, var(--color__cyan-aqua-brightest) 42%, transparent);
+
+  --clr-ink: var(--color__white-catskill);
+  --clr-ink-muted: color-mix(in oklab, var(--color__white-catskill) 62%, transparent);
+  --clr-ink-faint: color-mix(in oklab, var(--color__white-catskill) 40%, transparent);
+
+  --clr-accent: var(--color__cyan-aqua-brightest);
+  --clr-accent-ink: var(--color__jaguar-black);
+  --clr-accent-soft: color-mix(in oklab, var(--color__cyan-aqua-brightest) 14%, transparent);
+  --clr-second: var(--color__purple-heart);
+  --clr-second-soft: color-mix(in oklab, var(--color__purple-heart) 22%, transparent);
+  --clr-third: var(--color__aquamarine);
+
+  --clr-chip: color-mix(in oklab, var(--color__hippie-blue) 18%, transparent);
+  --clr-chip-ink: var(--color__white-catskill);
+  --clr-shadow: hsl(288 100% 2% / 0.6);
+  --glow: 0 0 0 1px var(--clr-line-strong), 0 0 28px -12px var(--color__cyan-aqua-brightest);
+}
+
+/* ================================ LIGHT ================================== */
+:root[data-mode='light'] {
+  color-scheme: light;
+  --clr-ground: var(--color__catskill-paper);
+  --clr-ground-raised: #fff;
+  --clr-surface: var(--color__catskill-card);
+  --clr-surface-hover: #fff;
+  --clr-line: var(--color__catskill-line);
+  --clr-line-strong: var(--color__hippie-blue);
+
+  --clr-ink: var(--color__slate-ink);
+  --clr-ink-muted: color-mix(in oklab, var(--color__slate-ink) 72%, transparent);
+  --clr-ink-faint: color-mix(in oklab, var(--color__slate-ink) 50%, transparent);
+
+  /* The house cyan fails contrast as text on paper, so in light mode the
+     accent role moves to the violet and cyan is demoted to a fill-only role. */
+  --clr-accent: var(--color__purple-heart-deep);
+  --clr-accent-ink: #fff;
+  --clr-accent-soft: color-mix(in oklab, var(--color__cyan-aqua-brightest) 22%, transparent);
+  --clr-second: var(--color__hippie-blue-deep);
+  --clr-second-soft: color-mix(in oklab, var(--color__purple-heart) 14%, transparent);
+  --clr-third: var(--color__hippie-blue-deep);
+
+  --clr-chip: color-mix(in oklab, var(--color__hippie-blue) 14%, transparent);
+  --clr-chip-ink: var(--color__slate-ink);
+  --clr-shadow: hsl(216 22% 20% / 0.14);
+  --glow: 0 1px 2px var(--clr-shadow), 0 8px 24px -18px var(--clr-shadow);
+}
+
+/* =============================== VIBRANT ================================= */
+:root[data-mode='vibrant'] {
+  color-scheme: dark;
+  --clr-ground: var(--color__vibrant-ground);
+  --clr-ground-raised: var(--color__vibrant-card);
+  --clr-surface: color-mix(in oklab, var(--color__purple-heart) 16%, var(--color__vibrant-card));
+  --clr-surface-hover: color-mix(in oklab, var(--color__purple-heart) 28%, var(--color__vibrant-card));
+  --clr-line: color-mix(in oklab, var(--color__vibrant-line) 40%, transparent);
+  --clr-line-strong: var(--color__cyan-aqua-brightest);
+
+  --clr-ink: hsl(180 100% 96%);
+  --clr-ink-muted: color-mix(in oklab, var(--color__aquamarine) 78%, transparent);
+  --clr-ink-faint: color-mix(in oklab, var(--color__aquamarine) 52%, transparent);
+
+  --clr-accent: var(--color__cyan-aqua-brightest);
+  --clr-accent-ink: var(--color__vibrant-ground);
+  --clr-accent-soft: color-mix(in oklab, var(--color__cyan-aqua-brightest) 26%, transparent);
+  --clr-second: var(--color__magenta-flare);
+  --clr-second-soft: color-mix(in oklab, var(--color__magenta-flare) 26%, transparent);
+  --clr-third: var(--color__aquamarine);
+
+  --clr-chip: color-mix(in oklab, var(--color__magenta-flare) 20%, transparent);
+  --clr-chip-ink: hsl(180 100% 94%);
+  --clr-shadow: hsl(288 100% 2% / 0.8);
+  --glow:
+    0 0 0 1px var(--clr-line-strong),
+    0 0 30px -8px var(--color__cyan-aqua-brightest),
+    0 0 60px -20px var(--color__magenta-flare);
+}
