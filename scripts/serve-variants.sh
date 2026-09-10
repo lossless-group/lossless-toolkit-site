@@ -35,25 +35,52 @@ VARIANTS=(
 # here — so port clearing has to go through `ss`. This failing SILENTLY is what
 # makes it dangerous: Astro then auto-increments onto a free port and the
 # comparison table points at the wrong build.
-kill_port() {
-  local port="$1" pids
-  pids=$(ss -lptnH "sport = :$port" 2>/dev/null | grep -oE 'pid=[0-9]+' | cut -d= -f2 | sort -u)
-  [ -n "$pids" ] && kill $pids 2>/dev/null
-  return 0
+# Is anything listening on this port? Neither fuser nor lsof is guaranteed on a
+# minimal NixOS box, so this goes through `ss`.
+port_busy() {
+  ss -lptnH "sport = :$1" 2>/dev/null | grep -q . && return 0
+  return 1
 }
 
-# Sweep any preview server left over from an earlier run, whatever port it took.
-sweep_previews() {
-  ps -eo pid,args | grep "[a]stro.js preview" | awk '{print $1}' | xargs -r kill 2>/dev/null
+# Find a free port, starting at the preferred one and counting upward.
+#
+# This function exists instead of a kill_port() because killing was the wrong
+# instinct: the process holding a port is usually SOMEONE ELSE'S — a dev server
+# the operator started deliberately — and terminating it to claim a number is
+# rude and destructive. This harness serves throwaway builds; it has no claim
+# on any particular port.
+#
+# Falling back also removes the reason kill_port existed. Astro's preview server
+# silently auto-increments past a busy port, so the danger was never the
+# collision itself, it was binding somewhere unannounced and then reporting the
+# port we ASKED for. We now choose a free port up front and report the port the
+# server actually bound, read back from its own log.
+free_port() {
+  local port="$1" limit=$(( $1 + 40 ))
+  while [ "$port" -lt "$limit" ]; do
+    port_busy "$port" || { echo "$port"; return 0; }
+    port=$(( port + 1 ))
+  done
+  echo "$1" # give up and let Astro sort it out; the log read-back will tell us
+  return 1
+}
+
+# Stop only the servers THIS script started, tracked by pid file. Never a blanket
+# sweep of every astro process — see free_port() on not touching other people's.
+stop_ours() {
+  [ -f "$WORK/pids" ] || return 0
+  while read -r pid label; do
+    if kill -0 "$pid" 2>/dev/null; then
+      kill "$pid" 2>/dev/null && echo "  stopped $label (pid $pid)"
+    fi
+  done < "$WORK/pids"
+  rm -f "$WORK/pids"
   return 0
 }
 
 stop() {
   echo "Stopping servers…"
-  for v in "${VARIANTS[@]}"; do
-    IFS='|' read -r label _src _ref port _desc <<<"$v"
-    kill_port "$port" && echo "  $label (port $port) stopped"
-  done
+  stop_ours
   for v in "${VARIANTS[@]}"; do
     IFS='|' read -r label src _ref _port _desc <<<"$v"
     wt="$WORK/$label"
@@ -72,9 +99,6 @@ stop() {
 [ "${1:-}" = "--stop" ] && { stop; exit 0; }
 BUILD=1
 [ "${1:-}" = "--no-build" ] && BUILD=0
-
-sweep_previews
-sleep 1
 
 mkdir -p "$WORK"
 echo
@@ -110,14 +134,12 @@ for v in "${VARIANTS[@]}"; do
     fi
   fi
 
-  # Astro's preview server SILENTLY AUTO-INCREMENTS past a busy port, so a
-  # stale server does not cause a visible failure — it quietly shifts every
-  # variant onto the wrong port and the comparison table lies. Clear the port
-  # first, then confirm below which port was actually bound.
-  kill_port "$port"
-  sleep 1
+  # Take the next FREE port rather than evicting whoever holds the preferred
+  # one. The table below reports the port actually bound, so a fallback is
+  # visible rather than silently wrong.
+  port=$(free_port "$port")
 
-  (cd "$wt" && nohup pnpm preview --port "$port" >"$WORK/$label-serve.log" 2>&1 &)
+  (cd "$wt" && nohup pnpm preview --port "$port" >"$WORK/$label-serve.log" 2>&1 & echo "$! $label" >>"$WORK/pids")
 done
 
 echo
