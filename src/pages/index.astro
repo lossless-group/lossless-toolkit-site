@@ -59,27 +59,30 @@ const jsonLd = {
   jsonLd={jsonLd}
 >
   <section class="hero">
-    <div class="shell">
-      <p class="eyebrow">The Lossless Group</p>
-      <h1>
-        The tools we've found <em>worth saving</em>…
-      </h1>
-      <p class="lede">
-        {s.tools} catalogued tools, {s.tags} tags, {s.verticals} industry verticals. Not a directory
-        scraped from a list — a working record of what we put in front of clients, why, and where it
-        fits.
-      </p>
+    <div class="shell hero__grid">
+      <div class="hero__copy">
+        <p class="eyebrow">The Lossless Group</p>
 
-      <dl class="stats">
-        <div><dt>Tools</dt><dd>{s.tools}</dd></div>
-        <div><dt>Tags</dt><dd>{s.tags}</dd></div>
-        <div><dt>Categories</dt><dd>{s.categories}</dd></div>
-        <div><dt>Verticals</dt><dd>{s.verticals}</dd></div>
-      </dl>
+        <dl class="stats">
+          <div><dt>Tools</dt><dd>{s.tools}</dd></div>
+          <div><dt>Tags</dt><dd>{s.tags}</dd></div>
+          <div><dt>Categories</dt><dd>{s.categories}</dd></div>
+          <div><dt>Verticals</dt><dd>{s.verticals}</dd></div>
+        </dl>
 
-      <div class="hero__cta">
-        <a class="btn btn--primary" href="/toolkit/">Explore the catalogue →</a>
-        <a class="btn" href="/verticals/">Browse by vertical</a>
+        <h1>
+          The tools we've found <em>worth saving</em>…
+        </h1>
+        <p class="lede">
+          {s.tools} catalogued tools, {s.tags} tags, {s.verticals} industry verticals. Not a directory
+          scraped from a list — a working record of what we put in front of clients, why, and where it
+          fits.
+        </p>
+
+        <div class="hero__cta">
+          <a class="btn btn--primary" href="/toolkit/">Explore the catalogue →</a>
+          <a class="btn" href="/verticals/">Browse by vertical</a>
+        </div>
       </div>
 
       {featuredTags.length > 0 && (
@@ -181,9 +184,27 @@ const jsonLd = {
   .hero {
     padding-block: clamp(3rem, 9vw, 6.5rem) 2rem;
   }
+
+  /* One row: the copy reads on the left, the five curated filters stack on the
+     right as the hero's second call to action. No max-width on either track —
+     the columns themselves are what hold the line length now. */
+  .hero__grid {
+    display: grid;
+    grid-template-columns: 1.35fr 1fr;
+    gap: clamp(1.5rem, 4vw, 3.5rem);
+    align-items: start;
+  }
+
+  @media (width < 60rem) {
+    .hero__grid {
+      grid-template-columns: 1fr;
+    }
+  }
+  /* One step down the modular scale rather than an off-scale calc: --step-3
+     lands at ~2/3 of --step-4 where it matters (3.4rem vs 5rem at full width)
+     and keeps the heading on the same scale as every other heading. */
   .hero h1 {
-    font-size: var(--step-4);
-    max-width: 14ch;
+    font-size: var(--step-3);
   }
   .hero h1 em {
     font-style: italic;
@@ -200,10 +221,11 @@ const jsonLd = {
     display: flex;
     flex-wrap: wrap;
     gap: 0 2.5rem;
-    margin-block: 2rem 0;
-    padding-block-start: 1.2rem;
-    border-block-start: 1px solid var(--clr-line);
-    max-width: 40rem;
+    /* Sits between the eyebrow and the headline now, so the rule that separated
+       it from the copy above moves to its underside. */
+    margin-block: 0 1.5rem;
+    padding-block-end: 1.1rem;
+    border-block-end: 1px solid var(--clr-line);
   }
   .stats div {
     display: flex;
@@ -278,7 +300,7 @@ const jsonLd = {
    * a count and a line of context, not so much that they compete with the
    * primary CTA above them. Semantic tokens only — never --color__* here. */
   .featured-tags {
-    margin-top: 2rem;
+    margin-top: 0;
   }
 
   .featured-tags__label {
@@ -294,7 +316,9 @@ const jsonLd = {
     margin: 0;
     padding: 0;
     display: grid;
-    grid-template-columns: repeat(auto-fit, minmax(15rem, 1fr));
+    /* A single stacked column: these live in the hero's right-hand track now,
+       so they read as a list of five, not a reflowing card grid. */
+    grid-template-columns: 1fr;
     gap: 0.6rem;
   }
 
