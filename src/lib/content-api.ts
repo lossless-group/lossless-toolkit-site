@@ -67,6 +67,9 @@ export interface Tool {
   repoKind?: 'repo' | 'profile';
   /** Host of repoUrl — `github.com` for all but one entry. */
   repoHost?: string;
+  /** The glob key this entry was built from. An exact join key for modules
+   *  that index the corpus separately — see `client-tags.ts`. Never rendered. */
+  sourcePath: string;
 }
 
 export interface Vertical {
@@ -169,6 +172,7 @@ export function listAnomalies(): Anomaly[] {
 }
 
 function build(path: string, raw: string, rootSegment: string): Tool | null {
+  const sourcePath = path;
   const { data, body } = parseFrontmatter(raw);
 
   // House convention: missing `publish` means published. Only 443 of 1,764
@@ -304,6 +308,7 @@ function build(path: string, raw: string, rootSegment: string): Tool | null {
     repoUrl,
     repoKind,
     repoHost: hostOf(repoUrl),
+    sourcePath,
   };
 }
 

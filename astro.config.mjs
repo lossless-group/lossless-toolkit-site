@@ -13,7 +13,11 @@ export default defineConfig({
     svelte(),
     sitemap({
       // House filter: keep non-HTML routes out of the search index.
-      filter: (page) => !page.includes('/llms.txt') && !page.includes('/404'),
+      // `/client/` is excluded for a different reason — those are per-client
+      // portals carrying `noindex, nofollow`, and listing them in the sitemap
+      // would be an open invitation to the exact indexing we are avoiding.
+      filter: (page) =>
+        !page.includes('/llms.txt') && !page.includes('/404') && !page.includes('/client/'),
     }),
   ],
   build: { format: 'directory' },

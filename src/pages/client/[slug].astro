@@ -1,0 +1,103 @@
+---
+/**
+ * Per-client portal. One page per client, listing the catalogue entries tagged
+ * for them in `for_clients`.
+ *
+ * NOT INDEXED. `noindex, nofollow` on the page and excluded from the sitemap in
+ * astro.config.mjs. The whole point is that a marketing person at a client does
+ * not find us on page three of a search for their own brand.
+ *
+ * Deliberately NOT gated yet — the site is `output: 'static'` and adding auth
+ * means an adapter, middleware, and `prerender = false` on every route here.
+ * That is a real change and it is not this change. Today these pages are
+ * unlisted rather than protected: no index, no sitemap, and the only links in
+ * are from the quick-access rail.
+ *
+ * The client NAME never reaches a rendered byte. `client-tags.ts` returns
+ * source paths, not client strings, and the heading uses the stealth name from
+ * clients.json.
+ */
+import Base from '../../layouts/Base.astro';
+import ToolCard from '../../components/ToolCard.astro';
+import { allTools, tagSlug } from '../../lib/content-api';
+import { toolPathsForClient } from '../../lib/client-tags';
+import clientsData from '../../data/clients.json';
+
+export async function getStaticPaths() {
+  return clientsData.clients.map((c) => ({
+    params: { slug: c.id },
+    props: { client: c },
+  }));
+}
+
+const { client } = Astro.props;
+const name = client['stealth-name'];
+
+const paths = toolPathsForClient(client.id);
+const tools = allTools()
+  .filter((t) => paths.has(t.sourcePath))
+  .sort((a, b) => b.depth - a.depth);
+
+// What they cluster around — a cheap read on the shape of the engagement.
+const tagCounts = new Map<string, { label: string; n: number }>();
+for (const t of tools) {
+  for (const g of t.tags) {
+    const s = tagSlug(g);
+    const cur = tagCounts.get(s);
+    if (cur) cur.n += 1;
+    else tagCounts.set(s, { label: g, n: 1 });
+  }
+}
+const topTags = [...tagCounts.entries()]
+  .sort((a, b) => b[1].n - a[1].n)
+  .slice(0, 10);
+---
+
+<Base
+  title={`${name} — Toolkit`}
+  description="A private toolkit selection."
+  noindex={true}
+>
+  <section class="shell block">
+    <header class="block__head">
+      <p class="eyebrow">Client Portal</p>
+      <h1>{name}</h1>
+      <p class="dim">
+        {tools.length} {tools.length === 1 ? 'tool' : 'tools'} from the catalogue, selected for this
+        engagement. {client.industry} · {client.engagement}
+      </p>
+    </header>
+
+    {topTags.length > 0 && (
+      <div class="tagrow">
+        {topTags.map(([slug, t]) => (
+          <a class="chip" href={`/tags/${slug}/`}>{t.label}<span class="chip__n">{t.n}</span></a>
+        ))}
+      </div>
+    )}
+
+    {tools.length > 0 ? (
+      <div class="card-grid">
+        {tools.map((t) => <ToolCard tool={t} />)}
+      </div>
+    ) : (
+      <p class="dim">
+        Nothing tagged for this engagement yet. Tag entries with this client in the vault and they
+        appear here on the next sync.
+      </p>
+    )}
+  </section>
+</Base>
+
+<style>
+  .block__head h1 {
+    font-size: var(--step-3);
+    margin-block: 0.2rem 0.4rem;
+  }
+  .tagrow {
+    display: flex;
+    flex-wrap: wrap;
+    gap: 0.35rem;
+    margin-block-end: 1.4rem;
+  }
+</style>
