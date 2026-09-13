@@ -1,0 +1,54 @@
+---
+/**
+ * Custom Toolkit recommendations for Curious Clients.
+ *
+ * The client list and its cards are replicated from the lossless.group index
+ * page — see `src/components/ClientListHorizontalScroller.astro` for the
+ * provenance and the list of deliberate adaptations.
+ */
+import Base from '../../layouts/Base.astro';
+import ClientListHorizontalScroller from '../../components/ClientListHorizontalScroller.astro';
+import ClientPortalQuickAccess from '../../components/ClientPortalQuickAccess.astro';
+import clientsData from '../../data/clients.json';
+
+const clients = clientsData.clients;
+---
+
+<Base
+  title="Custom Toolkit recommendations for Curious Clients"
+  description="We keep a catalogue of the tools we actually reach for, then cut it down to the handful that fit one organisation. This is who we do that for."
+  category="clients"
+>
+  <ClientPortalQuickAccess clients={clients} />
+
+  <section class="hero">
+    <div class="shell">
+      <p class="eyebrow">The Lossless Group</p>
+      <h1>Custom Toolkit recommendations for <em>Curious Clients</em></h1>
+      <p class="lede">
+        A catalogue is a starting point, not an answer. The work is narrowing it — to the stack one
+        organisation can actually adopt, in the order they can adopt it. These are the engagements
+        where we've done that.
+      </p>
+    </div>
+  </section>
+
+  <div class="shell">
+    <ClientListHorizontalScroller clients={clients} title="Current Work" />
+  </div>
+</Base>
+
+<style>
+  .hero {
+    padding-block: clamp(2.5rem, 7vw, 5rem) 1rem;
+  }
+
+  .hero h1 {
+    font-size: var(--step-3);
+  }
+
+  .hero h1 em {
+    font-style: italic;
+    color: var(--clr-accent);
+  }
+</style>

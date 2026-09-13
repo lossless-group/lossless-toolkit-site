@@ -9,6 +9,7 @@ import {
   listVerticals,
   stats,
   tagSlug,
+  listRepos,
 } from '../lib/content-api';
 import { abs } from '../lib/seo';
 
@@ -19,29 +20,49 @@ const categories = listCategories();
 const verticals = listVerticals().slice(0, 6);
 
 /**
- * Curated entry points. These five tags are the filters worth leading with, so
- * they get real calls to action rather than being buried in a 745-tag list.
+ * Curated entry points — the filters worth leading with, rather than burying
+ * them in a 745-tag list.
  *
- * Looked up BY SLUG against the live facets, never hardcoded with a count: the
- * corpus drifts in casing (`Check-It-Out` 256 vs `Check-it-Out` 2), the facets
- * already fold those together, and a hand-typed number would be wrong by the
- * next sync. A tag that disappears from the corpus drops out of the row rather
- * than rendering a dead link.
+ * Two kinds, because not every useful filter is a tag:
+ *
+ *   TAG    looked up BY SLUG against the live facets, never hardcoded with a
+ *          count. The corpus drifts in casing (`Check-It-Out` 256 vs
+ *          `Check-it-Out` 2), the facets already fold those together, and a
+ *          hand-typed number would be wrong by the next sync. A tag that leaves
+ *          the corpus drops out of the row rather than rendering a dead link.
+ *
+ *   ROUTE  a filter that is a property of the entry, not a tag someone applied.
+ *          "Has a public repo" is true of 155 tools across every tag, and no
+ *          amount of tag hygiene would express it — so it gets its own page and
+ *          counts itself the same way: live, never typed in.
  */
+type FeaturedFilter = { label: string; count: number; href: string; blurb: string };
+
 const FEATURED_TAGS: { slug: string; blurb: string }[] = [
   { slug: 'ai-toolkit', blurb: 'The whole AI surface, from models to interfaces.' },
   { slug: 'agentic-ai', blurb: 'Tools that act, not just answer.' },
+  { slug: 'open-source-alternatives', blurb: 'Swap a subscription for something you can host.' },
   { slug: 'founder-toolkit', blurb: 'What we hand a founder on day one.' },
   { slug: 'must-have', blurb: "The short list we'd argue for." },
   { slug: 'check-it-out', blurb: 'Worth a look this quarter.' },
 ];
 
-const featuredTags = FEATURED_TAGS
-  .map((f) => {
+const repoCount = listRepos().length;
+
+const featuredTags: FeaturedFilter[] = [
+  ...FEATURED_TAGS.map((f) => {
     const facet = tags.find((t) => t.slug === f.slug);
-    return facet ? { ...facet, blurb: f.blurb } : null;
-  })
-  .filter((f): f is NonNullable<typeof f> => f !== null);
+    return facet
+      ? { label: facet.label, count: facet.count, href: `/tags/${facet.slug}/`, blurb: f.blurb }
+      : null;
+  }).filter((f): f is FeaturedFilter => f !== null),
+  {
+    label: 'GitHub Repositories',
+    count: repoCount,
+    href: '/repositories/',
+    blurb: 'Read the source before you adopt it.',
+  },
+];
 
 const jsonLd = {
   '@context': 'https://schema.org',
@@ -91,7 +112,7 @@ const jsonLd = {
           <ul class="featured-tags__list">
             {featuredTags.map((t) => (
               <li>
-                <a class="featured-tag" href={`/tags/${t.slug}/`}>
+                <a class="featured-tag" href={t.href}>
                   <span class="featured-tag__name">{t.label}</span>
                   <span class="featured-tag__count">{t.count}</span>
                   <span class="featured-tag__blurb">{t.blurb}</span>

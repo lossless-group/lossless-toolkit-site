@@ -61,6 +61,12 @@ export interface Tool {
   /** Ranked 0-100. Drives the default sort so thin entries sink. */
   depth: number;
   vertical?: string;
+  /** Source-code home, when the corpus records one. See `pickRepo`. */
+  repoUrl?: string;
+  /** Whether that URL is a single project or the owning org/user account. */
+  repoKind?: 'repo' | 'profile';
+  /** Host of repoUrl — `github.com` for all but one entry. */
+  repoHost?: string;
 }
 
 export interface Vertical {
@@ -254,6 +260,17 @@ function build(path: string, raw: string, rootSegment: string): Tool | null {
     });
   }
 
+  const { repoUrl, repoKind, repoTypoKey } = pickRepo(data);
+  if (repoTypoKey) {
+    note({
+      kind: 'Misspelled repo key',
+      file: contentPath,
+      field: repoTypoKey,
+      found: `\`${repoTypoKey}\``,
+      assumed: 'read as `github_profile_url` — fix the key in the vault and this note disappears',
+    });
+  }
+
   const category = dirs[0] || 'Uncategorized';
   const subcategory = dirs[1];
 
@@ -284,7 +301,43 @@ function build(path: string, raw: string, rootSegment: string): Tool | null {
     favicon: str(data, 'og_favicon'),
     body,
     depth,
+    repoUrl,
+    repoKind,
+    repoHost: hostOf(repoUrl),
   };
+}
+
+/**
+ * Where a tool's source lives, across the four spellings the corpus actually
+ * uses. Precedence runs most-specific first: a link to the project itself beats
+ * a link to the org that owns it.
+ *
+ *   github_repo_url     116   the project
+ *   github_url           15   the project, older spelling
+ *   github_profile_url   36   the org/user account
+ *   github_profle_url    10   ← TYPO, and 7 of those 10 carry NO other key.
+ *                              Matching only the correct spellings drops them
+ *                              silently, which is the same disease as the tag
+ *                              casing drift: assume any hand-maintained key in
+ *                              this corpus has a misspelt twin.
+ *   repo_url              1   not GitHub (Launchpad) — still source, still counts.
+ */
+function pickRepo(data: Record<string, unknown>): {
+  repoUrl?: string;
+  repoKind?: 'repo' | 'profile';
+  repoTypoKey?: string;
+} {
+  const repo = str(data, 'github_repo_url') || str(data, 'github_url') || str(data, 'repo_url');
+  if (repo && /^https?:\/\//.test(repo)) return { repoUrl: repo, repoKind: 'repo' };
+
+  const profile = str(data, 'github_profile_url');
+  if (profile && /^https?:\/\//.test(profile)) return { repoUrl: profile, repoKind: 'profile' };
+
+  const typo = str(data, 'github_profle_url');
+  if (typo && /^https?:\/\//.test(typo)) {
+    return { repoUrl: typo, repoKind: 'profile', repoTypoKey: 'github_profle_url' };
+  }
+  return {};
 }
 
 function dedupe(tools: Tool[]): Tool[] {
@@ -482,6 +535,8 @@ export interface ListToolsQuery {
   category?: string;
   vertical?: string;
   query?: string;
+  /** Only tools whose source-code home is recorded. */
+  hasRepo?: boolean;
   limit?: number;
 }
 
@@ -494,6 +549,7 @@ export function listTools(q: ListToolsQuery = {}): Tool[] {
   const wantSlug = q.tagSlug ?? (q.tag ? tagSlug(q.tag) : undefined);
   if (wantSlug) pool = pool.filter((t) => t.tags.some((g) => tagSlug(g) === wantSlug));
   if (q.category) pool = pool.filter((t) => t.category === q.category);
+  if (q.hasRepo) pool = pool.filter((t) => Boolean(t.repoUrl));
   if (q.query) {
     const words = q.query.toLowerCase().split(/\s+/).filter(Boolean);
     pool = pool.filter((t) => {
@@ -506,6 +562,14 @@ export function listTools(q: ListToolsQuery = {}): Tool[] {
 
 export function getTool(slug: string): Tool | undefined {
   return toolBySlug(slug);
+}
+
+/**
+ * Tools with a public source-code home, richest first. Grouped by owner at the
+ * page layer, not here — this stays a flat projection like every other list.
+ */
+export function listRepos(): Tool[] {
+  return listTools({ hasRepo: true });
 }
 
 export function listTags(minCount = 1): TagFacet[] {

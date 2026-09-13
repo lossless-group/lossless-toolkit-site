@@ -61,7 +61,14 @@ const { title, description, image, category, jsonLd, noindex, ogType } = Astro.p
     </script>
     <style>
       .site-head__search { flex: 1 1 22rem; max-width: 30rem; margin-inline: 1rem; }
-      @media (max-width: 860px) { .site-head__search { order: 3; flex-basis: 100%; margin: .5rem 0 0; } }
+      /* The previous narrow treatment pushed search to `order: 3` and a full-width
+         second row. With the nav now collapsing behind a hamburger there is room
+         to keep everything on one line, and the old rule actively fought it —
+         `order: 3` re-sorted search BEHIND the theme toggle, so the row read
+         hamburger, moon, search. Search now simply takes the reclaimed space. */
+      @container head (max-width: 52rem) {
+        .site-head__search { margin-inline: 0; max-width: none; }
+      }
     </style>
   </head>
 
@@ -71,15 +78,38 @@ const { title, description, image, category, jsonLd, noindex, ogType } = Astro.p
     <header class="site-head">
       <div class="shell site-head__inner">
         <a class="wordmark" href="/">Lossless<b>·</b>Toolkit</a>
+
+        <button
+          type="button"
+          class="nav-toggle"
+          id="nav-toggle"
+          aria-expanded="false"
+          aria-controls="nav-menu"
+          aria-label="Open menu"
+        >
+          <svg class="nav-toggle__open" width="22" height="22" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" aria-hidden="true">
+            <line x1="3" y1="6" x2="21" y2="6" /><line x1="3" y1="12" x2="21" y2="12" /><line x1="3" y1="18" x2="21" y2="18" />
+          </svg>
+          <svg class="nav-toggle__close" width="22" height="22" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" aria-hidden="true">
+            <line x1="5" y1="5" x2="19" y2="19" /><line x1="19" y1="5" x2="5" y2="19" />
+          </svg>
+        </button>
+
         <div class="site-head__search">
           <PagefindSearch client:idle placeholder="Search…" />
         </div>
-        <nav class="site-nav" aria-label="Primary">
+
+        <nav class="site-nav" id="nav-menu" aria-label="Primary">
+          <!-- Home carries the wordmark's job inside the panel, since the
+               wordmark itself is what collapsed. Hidden at full width, where
+               the wordmark is already doing it. -->
+          <a class="site-nav__home" href="/">Lossless<b>·</b>Toolkit</a>
           <a href="/toolkit/">Explore</a>
           <a href="/verticals/">Verticals</a>
           <a href="/tags/">Tags</a>
-          <ThemeToggle client:idle />
         </nav>
+
+        <ThemeToggle client:idle />
       </div>
     </header>
 
@@ -114,5 +144,63 @@ const { title, description, image, category, jsonLd, noindex, ogType } = Astro.p
         inset-inline-start: 0;
       }
     </style>
+    <script>
+      // Nav collapse. The CSS decides WHETHER the panel exists (container query);
+      // this only decides whether it is open.
+      function wireNav() {
+        const toggle = document.getElementById('nav-toggle');
+        const menu = document.getElementById('nav-menu');
+        if (!toggle || !menu || toggle.dataset.wired) return;
+        toggle.dataset.wired = 'true';
+
+        const setOpen = (open: boolean) => {
+          toggle.setAttribute('aria-expanded', String(open));
+          toggle.setAttribute('aria-label', open ? 'Close menu' : 'Open menu');
+          if (open) menu.setAttribute('data-open', '');
+          else menu.removeAttribute('data-open');
+        };
+
+        toggle.addEventListener('click', () =>
+          setOpen(toggle.getAttribute('aria-expanded') !== 'true')
+        );
+
+        // Collapse on choosing a destination — the panel covers the content, so
+        // leaving it open hides whatever the reader just asked to see.
+        menu.addEventListener('click', (e) => {
+          if ((e.target as HTMLElement).closest('a')) setOpen(false);
+        });
+
+        document.addEventListener('keydown', (e) => {
+          if (e.key === 'Escape' && toggle.getAttribute('aria-expanded') === 'true') {
+            setOpen(false);
+            toggle.focus();
+          }
+        });
+
+        document.addEventListener('click', (e) => {
+          if (toggle.getAttribute('aria-expanded') !== 'true') return;
+          const t = e.target as HTMLElement;
+          if (!menu.contains(t) && !toggle.contains(t)) setOpen(false);
+        });
+
+        // Growing back to the wide layout must clear the open state, or
+        // data-open survives and the panel reappears on the next narrowing.
+        // Observed on the CONTAINER, not the viewport, to match the CSS.
+        // No breakpoint number here on purpose. A copy in JS is a second place
+        // to update and a guaranteed drift; instead ask the CSS whether the
+        // hamburger is currently rendered at all. When the container grows past
+        // the query, the toggle goes display:none and the panel must close, or
+        // data-open survives and it reappears on the next narrowing.
+        const head = document.querySelector('.site-head__inner');
+        if (head) {
+          new ResizeObserver(() => {
+            if (getComputedStyle(toggle).display === 'none') setOpen(false);
+          }).observe(head);
+        }
+      }
+
+      wireNav();
+      document.addEventListener('astro:page-load', wireNav);
+    </script>
   </body>
 </html>

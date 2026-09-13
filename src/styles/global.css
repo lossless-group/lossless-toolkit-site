@@ -96,6 +96,23 @@ img { max-width: 100%; display: block; }
   align-items: center;
   gap: 1.25rem;
   padding-block: 0.7rem;
+
+  /* The collapse is keyed to the HEADER's own width, not the viewport's, so the
+     rule travels with the component. `position: relative` anchors the dropped
+     panel; `container-type: inline-size` is what makes @container below work.
+     (inline-size containment also makes this the containing block for the
+     panel, which is exactly where we want it anchored anyway.) */
+  position: relative;
+  container-type: inline-size;
+  container-name: head;
+}
+
+/* Full width: links inline, no hamburger, no panel-only home link. */
+.nav-toggle {
+  display: none;
+}
+.site-nav__home {
+  display: none;
 }
 
 .wordmark {
@@ -116,6 +133,118 @@ img { max-width: 100%; display: block; }
   font-size: var(--step--1);
   align-items: center;
   flex-wrap: wrap;
+}
+
+/* ---------------------------------------------------------------------------
+   Narrow header: the wordmark and the nav links collapse behind a hamburger.
+   The SEARCH BAR STAYS — it is the primary way into a 1,765-tool catalogue, and
+   burying it behind a tap would be the one regression this layout cannot afford.
+
+   The nav markup is NOT duplicated per breakpoint. This is the same <nav>,
+   restyled from an inline row into a dropped panel — a second copy is a second
+   place to forget a link, and it puts every href in the a11y tree twice.
+   --------------------------------------------------------------------------- */
+/* 52rem, not 46rem: the links wrap to a second row and the header grows to two
+   lines well before the old threshold — at ~800px the nav had already broken.
+   The breakpoint is the width at which everything still fits on ONE row, not
+   the width at which it becomes unreadable. Base.astro's search rule uses the
+   same query and must be changed with it. */
+@container head (max-width: 52rem) {
+  .wordmark {
+    display: none;
+  }
+
+  .nav-toggle {
+    display: inline-flex;
+    align-items: center;
+    justify-content: center;
+    /* Last in the row. The hamburger is a right-hand affordance by convention
+       and by thumb reach; source order keeps it next to the wordmark it
+       replaces, so flex `order` moves it rather than a second markup shape. */
+    order: 5;
+    padding: 0.35rem;
+    margin-inline-end: -0.35rem;
+    background: transparent;
+    border: 0;
+    border-radius: var(--radius-sm);
+    color: var(--clr-ink-muted);
+    cursor: pointer;
+    transition: color 0.15s ease;
+  }
+  .nav-toggle:hover {
+    color: var(--clr-ink);
+  }
+  .nav-toggle:focus-visible {
+    outline: 2px solid var(--clr-accent);
+    outline-offset: 2px;
+  }
+
+  /* The open/close glyph swap is pure CSS off aria-expanded — the attribute is
+     already the source of truth for assistive tech, so no second state to sync. */
+  .nav-toggle__close {
+    display: none;
+  }
+  .nav-toggle[aria-expanded='true'] .nav-toggle__open {
+    display: none;
+  }
+  .nav-toggle[aria-expanded='true'] .nav-toggle__close {
+    display: block;
+  }
+
+  /* Search absorbs the space the wordmark and links gave up. */
+  .site-head__search {
+    flex: 1 1 auto;
+    min-width: 0;
+  }
+
+  /* Absolute, not in flow: an in-flow panel shoves the page down as it opens,
+     which reads as the layout breaking rather than as a menu appearing. */
+  .site-nav {
+    position: absolute;
+    inset-inline: 0;
+    top: calc(100% + 0.55rem);
+    z-index: 50;
+    margin-inline-start: 0;
+    flex-direction: column;
+    align-items: stretch;
+    gap: 0.15rem;
+    padding: 0.4rem;
+    border: 1px solid var(--clr-line);
+    border-radius: var(--radius-lg);
+    background: var(--clr-ground-raised);
+    box-shadow: 0 12px 32px var(--clr-shadow);
+  }
+
+  /* display:none rather than opacity/height — a shut panel's links must leave
+     the tab order. A hidden-but-focusable menu is worse than an unanimated one. */
+  .site-nav:not([data-open]) {
+    display: none;
+  }
+
+  .site-nav a {
+    display: block;
+    padding: 0.6rem 0.7rem;
+    border-radius: var(--radius-sm);
+    border-block-end: 0;
+    font-size: var(--step-0);
+  }
+  .site-nav a:hover,
+  .site-nav a[aria-current='page'] {
+    background: var(--clr-surface-hover);
+  }
+
+  .site-nav__home {
+    display: block;
+    font-family: var(--font-display);
+    font-weight: 700;
+    color: var(--clr-ink);
+    border-block-end: 1px solid var(--clr-line);
+    border-radius: 0;
+    margin-block-end: 0.25rem;
+  }
+  .site-nav__home b {
+    color: var(--clr-accent);
+  }
 }
 .site-nav a {
   color: var(--clr-ink-muted);

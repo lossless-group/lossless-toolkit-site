@@ -1,0 +1,187 @@
+---
+/**
+ * ClientCard.astro
+ *
+ * Replicated from lossless-group/site
+ * `src/components/basics/messages/ClientCard--sm--stealth.astro`.
+ *
+ * This is the STEALTH card — the variant that ships on the lossless.group index
+ * page. It renders a codename ("Mission to Save Lives"), never the client's real
+ * name, and the source deliberately excludes `stealth-passcode` from its props.
+ * That exclusion is enforced one level earlier here: `src/data/clients.json`
+ * carries only the six fields this card reads, so a passcode or a real name
+ * cannot be passed in even by mistake.
+ *
+ * Adapted: hardcoded slate hexes (#f1f5f9, #cbd5e1, #94a3b8) become semantic
+ * tokens. The two brand gradients — the amber industry text and the red hover
+ * border — are carried over verbatim, because they ARE the component's identity.
+ * They are the one place raw values appear; tokenizing them into theme.css's
+ * named tier is the obvious follow-up.
+ *
+ * PROPS:
+ * - name (string, required): stealth project name
+ * - logo (string, optional): path to the stealth logo
+ * - description (string, required): stealth description of the engagement
+ * - industry (string, required)
+ * - engagement (string, required): e.g. "2024-Present"
+ * - logoShape ('icon' | 'wordmark', optional): square app icon (default) or a
+ *   wide trademark lockup. Wordmarks get a wider slot and a light backing, since
+ *   a full-colour brand mark with near-black type is unreadable on a dark ground.
+ * - clientId (string, optional): retained from the source so the portal link is
+ *   a one-line change if a /client/<id> route ever exists here. It is NOT
+ *   rendered — this site has no such route, and a dead link is worse than none.
+ */
+import TextCTA from './TextCTA.astro';
+
+interface Props {
+  name: string;
+  logo?: string;
+  description: string;
+  industry: string;
+  engagement: string;
+  logoShape?: 'icon' | 'wordmark';
+  clientId?: string;
+}
+
+const { name, logo, description, industry, engagement, logoShape = 'icon' } = Astro.props;
+---
+
+<div class="stealth-client-card">
+  <div class="client-header">
+    {logo && (
+      <div class:list={['client-logo', logoShape === 'wordmark' && 'client-logo--wordmark']}>
+        <img src={logo} alt={`${name} logo`} loading="lazy" decoding="async" />
+      </div>
+    )}
+    <div class="client-info">
+      <h3 class="client-name">{name}</h3>
+      <div class="client-meta">
+        <span class="client-industry">{industry}</span>
+        <span class="client-engagement">{engagement}</span>
+      </div>
+    </div>
+  </div>
+
+  <p class="client-description">{description}</p>
+
+  <div class="stealth-indicator">
+    <TextCTA text="Access Portal" />
+  </div>
+</div>
+
+<style>
+  .stealth-client-card {
+    background: var(--clr-surface);
+    border-radius: 1rem;
+    padding: 1.5rem;
+    min-width: 320px;
+    max-width: 400px;
+    height: 100%;
+    display: flex;
+    flex-direction: column;
+    gap: 1rem;
+    border: 1.5px solid var(--clr-line);
+    transition: all 0.3s ease;
+    position: relative;
+  }
+
+  /* Carried over verbatim from the source: the red gradient edge on hover. */
+  .stealth-client-card:hover {
+    box-shadow: 0 6px 20px var(--clr-shadow);
+    border-image: linear-gradient(135deg, #dc2626 0%, #991b1b 100%) 1;
+    border-width: 2.5px;
+    border-style: solid;
+  }
+
+  .client-header {
+    display: flex;
+    align-items: flex-start;
+    gap: 1rem;
+  }
+
+  .client-logo {
+    width: 60px;
+    height: 60px;
+    border-radius: 12px;
+    overflow: hidden;
+    background: color-mix(in oklab, var(--clr-ink) 10%, transparent);
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    flex-shrink: 0;
+    border: 1px solid rgba(220, 38, 38, 0.3);
+  }
+
+  .client-logo img {
+    width: 100%;
+    height: 100%;
+    object-fit: contain;
+    filter: contrast(0.8) brightness(0.9);
+  }
+
+  /* A trademark lockup is ~2.5:1, not square. Squeezing one into the 60px icon
+     slot renders it ~60x24 and its tagline becomes an illegible smudge, so the
+     slot widens to fit. The white backing is what makes a full-colour mark with
+     near-black type readable in dark and vibrant modes; the source sidesteps
+     this by shipping square app icons that already read on a dark ground. */
+  .client-logo--wordmark {
+    width: auto;
+    min-width: 60px;
+    max-width: 140px;
+    padding: 0.4rem 0.55rem;
+    background: #ffffff;
+    border-color: color-mix(in oklab, var(--clr-ink) 20%, transparent);
+  }
+
+  .client-logo--wordmark img {
+    width: auto;
+    max-width: 100%;
+    filter: none;
+  }
+
+  .client-info {
+    flex: 1;
+  }
+
+  .client-name {
+    font-size: 1.25rem;
+    font-weight: 700;
+    color: var(--clr-ink);
+    margin: 0 0 0.5rem 0;
+    line-height: 1.2;
+  }
+
+  .client-meta {
+    display: flex;
+    gap: 1rem;
+    font-size: 0.875rem;
+  }
+
+  /* Carried over verbatim: the amber-to-yellow industry gradient. */
+  .client-industry {
+    background: linear-gradient(90deg, #f59c49 0%, #fde047 100%);
+    -webkit-background-clip: text;
+    background-clip: text;
+    -webkit-text-fill-color: transparent;
+    font-weight: 500;
+    letter-spacing: 0.5px;
+  }
+
+  .client-engagement {
+    color: var(--clr-ink-faint);
+  }
+
+  .client-description {
+    color: var(--clr-ink-muted);
+    line-height: 1.6;
+    flex: 1;
+    margin: 0;
+    font-style: italic;
+  }
+
+  .stealth-indicator {
+    display: flex;
+    justify-content: center;
+    margin-top: auto;
+  }
+</style>

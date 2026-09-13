@@ -1,0 +1,96 @@
+---
+/**
+ * GlassmorphicNavButton.astro
+ *
+ * Replicated from lossless-group/site
+ * `src/components/basics/navigation/GlassmorphicNavButton.astro`.
+ * A round, blurred, frosted-glass nav button with an inline chevron.
+ *
+ * Adapted: the source's `rgba(255, 255, 255, …)` fills assume a dark ground and
+ * go invisible on paper. They are expressed here as `color-mix()` against
+ * `--clr-ink`, which keeps the glassmorphism (the backdrop blur is untouched)
+ * while surviving light and vibrant modes.
+ *
+ * PROPS:
+ * - direction ('left' | 'right', required): which way the chevron points
+ * - label (string, required): accessible name
+ * - href (string, optional): renders an <a> instead of a <button>
+ * - onClick (string, optional): inline handler, for parity with the source
+ * - class (string, optional)
+ */
+interface Props {
+  direction: 'left' | 'right';
+  href?: string;
+  label: string;
+  onClick?: string;
+  class?: string;
+}
+
+const { direction, href, label, onClick, class: className = '' } = Astro.props;
+
+const Tag = href ? 'a' : 'button';
+const tagProps = href
+  ? { href }
+  : onClick
+    ? { onclick: onClick, type: 'button' as const }
+    : { type: 'button' as const };
+---
+
+<Tag class:list={['glassmorphic-nav-button', className]} aria-label={label} {...tagProps}>
+  <svg width="24" height="24" viewBox="0 0 24 24" fill="none" xmlns="http://www.w3.org/2000/svg" aria-hidden="true">
+    {direction === 'left' ? (
+      <path d="M15 18L9 12L15 6" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" />
+    ) : (
+      <path d="M9 18L15 12L9 6" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" />
+    )}
+  </svg>
+</Tag>
+
+<style>
+  .glassmorphic-nav-button {
+    width: 60px;
+    height: 60px;
+    background: color-mix(in oklab, var(--clr-ink) 10%, transparent);
+    backdrop-filter: blur(10px);
+    border: 1px solid var(--clr-line);
+    border-radius: 50%;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    color: var(--clr-ink-muted);
+    text-decoration: none;
+    transition: all 0.3s ease;
+    box-shadow: 0 8px 32px var(--clr-shadow);
+    cursor: pointer;
+  }
+
+  .glassmorphic-nav-button:hover {
+    background: color-mix(in oklab, var(--clr-ink) 18%, transparent);
+    border-color: var(--clr-line-strong);
+    color: var(--clr-ink);
+    transform: scale(1.1);
+  }
+
+  .glassmorphic-nav-button:active {
+    transform: scale(0.95);
+  }
+
+  .glassmorphic-nav-button:focus-visible {
+    outline: 2px solid var(--clr-accent);
+    outline-offset: 2px;
+  }
+
+  @media (max-width: 768px) {
+    .glassmorphic-nav-button {
+      width: 50px;
+      height: 50px;
+    }
+  }
+
+  @media (max-width: 480px) {
+    .glassmorphic-nav-button {
+      width: 44px;
+      height: 44px;
+    }
+  }
+</style>

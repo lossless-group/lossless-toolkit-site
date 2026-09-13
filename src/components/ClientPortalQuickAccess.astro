@@ -1,0 +1,301 @@
+---
+/**
+ * ClientPortalQuickAccess.astro
+ *
+ * A thin floating rail that parks under the site header on the right: a label,
+ * a three-wide window of client app icons, and left/right toggles that walk the
+ * rest of the list through it. Each icon links straight to that client's portal.
+ *
+ * Laerdal leads the list deliberately — a client should land on the page and see
+ * their own mark first.
+ *
+ * ICON INTEGRITY: seven of the eleven logos in the source repo are git-lfs
+ * POINTER FILES — 130 bytes of ASCII that a web server happily returns as 200.
+ * Trusting the path is how a broken image ships. So every icon is checked on
+ * disk at build time and anything that is not a real image falls back to a
+ * monogram tile. When those LFS objects are eventually fetched, the real icons
+ * appear with no code change.
+ *
+ * PROPS:
+ * - clients (array, required)
+ * - title (string, optional)
+ * - visible (number, optional): how many icons show at once (default 3)
+ */
+import fs from 'node:fs';
+import path from 'node:path';
+
+interface Client {
+  id: string;
+  'stealth-name': string;
+  'app-icon'?: string;
+}
+
+interface Props {
+  clients: Client[];
+  title?: string;
+  visible?: number;
+}
+
+const { clients, title = 'Client Portals, Quick Access', visible = 3 } = Astro.props;
+
+/**
+ * A git-lfs pointer is a tiny text file. Real icons here are >2KB, pointers are
+ * ~130 bytes, so a size floor separates them without parsing. Erring toward the
+ * monogram is the safe direction: a clean initial beats a broken-image glyph.
+ */
+const LFS_POINTER_CEILING = 512;
+
+function usableIcon(src?: string): string | null {
+  if (!src) return null;
+  try {
+    const onDisk = path.join(process.cwd(), 'public', src.replace(/^\//, ''));
+    const { size } = fs.statSync(onDisk);
+    return size > LFS_POINTER_CEILING ? src : null;
+  } catch {
+    return null;
+  }
+}
+
+/** "Mission to Save Lives" -> "MS". Stealth names stay stealth in the fallback. */
+function monogram(name: string): string {
+  return name
+    .split(/\s+/)
+    .filter((w) => /^[A-Za-z]/.test(w))
+    .slice(0, 2)
+    .map((w) => w[0]!.toUpperCase())
+    .join('');
+}
+
+const items = clients.map((c) => ({
+  id: c.id,
+  name: c['stealth-name'],
+  icon: usableIcon(c['app-icon']),
+  monogram: monogram(c['stealth-name']),
+}));
+---
+
+<aside
+  class="portal-rail"
+  aria-label={title}
+  style={`--qa-visible:${visible}`}
+  data-count={items.length}
+>
+  <p class="portal-rail__label">{title}</p>
+
+  <div class="portal-rail__controls">
+    <button type="button" class="portal-rail__nav" data-dir="-1" aria-label="Previous clients">
+      <svg width="14" height="14" viewBox="0 0 24 24" fill="none" aria-hidden="true">
+        <path d="M15 18L9 12L15 6" stroke="currentColor" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round" />
+      </svg>
+    </button>
+
+    <div class="portal-rail__window">
+      <ul class="portal-rail__track">
+        {items.map((it) => (
+          <li>
+            <a class="portal-rail__item" href={`/client/${it.id}/`} title={it.name}>
+              {it.icon ? (
+                <img src={it.icon} alt="" width="28" height="28" loading="lazy" decoding="async" />
+              ) : (
+                <span class="portal-rail__monogram" aria-hidden="true">{it.monogram}</span>
+              )}
+              <span class="sr-only">{it.name}</span>
+            </a>
+          </li>
+        ))}
+      </ul>
+    </div>
+
+    <button type="button" class="portal-rail__nav" data-dir="1" aria-label="Next clients">
+      <svg width="14" height="14" viewBox="0 0 24 24" fill="none" aria-hidden="true">
+        <path d="M9 18L15 12L9 6" stroke="currentColor" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round" />
+      </svg>
+    </button>
+  </div>
+</aside>
+
+<style>
+  .portal-rail {
+    /* --qa-top is written by the script below from the header's measured height,
+       so the rail stays tucked under it rather than hardcoding a guess. */
+    position: fixed;
+    top: var(--qa-top, 3.4rem);
+    right: max(1rem, calc(50vw - 590px + 1rem));
+    z-index: 20;
+
+    display: flex;
+    align-items: center;
+    gap: 0.6rem;
+    padding: 0.3rem 0.45rem;
+    border: 1px solid var(--clr-line);
+    border-radius: 999px;
+    background: color-mix(in oklab, var(--clr-ground) 88%, transparent);
+    backdrop-filter: blur(10px);
+    box-shadow: 0 6px 20px var(--clr-shadow);
+  }
+
+  .portal-rail__label {
+    margin: 0;
+    padding-inline-start: 0.4rem;
+    font-family: var(--font-mono);
+    font-size: 0.62rem;
+    letter-spacing: 0.09em;
+    text-transform: uppercase;
+    color: var(--clr-ink-faint);
+    white-space: nowrap;
+  }
+
+  .portal-rail__controls {
+    display: flex;
+    align-items: center;
+    gap: 0.15rem;
+  }
+
+  .portal-rail__nav {
+    display: grid;
+    place-items: center;
+    width: 22px;
+    height: 22px;
+    flex-shrink: 0;
+    padding: 0;
+    border: none;
+    border-radius: 50%;
+    background: none;
+    color: var(--clr-ink-faint);
+    cursor: pointer;
+    transition: color 120ms ease, background 120ms ease;
+  }
+  .portal-rail__nav:hover {
+    color: var(--clr-ink);
+    background: var(--clr-surface-hover);
+  }
+  .portal-rail__nav:focus-visible {
+    outline: 2px solid var(--clr-accent);
+    outline-offset: 1px;
+  }
+
+  /* The window is exactly N slots wide; the track slides behind it. */
+  .portal-rail__window {
+    --slot: 34px;
+    width: calc(var(--slot) * var(--qa-visible, 3));
+    overflow: hidden;
+  }
+
+  .portal-rail__track {
+    display: flex;
+    list-style: none;
+    margin: 0;
+    padding: 0;
+    transition: transform 260ms cubic-bezier(0.22, 0.61, 0.36, 1);
+  }
+
+  .portal-rail__track > li {
+    width: 34px;
+    flex-shrink: 0;
+    display: grid;
+    place-items: center;
+  }
+
+  .portal-rail__item {
+    display: grid;
+    place-items: center;
+    width: 28px;
+    height: 28px;
+    border-radius: 7px;
+    overflow: hidden;
+    background: var(--clr-surface);
+    border: 1px solid var(--clr-line);
+    text-decoration: none;
+    transition: transform 120ms ease, border-color 120ms ease;
+  }
+  .portal-rail__item:hover {
+    transform: scale(1.12);
+    border-color: var(--clr-accent);
+  }
+  .portal-rail__item:focus-visible {
+    outline: 2px solid var(--clr-accent);
+    outline-offset: 2px;
+  }
+
+  .portal-rail__item img {
+    width: 100%;
+    height: 100%;
+    object-fit: contain;
+  }
+
+  .portal-rail__monogram {
+    font-family: var(--font-mono);
+    font-size: 0.6rem;
+    font-weight: 700;
+    letter-spacing: 0.02em;
+    color: var(--clr-ink-muted);
+  }
+
+  .sr-only {
+    position: absolute;
+    width: 1px;
+    height: 1px;
+    padding: 0;
+    margin: -1px;
+    overflow: hidden;
+    clip-path: inset(50%);
+    white-space: nowrap;
+    border: 0;
+  }
+
+  /* The label is the first thing to go when there is no room for it. */
+  @media (max-width: 900px) {
+    .portal-rail__label {
+      display: none;
+    }
+  }
+
+  @media (prefers-reduced-motion: reduce) {
+    .portal-rail__track {
+      transition: none;
+    }
+  }
+</style>
+
+<script>
+  document.querySelectorAll<HTMLElement>('.portal-rail').forEach((rail) => {
+    const track = rail.querySelector<HTMLElement>('.portal-rail__track');
+    const slots = rail.querySelector<HTMLElement>('.portal-rail__window');
+    if (!track || !slots) return;
+
+    const count = Number(rail.dataset.count ?? 0);
+    const visible = Number(getComputedStyle(rail).getPropertyValue('--qa-visible')) || 3;
+    const maxStart = Math.max(0, count - visible);
+    let start = 0;
+
+    const render = () => {
+      const slot = track.firstElementChild as HTMLElement | null;
+      const w = slot ? slot.offsetWidth : 34;
+      track.style.transform = `translateX(${-start * w}px)`;
+      rail.querySelectorAll<HTMLButtonElement>('.portal-rail__nav').forEach((b) => {
+        const dir = Number(b.dataset.dir);
+        b.disabled = dir < 0 ? start === 0 : start >= maxStart;
+        b.style.opacity = b.disabled ? '0.3' : '1';
+        b.style.cursor = b.disabled ? 'default' : 'pointer';
+      });
+    };
+
+    rail.querySelectorAll<HTMLButtonElement>('.portal-rail__nav').forEach((b) => {
+      b.addEventListener('click', () => {
+        start = Math.min(maxStart, Math.max(0, start + Number(b.dataset.dir)));
+        render();
+      });
+    });
+
+    // Park under the header, measured rather than assumed, and kept correct
+    // when the header reflows (the nav wraps at narrow widths).
+    const head = document.querySelector<HTMLElement>('.site-head');
+    if (head) {
+      const place = () => rail.style.setProperty('--qa-top', `${head.offsetHeight + 8}px`);
+      place();
+      new ResizeObserver(place).observe(head);
+    }
+
+    render();
+  });
+</script>
