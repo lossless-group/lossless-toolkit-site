@@ -11,3 +11,8 @@ dist/
 # It ships to dist/reports/content-anomalies.md; a sample is committed at
 # reports/content-anomalies.sample.md for illustration.
 reports/content-anomalies.md
+
+# context-v/extra/ is the universal scratch space — private working notes that
+# are deliberately NOT published. Ignored by convention across the tree; this
+# repo had never actually declared it, so the convention was not in force here.
+context-v/extra/
