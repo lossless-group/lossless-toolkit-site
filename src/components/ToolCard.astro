@@ -25,7 +25,7 @@ const dest = href ?? `/toolkit/${tool.slug}/`;
   {
     tool.tags.length > 0 && (
       <div class="card__tags card__tags--links">
-        {tool.tags.slice(0, 3).map((t) =>
+        {tool.tags.map((t) =>
           // Vertical entries carry tags that have no page in the tool tag index,
           // so they render as labels rather than links that would 404.
           external ? (
@@ -49,10 +49,13 @@ const dest = href ?? `/toolkit/${tool.slug}/`;
     color: inherit;
     text-decoration: none;
   }
+  /*
+     Padding only — layout and the three-row cap come from .card__tags in
+     global.css, and the custom properties it defines land on this same element.
+     Repeating the padding literal here would desync the cap, since max-height
+     is computed from --chip-pad under border-box.
+  */
   .card__tags--links {
-    padding: 0 0.95rem 0.9rem;
-    display: flex;
-    flex-wrap: wrap;
-    gap: 0.3rem;
+    padding: var(--chip-pad) 0.95rem;
   }
 </style>

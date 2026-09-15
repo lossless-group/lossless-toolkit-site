@@ -426,7 +426,11 @@
                interactive element nested in a link is invalid markup — which is
                exactly why the old decorative <span> did nothing when clicked. -->
           <div class="card__tags">
-            {#each t.g.slice(0, 3) as g}
+            <!-- Every tag, not the first three. 41% of the corpus carries more
+                 than three, and the container caps the visual height at three
+                 rows and scrolls past that — so truncating here hid tags the
+                 layout can now afford to show. -->
+            {#each t.g as g}
               <TagChip
                 tagString={g}
                 isSelected={toolkit.tags.includes(g)}
@@ -467,7 +471,7 @@
   .explorer { display: grid; gap: 1.1rem; }
   .card__repo {
     display: inline-flex; align-items: center; gap: 0.35rem;
-    margin: 0 0.7rem 0.7rem; padding: 0.2rem 0.5rem;
+    margin: 0 0.95rem 0.8rem; padding: 0.2rem 0.5rem;
     border: 1px solid var(--clr-line); border-radius: var(--radius-sm);
     color: var(--clr-ink-muted); text-decoration: none;
     font-family: var(--font-mono); font-size: 0.62rem; letter-spacing: 0.06em;

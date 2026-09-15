@@ -343,7 +343,38 @@ a.chip:hover { border-color: var(--clr-line-strong); color: var(--clr-accent); }
   -webkit-box-orient: vertical;
   overflow: hidden;
 }
-.card__tags { display: flex; flex-wrap: wrap; gap: 0.3rem; margin-block-start: auto; padding-block-start: 0.4rem; }
+/*
+   The chip row had no inline padding, so chips sat flush against the card edge
+   while every other element inside the card respected .card__body's 0.95rem
+   gutter. Matched here.
+
+   Capped at three rows, scrollable beyond. Tag counts are wildly uneven in this
+   corpus — an entry with twenty tags grew its card to several times the height
+   of its neighbours and broke the grid rhythm. The cap is arithmetic rather than
+   a guessed pixel value: three rows plus the two gaps between them, plus the
+   block padding, because border-box counts padding toward max-height.
+*/
+.card__tags {
+  --chip-row: 1.4rem;   /* one chip's outer height at 0.62rem mono */
+  --chip-gap: 0.3rem;
+  --chip-pad: 0.55rem;  /* block padding, top and bottom */
+
+  display: flex;
+  flex-wrap: wrap;
+  gap: var(--chip-gap);
+  margin-block-start: auto;
+  padding: var(--chip-pad) 0.95rem;
+  max-height: calc(3 * var(--chip-row) + 2 * var(--chip-gap) + 2 * var(--chip-pad));
+  overflow-y: auto;
+  overscroll-behavior: contain;
+  scrollbar-width: thin;
+  scrollbar-color: var(--clr-line-strong) transparent;
+}
+.card__tags::-webkit-scrollbar { width: 6px; }
+.card__tags::-webkit-scrollbar-thumb {
+  background: var(--clr-line-strong);
+  border-radius: 999px;
+}
 
 /* --------------------------------------------------------------- prose ---- */
 .prose { max-width: var(--measure); }
