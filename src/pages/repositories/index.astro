@@ -8,6 +8,7 @@
  */
 import Base from '../../layouts/Base.astro';
 import { listRepos, tagSlug } from '../../lib/content-api';
+import ToolExplorer from '../../components/ToolExplorer.svelte';
 import { abs } from '../../lib/seo';
 
 const repos = listRepos().sort((a, b) => b.depth - a.depth);
@@ -50,6 +51,12 @@ const jsonLd = {
       </p>
     </header>
 
+    {/* The same Explorer as /toolkit/, scoped to the repo subset. The projection
+        carries the source link (t.r), so filtering never costs the page its point.
+        The server-rendered list below stays as the no-JS path. */}
+    <ToolExplorer client:visible endpoint="/api/repositories.json" scope="/repositories/" />
+
+    <noscript>
     <ul class="repo-list">
       {repos.map((t) => (
         <li class="repo">
@@ -73,6 +80,7 @@ const jsonLd = {
         </li>
       ))}
     </ul>
+    </noscript>
   </section>
 </Base>
 

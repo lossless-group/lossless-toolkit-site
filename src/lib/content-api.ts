@@ -443,7 +443,7 @@ export interface TagFacet {
   count: number;
 }
 
-export function tagFacets(minCount = 1): TagFacet[] {
+export function tagFacets(minCount = 1, tools: Tool[] = allTools()): TagFacet[] {
   /**
    * Tags are folded BY SLUG, not by their literal string.
    *
@@ -458,7 +458,7 @@ export function tagFacets(minCount = 1): TagFacet[] {
    * the display and the minority is absorbed rather than dropped.
    */
   const groups = new Map<string, { count: number; variants: Map<string, number> }>();
-  for (const t of allTools()) {
+  for (const t of tools) {
     // Count each TOOL once per slug. Seven entries carry both `Agentic-AI` and
     // `Agentic-Ai`; counting occurrences would report 135 for a tag whose page
     // lists 128, and a facet count that disagrees with its own page is worse
@@ -511,9 +511,19 @@ export interface ClientTool {
   i: string; // image
   h?: string; // host
   k: string; // prebuilt lowercase haystack
+  /**
+   * Repo fields, present only on the /repositories/ projection. Added to the
+   * allowlist deliberately: both are already-public URLs printed on the page,
+   * and without them a filtered repo view loses the link that IS the page.
+   */
+  r?: string; // repoUrl
+  rk?: 'repo' | 'profile'; // repoKind
 }
 
-export function projectForClient(tools: Tool[] = allTools()): ClientTool[] {
+export function projectForClient(
+  tools: Tool[] = allTools(),
+  opts: { withRepo?: boolean } = {}
+): ClientTool[] {
   return tools.map((t) => ({
     s: t.slug,
     t: t.title,
@@ -523,6 +533,7 @@ export function projectForClient(tools: Tool[] = allTools()): ClientTool[] {
     i: t.image,
     h: t.domain,
     k: `${t.title} ${t.summary} ${t.tags.join(' ')} ${t.category} ${t.domain ?? ''}`.toLowerCase(),
+    ...(opts.withRepo && t.repoUrl ? { r: t.repoUrl, rk: t.repoKind } : {}),
   }));
 }
 
@@ -577,8 +588,15 @@ export function listRepos(): Tool[] {
   return listTools({ hasRepo: true });
 }
 
-export function listTags(minCount = 1): TagFacet[] {
-  return tagFacets(minCount);
+/**
+ * Facets for a SCOPED set of tools when `tools` is given — a client's selection,
+ * the repo subset — so a scoped Explorer's counts describe what is actually on
+ * the page. Passing the global list would show a facet reading 128 on a portal
+ * holding 14 tools, and a count that disagrees with its own result set is worse
+ * than no count.
+ */
+export function listTags(minCount = 1, tools?: Tool[]): TagFacet[] {
+  return tagFacets(minCount, tools ?? allTools());
 }
 
 export function listCategories(): TagFacet[] {

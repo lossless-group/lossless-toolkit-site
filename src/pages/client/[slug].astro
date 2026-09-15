@@ -19,6 +19,7 @@
  */
 import Base from '../../layouts/Base.astro';
 import ToolCard from '../../components/ToolCard.astro';
+import ToolExplorer from '../../components/ToolExplorer.svelte';
 import { allTools, tagSlug } from '../../lib/content-api';
 import { toolPathsForClient } from '../../lib/client-tags';
 import clientsData from '../../data/clients.json';
@@ -77,9 +78,21 @@ const topTags = [...tagCounts.entries()]
     )}
 
     {tools.length > 0 ? (
-      <div class="card-grid">
-        {tools.map((t) => <ToolCard tool={t} />)}
-      </div>
+      <Fragment>
+        {/* Scoped to this engagement: the endpoint carries only these tools, and
+            scope keeps the filter on THIS url rather than rewriting to /tags/ or
+            the global explorer, which would swap the page for the full catalogue. */}
+        <ToolExplorer
+          client:visible
+          endpoint={`/api/client/${client.id}.json`}
+          scope={`/client/${client.id}/`}
+        />
+        <noscript>
+          <div class="card-grid">
+            {tools.map((t) => <ToolCard tool={t} />)}
+          </div>
+        </noscript>
+      </Fragment>
     ) : (
       <p class="dim">
         Nothing tagged for this engagement yet. Tag entries with this client in the vault and they

@@ -19,10 +19,18 @@
    *    reaches is a link they can text to someone. See `syncUrl` below.
    */
 
-  import { toolkit, registerSlugs, writeUrl, shareUrl, toggleTag as toggleShared } from '../lib/toolkit-state.svelte.js';
+  import { toolkit, registerSlugs, writeUrl, shareUrl, toggleTag as toggleShared, setScope } from '../lib/toolkit-state.svelte.js';
   import TagChip from './TagChip.svelte';
 
-  let { endpoint = '/api/tools.json', initial = {} } = $props();
+  let { endpoint = '/api/tools.json', initial = {}, scope = '' } = $props();
+
+  /**
+   * Registered synchronously, before the URL-writing effects run. A scoped mount
+   * that told the atom late would emit one global-shaped URL first — and since
+   * writeUrl uses replaceState, that wrong URL is what a user copying the address
+   * bar in the first moments would get.
+   */
+  setScope(scope);
 
   let tools = $state([]);
   let tagIndex = $state([]);
@@ -390,6 +398,16 @@
 
             </div>
           </a>
+          <!-- Only the /repositories/ projection sets t.r. Outside the anchor for
+               the same reason the tags are: a link inside a link is invalid. -->
+          {#if t.r}
+            <a class="card__repo" href={t.r} rel="noopener noreferrer nofollow" target="_blank">
+              <svg width="14" height="14" viewBox="0 0 16 16" fill="currentColor" aria-hidden="true">
+                <path d="M8 0C3.58 0 0 3.58 0 8c0 3.54 2.29 6.53 5.47 7.59.4.07.55-.17.55-.38 0-.19-.01-.82-.01-1.49-2.01.37-2.53-.49-2.69-.94-.09-.23-.48-.94-.82-1.13-.28-.15-.68-.52-.01-.53.63-.01 1.08.58 1.23.82.72 1.21 1.87.87 2.33.66.07-.52.28-.87.51-1.07-1.78-.2-3.64-.89-3.64-3.95 0-.87.31-1.59.82-2.15-.08-.2-.36-1.02.08-2.12 0 0 .67-.21 2.2.82.64-.18 1.32-.27 2-.27s1.36.09 2 .27c1.53-1.04 2.2-.82 2.2-.82.44 1.1.16 1.92.08 2.12.51.56.82 1.27.82 2.15 0 3.07-1.87 3.75-3.65 3.95.29.25.54.73.54 1.48 0 1.07-.01 1.93-.01 2.2 0 .21.15.46.55.38A8.01 8.01 0 0 0 16 8c0-4.42-3.58-8-8-8Z" />
+              </svg>
+              <span>{t.rk === 'profile' ? 'org' : 'source'}</span>
+            </a>
+          {/if}
           <!-- Outside the anchor deliberately: these are controls, and an
                interactive element nested in a link is invalid markup — which is
                exactly why the old decorative <span> did nothing when clicked. -->
@@ -433,6 +451,15 @@
 
 <style>
   .explorer { display: grid; gap: 1.1rem; }
+  .card__repo {
+    display: inline-flex; align-items: center; gap: 0.35rem;
+    margin: 0 0.7rem 0.7rem; padding: 0.2rem 0.5rem;
+    border: 1px solid var(--clr-line); border-radius: var(--radius-sm);
+    color: var(--clr-ink-muted); text-decoration: none;
+    font-family: var(--font-mono); font-size: 0.62rem; letter-spacing: 0.06em;
+    width: max-content;
+  }
+  .card__repo:hover { border-color: var(--clr-line-strong); color: var(--clr-accent); }
   .sr { position: absolute; width: 1px; height: 1px; overflow: hidden; clip-path: inset(50%); }
   .dim { color: var(--clr-ink-faint); }
 
