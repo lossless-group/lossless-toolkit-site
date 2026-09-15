@@ -67,16 +67,29 @@
 </span>
 
 <style>
+  /*
+     Matched to the static .chip in global.css (ported from spike/variant-a):
+     hairline outline instead of a fill, squared corners, mono at 0.62rem with
+     wider tracking. A card carrying three filled pills competed with its own
+     title, and the Explorer's cards sit beside static .chip elsewhere on the
+     same page — two treatments for one idea read as a bug.
+
+     What does NOT shrink to match: the hit area. This chip is a control, not a
+     label, so padding stays generous enough to tap and .selected keeps a solid
+     fill. Losing the filled state would cost the only cue for which facets are
+     active, which is the whole point of filtering.
+  */
   .tool-tag {
-    display: inline-flex; align-items: center; gap: .3em;
+    display: inline-flex; align-items: center; gap: .35em;
     white-space: nowrap; cursor: pointer;
-    padding: .15em .6em; border-radius: 999px;
-    background: var(--clr-chip); color: var(--clr-chip-ink);
-    border: 1px solid var(--clr-line-strong);
-    font-size: .8rem; line-height: 1.6;
+    padding: .3em .55em; border-radius: var(--radius-sm);
+    background: none; color: var(--clr-ink-muted);
+    border: 1px solid var(--clr-line);
+    font-family: var(--font-mono);
+    font-size: .62rem; letter-spacing: .06em; line-height: 1.4;
     transition: border-color .15s ease, background .15s ease, color .15s ease;
   }
-  .tool-tag:hover { border-color: var(--clr-accent); color: var(--clr-ink); }
+  .tool-tag:hover { border-color: var(--clr-line-strong); color: var(--clr-accent); }
   .tool-tag:focus-visible { outline: 2px solid var(--clr-accent); outline-offset: 2px; }
   .tool-tag__count { color: var(--clr-ink-faint); font-size: .8em; }
   .tool-tag.selected,

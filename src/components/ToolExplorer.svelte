@@ -298,20 +298,34 @@
           <path d="M3 5h18l-7 8v6l-4 2v-8L3 5Z" fill="none" stroke="currentColor"
                 stroke-width="2" stroke-linejoin="round" />
         </svg>
+      <!--
+        value= + an explicit handler, NOT bind:value.
+
+        With bind:value AND oninput, the two race: Svelte's binding and this
+        handler both fire on the input event, and the handler can run FIRST. push()
+        then copied a stale `query` into the atom, the binding updated `query` a
+        moment later, and the bridge effect below saw toolkit.query ('') disagree
+        with query ('k') and reset the input to ''. Every keystroke was eaten — the
+        box looked dead.
+
+        Reading the value off the event makes DOM -> query -> toolkit.query one
+        synchronous sequence, so the effect never sees them disagree.
+      -->
       <input
         type="search"
-        bind:value={query}
+        value={query}
         placeholder={loading
           ? 'Loading the catalogue…'
           : `Filter these ${tools.length} tools — name, description, tag, domain…`}
         autocomplete="off"
-        oninput={() => { limit = 48; push(); }}
+        oninput={(e) => { limit = 48; query = e.currentTarget.value; push(); }}
       />
     </label>
 
     <label class="sel">
       <span class="sr">Category</span>
-      <select bind:value={category} onchange={() => { limit = 48; push(); }}>
+      <!-- Same race as the search box above: read the value off the event. -->
+      <select value={category} onchange={(e) => { limit = 48; category = e.currentTarget.value; push(); }}>
         <option value="">All categories</option>
         {#each categories as c}<option value={c}>{c}</option>{/each}
       </select>
