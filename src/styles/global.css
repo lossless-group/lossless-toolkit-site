@@ -267,22 +267,29 @@ img { max-width: 100%; display: block; }
 }
 
 /* ----------------------------------------------------------------- chips -- */
+/* Ported from spike/variant-a (`src/styles/app.css`). The filled pill read
+   as heavy at card density — a dozen of them competed with the title. Variant A's
+   treatment is quieter: hairline outline instead of a fill, squared corners
+   instead of a pill, ~25% smaller type, and wider tracking so the smaller size
+   stays legible. Tokens remapped to this site's two-tier set
+   (--hairline -> --clr-line, --text-muted -> --clr-ink-muted), so it still
+   responds to all three modes. */
 .chip {
   display: inline-flex;
   align-items: center;
   gap: 0.35rem;
-  padding: 0.18rem 0.6rem;
-  border-radius: 999px;
-  background: var(--clr-chip);
-  color: var(--clr-chip-ink);
-  font-size: var(--step--1);
+  padding: 0.16rem 0.45rem;
+  border-radius: var(--radius-sm);
+  background: none;
+  color: var(--clr-ink-muted);
+  font-size: 0.62rem;
   font-family: var(--font-mono);
-  letter-spacing: 0.01em;
+  letter-spacing: 0.06em;
   text-decoration: none;
-  border: 1px solid transparent;
+  border: 1px solid var(--clr-line);
   white-space: nowrap;
 }
-a.chip:hover { border-color: var(--clr-line-strong); color: var(--clr-ink); }
+a.chip:hover { border-color: var(--clr-line-strong); color: var(--clr-accent); }
 .chip__n { color: var(--clr-ink-faint); font-size: 0.85em; }
 
 /* ----------------------------------------------------------------- cards -- */
