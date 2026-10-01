@@ -1,5 +1,6 @@
 ---
-import { tagLabel, tagSlug, type Tool } from '../lib/content-api';
+import { tagSlug, type Tool } from '../lib/content-api';
+import TagChip from './TagChip.astro';
 
 interface Props {
   tool: Tool;
@@ -29,11 +30,9 @@ const dest = href ?? `/toolkit/${tool.slug}/`;
           // Vertical entries carry tags that have no page in the tool tag index,
           // so they render as labels rather than links that would 404.
           external ? (
-            <span class="chip">{tagLabel(t)}</span>
+            <TagChip tag={t} />
           ) : (
-            <a class="chip" href={`/tags/${tagSlug(t)}/`}>
-              {tagLabel(t)}
-            </a>
+            <TagChip tag={t} href={`/tags/${tagSlug(t)}/`} />
           )
         )}
       </div>

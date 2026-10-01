@@ -11,6 +11,7 @@ import {
   tagSlug,
   listRepos,
 } from '../lib/content-api';
+import TagChip from '../components/TagChip.astro';
 import { abs } from '../lib/seo';
 
 const s = stats();
@@ -190,10 +191,7 @@ const jsonLd = {
     <div class="tagrow">
       {
         tags.slice(0, 40).map((t) => (
-          <a class="chip" href={`/tags/${tagSlug(t.tag)}/`}>
-            {t.label}
-            <span class="chip__n">{t.count}</span>
-          </a>
+          <TagChip tag={t.tag} label={t.label} href={`/tags/${tagSlug(t.tag)}/`} count={t.count} />
         ))
       }
     </div>

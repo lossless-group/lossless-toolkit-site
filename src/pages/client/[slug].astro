@@ -22,6 +22,7 @@ import ToolCard from '../../components/ToolCard.astro';
 import ToolExplorer from '../../components/ToolExplorer.svelte';
 import { allTools, tagSlug } from '../../lib/content-api';
 import { toolPathsForClient } from '../../lib/client-tags';
+import TagChip from '../../components/TagChip.astro';
 import clientsData from '../../data/clients.json';
 
 export async function getStaticPaths() {
@@ -72,7 +73,7 @@ const topTags = [...tagCounts.entries()]
     {topTags.length > 0 && (
       <div class="tagrow">
         {topTags.map(([slug, t]) => (
-          <a class="chip" href={`/tags/${slug}/`}>{t.label}<span class="chip__n">{t.n}</span></a>
+          <TagChip tag={t.label} href={`/tags/${slug}/`} count={t.n} />
         ))}
       </div>
     )}

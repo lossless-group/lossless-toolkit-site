@@ -2,6 +2,7 @@
 import Base from '../../layouts/Base.astro';
 import ToolCard from '../../components/ToolCard.astro';
 import { listTools, tagLabel, tagSlug, type Tool } from '../../lib/content-api';
+import TagChip from '../../components/TagChip.astro';
 import { renderMarkdown } from '../../lib/markdown';
 import { abs, clamp } from '../../lib/seo';
 
@@ -78,9 +79,12 @@ const jsonLd = {
           tool.tags.length > 0 && (
             <div class="tool__tags">
               {tool.tags.map((t) => (
-                <a class="chip" href={`/tags/${tagSlug(t)}/`} data-tag={t} data-pagefind-filter="tag[data-tag]">
-                  {tagLabel(t)}
-                </a>
+                <TagChip
+                  tag={t}
+                  href={`/tags/${tagSlug(t)}/`}
+                  data-tag={t}
+                  data-pagefind-filter="tag[data-tag]"
+                />
               ))}
             </div>
           )

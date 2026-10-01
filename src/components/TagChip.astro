@@ -1,0 +1,57 @@
+---
+/**
+ * TagChip.astro — the one way a tag is drawn on a server-rendered surface.
+ *
+ * `TagChip.svelte` is its counterpart inside the hydrated Explorer, where a chip
+ * is a toggle. The two share a prop API on purpose so they stay recognisably the
+ * same component in two runtimes.
+ *
+ * THIS COMPONENT OWNS NO COLOURS. The house chip is defined once, in
+ * `global.css`, and variants are modifier classes on that single definition —
+ * never a second copy of it. A duplicate chip definition is how the Explorer's
+ * cards and the static cards drifted apart in the first place.
+ *
+ * Variants:
+ *   default   the house chip — mono, squared, hairline, no fill. Unchanged,
+ *             so converting a bare `class="chip"` to this component is a
+ *             no-op visually.
+ *   accent    for the one chip in a row that means something other than "a
+ *             tag" — e.g. a field-tested marker.
+ *   solid     the filled pill the house chip used to be. Kept for emphasis on
+ *             static surfaces where there is no selected state to confuse it
+ *             with.
+ *
+ * PROPS:
+ * - tag (string, required): the stored Train-Case value, e.g. `Design-Tools`
+ * - href (string, optional): renders an <a>; omit for a non-navigating <span>
+ * - count (number, optional): trailing tally, rendered as `.chip__n`
+ * - variant ('default' | 'accent' | 'solid', optional)
+ * - label (string, optional): override the display text when the caller has
+ *   already resolved it
+ * - Any other attribute (data-*, title, …) passes through — `/toolkit/[slug]`
+ *   depends on `data-tag` and `data-pagefind-filter` reaching the DOM intact.
+ */
+import { tagLabel } from '../lib/content-api';
+
+interface Props {
+  tag: string;
+  href?: string;
+  count?: number;
+  variant?: 'default' | 'accent' | 'solid';
+  label?: string;
+  [key: string]: unknown;
+}
+
+const { tag, href, count, variant = 'default', label, ...rest } = Astro.props;
+
+const Tag = href ? 'a' : 'span';
+const text = label ?? tagLabel(tag);
+---
+
+<Tag
+  class:list={['chip', variant !== 'default' && `chip--${variant}`]}
+  {...href ? { href } : {}}
+  {...rest}
+>
+  {text}{count !== undefined && <span class="chip__n">{count}</span>}
+</Tag>

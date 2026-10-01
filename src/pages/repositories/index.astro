@@ -8,6 +8,7 @@
  */
 import Base from '../../layouts/Base.astro';
 import { listRepos, tagSlug } from '../../lib/content-api';
+import TagChip from '../../components/TagChip.astro';
 import ToolExplorer from '../../components/ToolExplorer.svelte';
 import { abs } from '../../lib/seo';
 
@@ -65,7 +66,7 @@ const jsonLd = {
             {t.summary && <p class="repo__summary">{t.summary}</p>}
             <div class="repo__tags">
               {t.tags.slice(0, 4).map((g) => (
-                <a class="chip" href={`/tags/${tagSlug(g)}/`}>{g}</a>
+                <TagChip tag={g} href={`/tags/${tagSlug(g)}/`} />
               ))}
             </div>
           </div>

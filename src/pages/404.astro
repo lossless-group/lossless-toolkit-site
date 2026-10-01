@@ -1,6 +1,7 @@
 ---
 import Base from '../layouts/Base.astro';
 import { listTags } from '../lib/content-api';
+import TagChip from '../components/TagChip.astro';
 const tags = listTags().slice(0, 12);
 ---
 
@@ -16,9 +17,7 @@ const tags = listTags().slice(0, 12);
     <div class="tagrow">
       {
         tags.map((t) => (
-          <a class="chip" href={`/tags/${t.slug}/`}>
-            {t.label}
-          </a>
+          <TagChip tag={t.label} href={`/tags/${t.slug}/`} />
         ))
       }
     </div>

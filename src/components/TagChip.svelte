@@ -19,6 +19,13 @@
     showCount = false,
     removable = false,
     title = '',
+    /**
+     * Mirrors TagChip.astro's prop of the same name, so the static and hydrated
+     * chips stay the same component in two runtimes. The hydrated chip is a
+     * CONTROL, so 'solid' is deliberately not offered here — a filled chip in
+     * the Explorer reads as selected, and selection already owns that fill.
+     */
+    variant = 'default',
     onclick,
   } = $props();
 
@@ -50,6 +57,7 @@
 
 <span
   class="tool-tag"
+  class:accent={variant === 'accent'}
   class:selected={isSelected}
   class:removable
   title={effectiveTitle}
@@ -96,6 +104,15 @@
   .tool-tag.removable {
     background: var(--clr-accent); color: var(--clr-accent-ink); border-color: transparent;
   }
+  /* Matches .chip--accent in global.css. Selection still outranks it: .selected
+     is declared after, so an accent chip that is also selected reads as
+     selected, which is the state that matters for a control. */
+  .tool-tag.accent {
+    color: var(--clr-accent);
+    border-color: var(--clr-line-strong);
+    background: var(--clr-accent-soft);
+  }
+
   .tool-tag.removable .tool-tag__x { font-size: 1.05em; opacity: .75; }
   .tool-tag.removable:hover .tool-tag__x { opacity: 1; }
   @media (prefers-reduced-motion: reduce) { .tool-tag { transition: none; } }

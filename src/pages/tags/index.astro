@@ -1,6 +1,7 @@
 ---
 import Base from '../../layouts/Base.astro';
 import { listTags } from '../../lib/content-api';
+import TagChip from '../../components/TagChip.astro';
 
 const tags = listTags();
 const max = tags[0]?.count ?? 1;
@@ -42,10 +43,7 @@ const grouped = buckets.map((b, i) => ({
             </h2>
             <div class="tagrow">
               {g.tags.map((t) => (
-                <a class="chip" href={`/tags/${t.slug}/`}>
-                  {t.label}
-                  <span class="chip__n">{t.count}</span>
-                </a>
+                <TagChip tag={t.label} href={`/tags/${t.slug}/`} count={t.count} />
               ))}
             </div>
           </section>

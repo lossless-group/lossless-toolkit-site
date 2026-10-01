@@ -292,6 +292,38 @@ img { max-width: 100%; display: block; }
 a.chip:hover { border-color: var(--clr-line-strong); color: var(--clr-accent); }
 .chip__n { color: var(--clr-ink-faint); font-size: 0.85em; }
 
+/* Chip variants — modifiers on the ONE definition above, never a second copy.
+   `.chip` alone is unchanged, so every existing bare usage renders identically.
+   Rendered through TagChip.astro / TagChip.svelte; see those for the prop API. */
+
+/* For the one chip in a row that means something other than "a tag". */
+.chip--accent {
+  color: var(--clr-accent);
+  border-color: var(--clr-line-strong);
+  background: var(--clr-accent-soft);
+}
+
+/* The filled pill the house chip used to be. Static surfaces only — inside the
+   Explorer this reads as "selected", which is a different thing entirely. */
+.chip--solid {
+  border-radius: 999px;
+  padding: 0.18rem 0.6rem;
+  font-size: var(--step--1);
+  letter-spacing: 0.01em;
+  background: var(--clr-chip);
+  color: var(--clr-chip-ink);
+  border-color: transparent;
+}
+
+a.chip:hover {
+  color: var(--clr-accent);
+  border-color: var(--clr-line-strong);
+}
+a.chip--solid:hover {
+  border-color: transparent;
+  background: var(--clr-surface-hover);
+}
+
 /* ----------------------------------------------------------------- cards -- */
 .card-grid {
   display: grid;
