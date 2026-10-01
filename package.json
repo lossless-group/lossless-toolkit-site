@@ -12,9 +12,9 @@
   },
   "dependencies": {
     "@astrojs/sitemap": "^3.7.4",
-    "@astrojs/svelte": "^7.2.5",
+    "@astrojs/svelte": "^9.0.1",
     "@lossless-group/lfm": "npm:@jsr/lossless-group__lfm@0.6.0",
-    "astro": "^5.18.2",
+    "astro": "^7.3.5",
     "svelte": "^5.57.1"
   },
   "devDependencies": {
