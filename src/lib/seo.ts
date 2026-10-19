@@ -16,7 +16,8 @@
  * So the card is ours: 1200x630, JPEG, dimensions known because we made it.
  */
 
-export const SITE_ORIGIN = 'https://lossless-toolkit.vercel.app';
+/** Astro's `site` (astro.config.mjs), so the origin is defined in one place. */
+export const SITE_ORIGIN = import.meta.env.SITE;
 
 export interface OgImage {
   url: string;
