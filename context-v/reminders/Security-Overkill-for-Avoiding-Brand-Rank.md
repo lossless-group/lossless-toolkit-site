@@ -13,6 +13,7 @@ tags:
   - SEO
   - Scope-Discipline
 status: Active
+type: Reminders
 ---
 
 # Security Overkill for Avoiding Brand Rank

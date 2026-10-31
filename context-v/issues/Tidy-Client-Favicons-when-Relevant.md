@@ -14,6 +14,7 @@ tags:
   - Low-Priority
 status: Open
 priority: Low
+type: Issues
 ---
 
 # Tidy Client Favicons when Relevant

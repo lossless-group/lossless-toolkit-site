@@ -14,6 +14,7 @@ tags:
   - Agent-Workflow
   - Build-Loop
 status: Open
+type: Explorations
 ---
 
 # Build Loop and Verification Strategy

@@ -16,6 +16,7 @@ tags:
   - Server-Rendering
   - Static-Generation
 status: Open
+type: Explorations
 ---
 
 # Opening Strategy Questions for Architecture and Stack

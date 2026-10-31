@@ -14,6 +14,7 @@ tags:
   - Agent-Workflow
   - Refactoring
 status: Open
+type: Handoffs
 ---
 
 # Use Spikes to Converge on Spec

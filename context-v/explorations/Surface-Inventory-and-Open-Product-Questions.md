@@ -16,6 +16,7 @@ tags:
   - Search
   - Access-Control
 status: Open
+type: Explorations
 ---
 
 # Surface Inventory and Open Product Questions
