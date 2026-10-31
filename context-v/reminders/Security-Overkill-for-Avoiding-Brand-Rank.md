@@ -13,6 +13,8 @@ tags:
   - SEO
   - Scope-Discipline
 status: Active
+site_uuid: 6edd7e72-208d-4bad-a05b-2fa15f9dabef
+hex_code: z1gp7r
 type: Reminders
 ---
 

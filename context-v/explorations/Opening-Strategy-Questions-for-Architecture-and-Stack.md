@@ -16,6 +16,8 @@ tags:
   - Server-Rendering
   - Static-Generation
 status: Open
+site_uuid: 3052297c-b3b1-424c-b2d8-ebc023bb38cd
+hex_code: zs6x3k
 type: Explorations
 ---
 
