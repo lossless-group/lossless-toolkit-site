@@ -1,5 +1,7 @@
 node_modules/
 dist/
+# Vercel adapter build output, and the CLI's project link.
+.vercel/
 .astro/
 .env
 .env.*

@@ -17,16 +17,9 @@ import clientsData from '../../../data/clients.json';
  * still never appears — client-tags returns tool slugs, and the projection is an
  * explicit allowlist. The sitemap filter in astro.config.mjs excludes anything
  * containing `/client/`, which covers this path too.
- *
- * Prerendered: one static file per client, no server.
  */
-export const prerender = true;
-
-export function getStaticPaths() {
-  return clientsData.clients.map((c) => ({ params: { slug: c.id } }));
-}
-
 export const GET: APIRoute = ({ params }) => {
+  if (!clientsData.clients.some((c) => c.id === params.slug)) return new Response(null, { status: 404 });
   const paths = toolPathsForClient(String(params.slug));
   const tools = allTools()
     .filter((t) => paths.has(t.sourcePath))

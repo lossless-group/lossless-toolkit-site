@@ -12,7 +12,6 @@ import { listRepos, projectForClient, listTags } from '../../lib/content-api';
  * Facets are computed against the repo subset, not the corpus, so a count here
  * describes the tools actually reachable on this page.
  */
-export const prerender = true;
 
 export const GET: APIRoute = () => {
   const repos = listRepos().sort((a, b) => b.depth - a.depth);

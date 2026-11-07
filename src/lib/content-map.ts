@@ -93,12 +93,12 @@ export const wikilinkRoutes = [
 /**
  * Custom `{token}` expansions for the route templates above, passed straight to
  * `createPathResolver`. `{group}` mirrors the grouping rule in
- * `allVerticals()`: the folder directly under the collection root, or
- * `Cross-Vertical` for a file sitting loose at the top.
+ * `allVerticals()`: the folder the file sits in, or `Cross-Vertical` for a file
+ * sitting loose at the top.
  */
 export const wikilinkTokens = {
   group: (parts: { segments: string[] }) =>
-    slugify(parts.segments.length > 2 ? parts.segments[1] : 'Cross-Vertical'),
+    slugify(parts.segments.length > 2 ? parts.segments[parts.segments.length - 2] : 'Cross-Vertical'),
 };
 
 /**

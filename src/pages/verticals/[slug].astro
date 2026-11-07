@@ -1,17 +1,11 @@
 ---
 import Base from '../../layouts/Base.astro';
 import ToolCard from '../../components/ToolCard.astro';
-import { listVerticals, type Vertical } from '../../lib/content-api';
+import { getVertical } from '../../lib/content-api';
 import { abs } from '../../lib/seo';
 
-export function getStaticPaths() {
-  return listVerticals().map((vertical) => ({ params: { slug: vertical.slug }, props: { vertical } }));
-}
-
-interface Props {
-  vertical: Vertical;
-}
-const { vertical } = Astro.props;
+const vertical = getVertical(Astro.params.slug ?? '');
+if (!vertical) return Astro.rewrite('/404');
 
 const description = `${vertical.entries.length} companies and tools catalogued under ${vertical.title} — ${vertical.entries
   .slice(0, 6)

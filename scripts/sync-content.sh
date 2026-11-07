@@ -7,36 +7,43 @@
 # tag counts, collision rates, pagination, and search relevance all behave
 # differently at 1,764 than at 173.
 #
-# Content is VENDORED — committed into this repo, not read from a sibling path
-# at build time — because the site must build from its own repo alone. This
-# script is how the vendored copy gets refreshed.
+# Content is VENDORED as a BASELINE — committed into this repo, bundled at
+# build time — and the live site overlays the vault's GitHub head on top of it
+# at request time (src/lib/corpus.ts). Freshness never depends on this script:
+# re-vendoring only shrinks the overlay a cold server instance has to fetch.
 #
-#   ./scripts/sync-content.sh            # sync from ../lossless-monorepo/content
+#   ./scripts/sync-content.sh            # sync from the monorepo's content/ checkout
 #   ./scripts/sync-content.sh <vault>    # or from an explicit vault path
 #   ./scripts/sync-content.sh --dry-run
 #
 set -euo pipefail
 
-VAULT="${1:-/home/mps/code/lossless-monorepo/content}"
-[ "$VAULT" = "--dry-run" ] && VAULT="/home/mps/code/lossless-monorepo/content"
-DRY=""
-for a in "$@"; do [ "$a" = "--dry-run" ] && DRY="--dry-run"; done
-
 SITE="$(cd "$(dirname "$0")/.." && pwd)"
+DEFAULT_VAULT="$(cd "$SITE/../../.." && pwd)/content"
+
+VAULT="$DEFAULT_VAULT"
+DRY=""
+for a in "$@"; do
+  if [ "$a" = "--dry-run" ]; then DRY="--dry-run"; else VAULT="$a"; fi
+done
 
 if [ ! -d "$VAULT/tooling" ]; then
   echo "No vault at $VAULT — pass the path to the content repo." >&2
   exit 1
 fi
 
-# Fixtures are site-owned and have no vault counterpart. They pin behaviour the
-# corpus cannot be relied on to exhibit — a zero-byte file, a frontmatter
-# precedence chain, a publish:false entry. --delete would remove them, so it is
-# deliberately NOT used; likewise config.ts, which is the collection schema.
+# Mirror, deletions included, so a file moved or removed in the vault does not
+# linger here. Protected from deletion: config.ts (the collection schema) and
+# the fixtures, which are site-owned and have no vault counterpart. corpus.ts
+# keeps the fixtures through the live overlay for the same reason.
 sync_area() {
   local area="$1"
   echo "→ $area"
-  rsync -a $DRY \
+  rsync -a --delete $DRY \
+    --filter='P config.ts' \
+    --filter='P Empty Tool Test.md' \
+    --filter='P Precedence Test.md' \
+    --filter='P Publish False Test.md' \
     --include='*/' --include='*.md' --exclude='*' \
     --prune-empty-dirs \
     "$VAULT/$area/" "$SITE/src/content/$area/"

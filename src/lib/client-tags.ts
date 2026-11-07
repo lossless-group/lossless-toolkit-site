@@ -16,11 +16,7 @@
  * `- FullStackVC` (a YAML list-dash that survived into the value) are the same
  * client typed differently.
  */
-const RAW = import.meta.glob('../content/tooling/**/*.md', {
-  query: '?raw',
-  import: 'default',
-  eager: true,
-}) as Record<string, string>;
+import { corpusFiles, corpusVersion } from './corpus';
 
 const clientSlug = (s: string): string =>
   s.replace(/^-\s*/, '').trim().toLowerCase().replace(/[^a-z0-9]+/g, '-').replace(/^-|-$/g, '');
@@ -42,6 +38,7 @@ function clientsOf(raw: string): string[] {
 }
 
 let index: Map<string, Set<string>> | null = null;
+let indexVersion = -1;
 
 /**
  * client slug -> set of glob PATHS. Keyed on the path rather than a re-derived
@@ -51,9 +48,10 @@ let index: Map<string, Set<string>> | null = null;
  * identical path on `Tool.sourcePath`, so the join is exact.
  */
 function buildIndex(): Map<string, Set<string>> {
-  if (index) return index;
+  if (index && indexVersion === corpusVersion()) return index;
+  indexVersion = corpusVersion();
   index = new Map();
-  for (const [path, raw] of Object.entries(RAW)) {
+  for (const [path, raw] of Object.entries(corpusFiles('tooling'))) {
     for (const c of clientsOf(raw)) {
       if (!index.has(c)) index.set(c, new Set());
       index.get(c)!.add(path);
@@ -67,7 +65,7 @@ export function toolPathsForClient(clientSlugName: string): Set<string> {
   return buildIndex().get(clientSlug(clientSlugName)) ?? new Set();
 }
 
-/** Every client slug present in the corpus, with a count. Build-time only. */
+/** Every client slug present in the corpus, with a count. */
 export function clientCounts(): { slug: string; count: number }[] {
   return [...buildIndex().entries()]
     .map(([slug, files]) => ({ slug, count: files.size }))

@@ -7,11 +7,10 @@
  * astro.config.mjs. The whole point is that a marketing person at a client does
  * not find us on page three of a search for their own brand.
  *
- * Deliberately NOT gated yet — the site is `output: 'static'` and adding auth
- * means an adapter, middleware, and `prerender = false` on every route here.
- * That is a real change and it is not this change. Today these pages are
- * unlisted rather than protected: no index, no sitemap, and the only links in
- * are from the quick-access rail.
+ * Deliberately NOT gated yet. The site renders on demand now, so a gate is
+ * middleware away, but it is not this change. Today these pages are unlisted
+ * rather than protected: no index, no sitemap, and the only links in are from
+ * the quick-access rail.
  *
  * The client NAME never reaches a rendered byte. `client-tags.ts` returns
  * source paths, not client strings, and the heading uses the stealth name from
@@ -25,14 +24,8 @@ import { toolPathsForClient } from '../../lib/client-tags';
 import TagChip from '../../components/TagChip.astro';
 import clientsData from '../../data/clients.json';
 
-export async function getStaticPaths() {
-  return clientsData.clients.map((c) => ({
-    params: { slug: c.id },
-    props: { client: c },
-  }));
-}
-
-const { client } = Astro.props;
+const client = clientsData.clients.find((c) => c.id === Astro.params.slug);
+if (!client) return Astro.rewrite('/404');
 const name = client['stealth-name'];
 
 const paths = toolPathsForClient(client.id);

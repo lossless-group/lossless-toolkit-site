@@ -2,7 +2,7 @@
 import Base from '../../layouts/Base.astro';
 import ToolExplorer from '../../components/ToolExplorer.svelte';
 import ToolCard from '../../components/ToolCard.astro';
-import { listTags, listTools, type TagFacet } from '../../lib/content-api';
+import { listTags, listTools } from '../../lib/content-api';
 import { abs } from '../../lib/seo';
 
 /**
@@ -10,23 +10,14 @@ import { abs } from '../../lib/seo';
  * exists only in client state has no URL, so it cannot be texted and cannot
  * unfurl — and texting one precise link is how this site is actually used.
  *
- * So every single tag gets a REAL prerendered page: its own <title>, its own
+ * So every single tag gets a REAL server-rendered page: its own <title>, its own
  * description, its own OG card, its own JSON-LD, indexed in the sitemap. The
  * island then treats `/tags/<slug>/` as the canonical URL for a one-tag filter
  * and rewrites to it, so the link a user copies is always the server-rendered
  * one rather than a query string that unfurls generically.
  */
-export function getStaticPaths() {
-  return listTags().map((facet) => ({
-    params: { tag: facet.slug },
-    props: { facet },
-  }));
-}
-
-interface Props {
-  facet: TagFacet;
-}
-const { facet } = Astro.props;
+const facet = listTags().find((f) => f.slug === Astro.params.tag);
+if (!facet) return Astro.rewrite('/404');
 
 const tools = listTools({ tag: facet.tag });
 const description = `${tools.length} ${tools.length === 1 ? 'tool' : 'tools'} tagged ${facet.label} in the Lossless Toolkit — ${tools

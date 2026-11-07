@@ -13,9 +13,9 @@ import { projectForClient, listTags } from '../../lib/content-api';
  * shared Lossless content service would return, so the day that service exists,
  * the island changes one URL and nothing else.
  *
- * Prerendered to a static file — no server required.
+ * Rendered from the live corpus and held on the CDN like every page, so the
+ * explorer sees a push as soon as the cache is purged.
  */
-export const prerender = true;
 
 export const GET: APIRoute = () =>
   new Response(

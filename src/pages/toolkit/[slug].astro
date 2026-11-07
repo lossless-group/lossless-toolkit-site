@@ -1,23 +1,18 @@
 ---
 import Base from '../../layouts/Base.astro';
 import ToolCard from '../../components/ToolCard.astro';
-import { listTools, tagLabel, tagSlug, type Tool } from '../../lib/content-api';
+import { listTools, getTool, tagLabel, tagSlug } from '../../lib/content-api';
 import TagChip from '../../components/TagChip.astro';
 import { renderMarkdown } from '../../lib/markdown';
 import { abs, clamp } from '../../lib/seo';
 
-export function getStaticPaths() {
-  return listTools().map((tool) => ({ params: { slug: tool.slug }, props: { tool } }));
-}
-
-interface Props {
-  tool: Tool;
-}
-const { tool } = Astro.props;
+// Rendered on demand from the live corpus; a slug that isn't there is a 404.
+const tool = getTool(Astro.params.slug ?? '');
+if (!tool) return Astro.rewrite('/404');
 
 const { html, headings } = renderMarkdown(tool.body);
 
-// Related: shared-tag overlap, then same category. Computed at build; cheap.
+// Related: shared-tag overlap, then same category. Cheap.
 const related = listTools()
   .filter((t) => t.slug !== tool.slug)
   .map((t) => ({ t, score: t.tags.filter((g) => tool.tags.includes(g)).length + (t.category === tool.category ? 0.5 : 0) }))

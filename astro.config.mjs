@@ -1,6 +1,7 @@
 import { defineConfig } from 'astro/config';
+import vercel from '@astrojs/vercel';
+import { cacheVercel } from '@astrojs/vercel/cache';
 import svelte from '@astrojs/svelte';
-import sitemap from '@astrojs/sitemap';
 
 // The canonical origin. Every og:* URL is built absolute from this — unfurlers
 // (iMessage, WhatsApp, Slack) will not resolve relative image paths. The
@@ -9,20 +10,28 @@ import sitemap from '@astrojs/sitemap';
 // generated host is lossless-toolkit-site.vercel.app.
 export const SITE = process.env.SITE_URL ?? 'https://toolkit.lossless.group';
 
+// Server output: pages render on demand from the live corpus (src/lib/corpus.ts),
+// so a push to lossless-content reaches the site with no rebuild.
+//
+// Rendered pages sit on Vercel's CDN under one tag, `content`, and are purged
+// on push via the org webhook → lossless-hook-relay → /api/content-hook. One
+// tag rather than per-page tags because nearly every page lists or counts the
+// whole corpus: a new tool changes the home page, its tag pages, and the
+// explorer payload alike. maxAge (5 min) is the safety net for a missed
+// delivery; GitHub does not retry.
+//
+// The sitemap is an endpoint (src/pages/sitemap-*.xml.ts) rather than
+// @astrojs/sitemap, which only lists prerendered routes. Its old filter rules
+// (no /client/, no non-HTML routes) live there now.
 export default defineConfig({
   site: SITE,
-  output: 'static',
-  integrations: [
-    svelte(),
-    sitemap({
-      // House filter: keep non-HTML routes out of the search index.
-      // `/client/` is excluded for a different reason — those are per-client
-      // portals carrying `noindex, nofollow`, and listing them in the sitemap
-      // would be an open invitation to the exact indexing we are avoiding.
-      filter: (page) =>
-        !page.includes('/llms.txt') && !page.includes('/robots.txt') && !page.includes('/404') && !page.includes('/client/'),
-    }),
-  ],
+  output: 'server',
+  adapter: vercel(),
+  integrations: [svelte()],
+  cache: { provider: cacheVercel() },
+  routeRules: {
+    '/[...path]': { maxAge: 300, swr: 86400, tags: ['content'] },
+  },
   build: { format: 'directory' },
   markdown: { shikiConfig: { theme: 'github-dark' } },
 });

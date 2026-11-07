@@ -26,7 +26,7 @@ const PAGE_SIZE = 48;
 const TAGS = ['ai-toolkit', 'agentic-ai', 'founder-toolkit', 'must-have', 'check-it-out'];
 
 const norm = (s) => s.toLowerCase().replace(/[^a-z0-9]+/g, '-').replace(/^-|-$/g, '');
-const api = JSON.parse(readFileSync('dist/api/tools.json', 'utf8'));
+const api = await (await fetch(`${BASE}/api/tools.json`)).json();
 
 let failed = 0;
 const ok = (label, cond, extra = '') => {

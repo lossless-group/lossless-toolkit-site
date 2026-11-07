@@ -8,7 +8,6 @@ import { listAnomalies, stats } from '../../lib/content-api';
  *
  * Markdown, not JSON, because these files are fixed in Obsidian.
  */
-export const prerender = true;
 
 export const GET: APIRoute = () => {
   const anomalies = listAnomalies();

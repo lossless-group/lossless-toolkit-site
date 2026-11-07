@@ -1,5 +1,6 @@
 import { parseFrontmatter, str, list, type Frontmatter } from './frontmatter';
 import { slugify } from './content-map';
+import { corpusFiles, corpusVersion } from './corpus';
 
 /**
  * content-api.ts — THE ONLY module in this codebase that touches content.
@@ -16,10 +17,10 @@ import { slugify } from './content-map';
  *
  * Why an interface rather than direct reads: whether toolkit content is
  * eventually served by a shared Lossless content service or read per-site is a
- * deliberately deferred decision. Today the "endpoints" resolve to local paths
- * via `import.meta.glob`. Swapping them for `await fetch(...)` changes this file
- * and nothing else, because every return shape is plain, serializable data that
- * would survive a trip over the wire.
+ * deliberately deferred decision. The raw files come from `corpus.ts`, which
+ * overlays the vault's live GitHub head on a vendored baseline; this file only
+ * parses them. Every return shape is plain, serializable data that would
+ * survive a trip over the wire.
  *
  * Normalization also lives here and only here: derived titles and slugs, the
  * `publish !== false` rule, image fallbacks, and the `for_clients` strip. Every
@@ -31,17 +32,25 @@ import { slugify } from './content-map';
  * The corpus is not schema-clean and never will be, so the pipeline is lenient
  * by design.
  */
-const TOOL_FILES = import.meta.glob('../content/tooling/**/*.md', {
-  query: '?raw',
-  import: 'default',
-  eager: true,
-}) as Record<string, string>;
+// The corpus is LIVE: `corpus.ts` overlays the vault's current head on the
+// vendored baseline, so these accessors must be read per call, never captured.
+const TOOL_FILES = () => corpusFiles('tooling');
+const VERTICAL_FILES = () => corpusFiles('vertical-toolkits');
 
-const VERTICAL_FILES = import.meta.glob('../content/vertical-toolkits/**/*.md', {
-  query: '?raw',
-  import: 'default',
-  eager: true,
-}) as Record<string, string>;
+/**
+ * Every memo below is valid for one corpus version. When a sync swaps the
+ * snapshot, the next read rebuilds them from scratch, anomalies included.
+ */
+let memoVersion = -1;
+function fresh() {
+  if (memoVersion === corpusVersion()) return;
+  memoVersion = corpusVersion();
+  _slugByPath = null;
+  _tools = null;
+  _verticals = null;
+  anomalies.length = 0;
+  seenAnomalies.clear();
+}
 
 export interface Tool {
   slug: string;
@@ -378,6 +387,7 @@ function dedupe(tools: Tool[]): Tool[] {
 let _slugByPath: Map<string, string> | null = null;
 
 export function slugByVaultPath(): Map<string, string> {
+  fresh();
   if (_slugByPath) return _slugByPath;
   const m = new Map<string, string>();
   const add = (files: Record<string, string>, root: string) => {
@@ -388,8 +398,8 @@ export function slugByVaultPath(): Map<string, string> {
       m.set(rel.toLowerCase(), t.slug);
     }
   };
-  add(TOOL_FILES, 'tooling');
-  add(VERTICAL_FILES, 'vertical-toolkits');
+  add(TOOL_FILES(), 'tooling');
+  add(VERTICAL_FILES(), 'vertical-toolkits');
   _slugByPath = m;
   return m;
 }
@@ -397,9 +407,10 @@ export function slugByVaultPath(): Map<string, string> {
 let _tools: Tool[] | null = null;
 
 export function allTools(): Tool[] {
+  fresh();
   if (_tools) return _tools;
   const out: Tool[] = [];
-  for (const [path, raw] of Object.entries(TOOL_FILES)) {
+  for (const [path, raw] of Object.entries(TOOL_FILES())) {
     const t = build(path, raw, 'tooling');
     if (t) out.push(t);
   }
@@ -410,14 +421,19 @@ export function allTools(): Tool[] {
 let _verticals: Vertical[] | null = null;
 
 export function allVerticals(): Vertical[] {
+  fresh();
   if (_verticals) return _verticals;
   const groups = new Map<string, Tool[]>();
-  for (const [path, raw] of Object.entries(VERTICAL_FILES)) {
+  for (const [path, raw] of Object.entries(VERTICAL_FILES())) {
     const t = build(path, raw, 'vertical-toolkits');
     if (!t) continue;
     const rel = path.split('/content/vertical-toolkits/')[1] ?? '';
     const seg = rel.split('/');
-    const name = seg.length > 1 ? seg[0] : 'Cross-Vertical';
+    // Group by the folder the file sits in, not the top-level one. Umbrella
+    // folders (`Alternatives/Venture-Capital-Firms/`) arrived after the URLs
+    // were public; grouping by the leaf keeps `/verticals/venture-capital-firms/`
+    // where it was instead of folding it into an `alternatives` page.
+    const name = seg.length > 1 ? seg[seg.length - 2] : 'Cross-Vertical';
     if (!groups.has(name)) groups.set(name, []);
     groups.get(name)!.push({ ...t, vertical: name });
   }
