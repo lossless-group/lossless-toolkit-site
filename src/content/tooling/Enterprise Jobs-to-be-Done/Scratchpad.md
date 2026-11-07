@@ -1,7 +1,7 @@
 ---
 url: https://www.scratchpad.com/
 date_created: 2024-07-23
-date_modified: 2026-08-05
+date_modified: 2026-10-07
 site_uuid: ac129ccd-1005-463a-848c-934045901584
 publish: true
 title: Scratchpad
@@ -31,7 +31,7 @@ cf_last_run_model: Perplexity sonar-pro
 
 [[Vocabulary/CRM|CRM]]
 [[concepts/Explainers for Tooling/Go-to-Market Platforms|GTM Platforms]]
-[[Sales AI]]
+[[concepts/Market-Categories/Sales AI]]
 
 # Value Proposition & Features
 
@@ -68,7 +68,7 @@ Scratchpad was **founded in 2019 by Pouyan Salehi** to address inefficiencies an
 | Round     | Date        | Amount   | Lead investor      |
 | --------- | ----------- | -------- | ------------------ |
 | Seed      | Oct 1, 2020 | $4M      | Accel              |
-| Series A  | Feb 1, 2021 | $13M     | [[Craft Ventures]] |
+| Series A  | Feb 1, 2021 | $13M     | [[vertical-toolkits/Alternatives/Venture-Capital-Firms/Craft Ventures]] |
 | Series B  | Jan 1, 2022 | $33M     | Craft Ventures     |
 | **Total** | —           | **$50M** | —                  |
 
@@ -133,7 +133,7 @@ Scratchpad is **not ideal for organizations that do not use Salesforce as their 
 | [monday CRM]        | Work‑management‑style CRM with customizable boards for deals, tasks, and pipelines, serving as an all‑in‑one sales workspace rather than a Salesforce add‑on. [^ckv32y]                                        |
 | [Zoho CRM]          | Cloud CRM with sales automation, pipeline management, and reporting, positioned as a value‑priced alternative to Salesforce. [^ckv32y]                                                                         |
 | [[Showpad]]         | Sales enablement platform focused on empowering sellers with content, training, and deal‑support tools, overlapping with Scratchpad in seller workflows but less focused on Salesforce data entry. [^h42rl7]   |
-| [[Aligned]]         | AI B2B sales workspace that raised $60M Series B in 2026, offering collaborative buyer rooms and deal workflows that compete with sales workspaces like Scratchpad for complex B2B cycles. [^jqqnf9] [^rp7pfn] |
+| [[Aligned Up]]         | AI B2B sales workspace that raised $60M Series B in 2026, offering collaborative buyer rooms and deal workflows that compete with sales workspaces like Scratchpad for complex B2B cycles. [^jqqnf9] [^rp7pfn] |
 |                     |                                                                                                                                                                                                                |
 
 

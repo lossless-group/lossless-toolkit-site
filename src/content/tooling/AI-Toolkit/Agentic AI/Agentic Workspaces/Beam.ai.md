@@ -1,24 +1,35 @@
 ---
 date_created: 2025-09-21
-date_modified: 2026-05-09
-url: "https://beam.ai/"
-og_title: "Leading Platform for Agentic Automation & AI Agents"
-og_description: "Automate processes with powerful AI Agents ✓Build & deploy agents in minutes ✓Seamlessly integrate into your workflows ➤ Start automating today!"
-og_image: "https://framerusercontent.com/assets/K1wsaUBWV7twBiKRliuySFqiHE.png"
-og_favicon: "https://framerusercontent.com/images/99gJVyeON4zehLgctHHSWT61g.png"
-og_last_fetch: "2025-10-03T04:00:28.425Z"
-site_name: "Beam AI"
-tags: [Agentic-Workspaces, Agentic-AI, Enterprise-AI, RAG-Stack, Check-It-Out]
+date_modified: 2026-09-11
+url: https://beam.ai/
+og_title: Leading Platform for Agentic Automation & AI Agents
+og_description: Automate processes with powerful AI Agents ✓Build & deploy agents in minutes ✓Seamlessly integrate into your workflows ➤ Start automating today!
+og_image: https://framerusercontent.com/assets/K1wsaUBWV7twBiKRliuySFqiHE.png
+og_favicon: https://framerusercontent.com/images/99gJVyeON4zehLgctHHSWT61g.png
+og_last_fetch: 2025-10-03T04:00:28.425Z
+site_name: Beam AI
+tags:
+  - Agentic-Workspaces
+  - Agentic-AI
+  - Enterprise-AI
+  - RAG-Stack
+  - Check-It-Out
+  - AI-Toolkit
 site_uuid: 4dd96d84-3054-46bb-a1d4-4247f19c3ec2
 publish: true
-title: "Beam AI"
+title: Beam AI
 slug: beam-ai
-at_semantic_version: 0.0.0.1
+at_semantic_version: 0.0.1.1
+for_clients:
+  - Laerdal
+  - Param
 ---
+[[concepts/Visual Software Development|Visual Software Development]]
+[[Vocabulary/Data Flow Diagrams|Data Flow Diagrams]]
 
 # Comprehensive Research Profile: Beam AI
 
-Beam AI is an agentic AI platform purpose-built for [[enterprise automation]], with particular emphasis on banking, fintech, and complex business process workflows. [^1kkukr] [^1kkukr] [^1kkukr] The platform enables organizations to build and deploy autonomous AI agents through natural language interfaces, abstracting away traditional coding complexity while maintaining enterprise-grade reliability, governance, and observability. [^ajk1no] [^ajk1no] [^ajk1no] As of May 2026, Beam AI operates as a horizontal automation platform competing in the rapidly expanding [[Vocabulary/Agentic AI|Agentic AI]] market, which is projected to grow from $7.5 billion in 2025 to $231.9 billion by 2034—representing a compound annual growth rate of 46.3%. [^aai2aj]
+Beam AI is an agentic AI platform purpose-built for [[concepts/Explainers for AI/Enterprise Automation]], with particular emphasis on banking, fintech, and complex business process workflows. [^1kkukr] [^1kkukr] [^1kkukr] The platform enables organizations to build and deploy autonomous AI agents through natural language interfaces, abstracting away traditional coding complexity while maintaining enterprise-grade reliability, governance, and observability. [^ajk1no] [^ajk1no] [^ajk1no] As of May 2026, Beam AI operates as a horizontal automation platform competing in the rapidly expanding [[Vocabulary/Agentic AI|Agentic AI]] market, which is projected to grow from $7.5 billion in 2025 to $231.9 billion by 2034—representing a compound annual growth rate of 46.3%. [^aai2aj]
 
 ---
 

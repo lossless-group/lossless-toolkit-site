@@ -1,6 +1,6 @@
 ---
 date_created: 2025-11-26
-date_modified: 2025-11-28
+date_modified: 2026-09-11
 url: https://datagrid.com/
 og_title: Datagrid
 og_description: Agentic AI that runs on your data and systems, designed to enhance productivity and streamline workflows. Ensuring tasks are completed efficiently.
@@ -11,10 +11,214 @@ for_clients:
   - Laerdal
   - Param
   - Tonguc
-tags: [Agentic-AI, Agentic-Workflow-Engines, AI-Toolkit, Enterprise-AI, Data-Pipelines, Data-Utilities, Check-It-Out, Workflow-Automation]
+tags:
+  - Agentic-AI
+  - Agentic-Workflow-Engines
+  - AI-Toolkit
+  - Enterprise-AI
+  - Data-Pipelines
+  - Data-Utilities
+  - Check-It-Out
+  - Workflow-Automation
 site_uuid: ec027e5c-160a-4b7f-9d36-5cbf0bdeb807
 publish: true
 title: Datagrid
 slug: datagrid
 at_semantic_version: 0.0.0.1
+cf_last_run: 2026-09-11T01:45:07.440Z
+cf_last_run_model: Perplexity sonar-pro
+cf_retrieved_source_count: 2
+cf_last_run_retrieval: 2026-09-11T01:45:07.440Z
 ---
+
+## Value Proposition & Features
+
+**Value proposition (2–3 sentences)**  
+Datagrid AI is an **agentic AI platform for construction and engineering teams** that connects project systems and files to automate end‑to‑end workflows such as document review, data analysis, and bid management. [^E1] [^0ie25m] [^3co8ke] It runs AI agents across drawings, specifications, RFIs, schedules, photos, and spreadsheets, turning fragmented project data into traceable, governed actions that update outputs like Excel and project records. [^E1] [^0ie25m] [^ae2x2t] [^3co8ke] The platform emphasizes **trust, traceability, and enterprise governance** through sources, teamspaces, role‑based access control (RBAC), and usage reporting. [^E1] [^3co8ke] [^rprjs6]
+
+**Core product features (2–3 sentences each)**  
+
+1. **Agentic workflow engine**  
+   Datagrid provides an agentic workflow engine where multiple specialized AI agents (e.g., Deep Search Agent, RFI Agent, Daily Log Agent, Site Safety Agent, Schedule Analyst Agent) collaborate to execute multi‑step construction workflows across systems. [^0ie25m] [^sm20x2] [^wxs3et] Agents can be auto‑selected or explicitly chosen, and can both “ask” and “execute” tasks such as creating submittals, reconciling bids, or assembling audit packages, with human approval gates. [^0ie25m] [^k9djpd] [^44omsz] [^nnk1mb] [^tldy6r]
+
+2. **Data connectivity & multimodal reasoning**  
+   The platform connects to over 100+ software platforms and thousands of APIs, indexing data from Procore, Autodesk Construction Cloud, Primavera P6, ERP systems, cloud drives, and local files into unified **datasets** for AI reasoning. [^E1] [^0ie25m] [^3co8ke] [^rprjs6] Its agents perform multimodal analysis across documents, drawings, schedules, and photos, enabling deep search, cross‑system queries, and change tracking with source‑backed answers. [^0ie25m] [^ae2x2t] [^44omsz] [^3co8ke]
+
+3. **Enterprise governance & collaboration**  
+   Datagrid uses **teamspaces**, RBAC, and usage reports to enforce enterprise governance, keeping AI actions aligned with existing project permissions (e.g., Procore’s security model) and auditable via cited sources in each response.[^E1] [^3co8ke] [^rprjs6] Collaboration channels (such as Procore’s side panel and chat) allow users to invoke agents, tag Datagrid, and review AI‑proposed changes before approval in a shared workspace. [^44omsz] [^nnk1mb] [^tx7p4p]
+
+4. **Vertical construction use cases**  
+   Datagrid ships construction‑specific workflows including bid management, chemical compliance monitoring, safety incident detection from photos, schedule risk analysis, and LEED documentation automation. [^0ie25m] [^k9djpd] [^sm20x2] [^ae2x2t] These workflows automate the “document‑heavy grind,” such as reconciling scattered files, checking submittals against registers, tracking addenda changes, and assembling evidence packages for audits or certifications. [^0ie25m] [^k9djpd] [^ae2x2t]
+
+**Key features (5–8 bullets, priority order)**  
+
+- **Agent marketplace and templates** — ready‑made agents like **Deep Search**, **RFI Agent**, **Daily Log Agent**, **Site Safety Agent**, **Schedule Analyst Agent**, plus custom agents created from templates or scratch for project‑specific workflows. [^sm20x2] [^nnk1mb] [^tldy6r] [^wxs3et]  
+- **Deep Search & cross‑system querying** — answers questions across Procore, Autodesk Construction Cloud, Primavera P6, spreadsheets, and stored proposals without manually opening each system. [^0ie25m] [^44omsz] [^3co8ke]  
+- **Document & change reconciliation** — requirement extraction from large bid packages, addenda change tracking, and contract term review, highlighting what changed between drawing/spec revisions and which bids reference superseded sets. [^0ie25m] [^ae2x2t]  
+- **Compliance and audit workflows** — chemical compliance checks that reconcile subcontractor submittals against site registers and assemble audit packages; similar patterns applied to safety and quality documentation. [^k9djpd] [^ae2x2t] [^8rhrt6]  
+- **Multimodal safety and schedule agents** — agents that flag non‑compliance from site photos and inspection checklists, and compare new schedules to previous versions to surface risks and changes. [^sm20x2] [^44omsz]  
+- **Data connectivity & indexing pipelines** — connectors for Procore, Box, SharePoint, Google Drive, and other apps, with project‑level dataset indexing and “Up to Date” status for searchable data. [^3co8ke] [^rprjs6] [^x3hnfp] [^ulk9e8]  
+- **Governance & RBAC** — teamspaces, role‑based access, source citations, usage metrics, and alignment with Procore’s permission model to ensure traceable, governed AI actions.[^E1] [^rprjs6] [^3ldhy0]  
+- **Free tier & starter packs** — a free Datagrid account to connect a few systems, plus Procore AI Starter Packs that include limited‑scope multi‑agent access for specialty contractors. [^wxs3et] [^5cfe21] [^xwpzu1]
+
+## Product Roadmap / Announcements (past 6 months)
+
+As of **September 11, 2026**, recent publicly documented roadmap/announcement items include:
+
+- **2026-09-02 — Simplified chat controls & smarter default mode**: Procore AI & Datagrid introduced **streamlined agent selection**, a consolidated “Plus +” menu for attachments, actions, tools, and LLM switching, and an improved **Agents (Auto)** default mode that routes requests between self‑handled queries, tools, and specialized agents without the Ask/Execute toggle. [^e1ncp5]  
+- **2026-08-27 — Procore AI global rollout with Datagrid at its core**: A Procore partner blog states that Procore launched **Procore AI globally**, with **DataGrid as the intelligence layer** underneath and more than 18 specialized agents available out of the box, along with a free Datagrid plan for experimentation. [^ys8x51] [^5cfe21]  
+- **2026-08-17 — Procore AI Starter Pack for specialty contractors**: Datagrid release notes announced a **Starter Pack** that gives three projects six months of unlimited access to AI‑powered retrieval and actions from the side panel, plus five agents tailored to specialty contractor workflows. [^wxs3et] [^sm20x2]  
+
+---
+
+## Recent Developments (past 90 days)
+
+- **Procore acquisition and embedding of Datagrid intelligence**: An industry analysis reports that **Procore acquired Datagrid in January 2026** and by May 2026 embedded Datagrid’s multimodal intelligence layer into Procore AI, powering “Digital Coworker” packages launched on July 23. [^szhsa4] [^ffvu1r] [^3co8ke]  
+- **Horizontal works & infrastructure milestones for Datagrid New Zealand (separate entity)**: Multiple New Zealand news sources describe a Singapore‑backed company named Datagrid building a 280MW AI data centre campus in Makarewa, Southland, including horizontal construction starting August 18, grid interconnection deals, and resource consent milestones. [^3tcfwm] [^6x091b] [^7b14i0] [^2l7vo9] [^w1zdcz] These refer to a **distinct infrastructure company (Datagrid New Zealand)** and not the Datagrid AI software platform profiled here.  
+
+---
+
+## History and Origin Story
+
+Datagrid AI is described as a **vertical AI company built around agents for construction**, later acquired by Procore in January 2026 and integrated as the intelligence layer behind Procore AI. [^szhsa4] [^ys8x51] [^3co8ke] [^5cfe21] Prior to acquisition, it positioned itself as a standalone construction‑focused AI platform connecting fragmented project systems and documents into an agentic workflow engine for estimators, project managers, and compliance teams.[^E1] [^0ie25m] [^3co8ke] Post‑acquisition, Datagrid continues as a distinct product (`app.datagrid.ai`) while also powering Procore’s native AI side panel and Digital Coworker bundles. [^44omsz] [^nnk1mb] [^5cfe21] [^ffvu1r]
+
+---
+
+## Fundraising History
+
+Public sources focus on acquisition rather than discrete venture rounds; no detailed pre‑acquisition funding history (Seed, Series A, etc.) for Datagrid AI is reliably documented. Procore’s purchase of Datagrid is treated as an M&A event rather than a financing round, and terms have not been publicly disclosed. [^szhsa4] [^3co8ke] [^5cfe21] [^j12ja2]  
+
+### Funding & M&A Table
+
+| Round       | Date     | Amount        | Lead investor / acquirer                                    |
+| ----------- | -------- | ------------- | ----------------------------------------------------------- |
+| Acquisition | Jan 2026 | Not disclosed | **[[Procore Technologies]]** (acquirer) |
+| Total       | —        | Not disclosed | —                                                           |
+
+Sources for Table: [^szhsa4] [^5cfe21]
+
+*Investors / acquirer (alphabetical)*  
+- Procore Technologies [^szhsa4] [^5cfe21]  
+
+---
+
+## Notable Team Members
+
+Public commentary references Datagrid AI’s CEO **Thiago Da Costa**, mentioned as “CEO of Datagrid AI” in a January 2025 panel context, indicating leadership tied to construction‑focused AI agents. [^hfzj0m] Post‑acquisition, Datagrid’s technology and product direction appears closely aligned with Procore’s AI leadership, though detailed executive org charts for Datagrid AI specifically are not publicly documented. [^ys8x51] [^5cfe21]
+
+---
+
+## Market Sizing
+
+### Category, Market Size, and Category Growth
+
+Datagrid AI sits in the **agentic AI / AI agent platforms** and **AI workflow orchestration for construction and engineering** categories.[^E1] [^ae2x2t] [^3co8ke] Analyst reports estimate the **global agentic AI market** between roughly **USD 12.84–19.33 billion in 2026**, with forecasts reaching **USD 205–337 billion by 2033–2035** and CAGRs around **40–44%**, indicating very rapid growth. [^hg4he7] [^rd4sbh] [^vx1nzf] [^jmlz7g] Dedicated **AI workflow orchestration** and **AI agent market** segments are projected to reach **USD 72.8–95.1 billion** and **USD 52.62 billion** respectively by 2030–2035, with CAGRs above **23–35%**, highlighting strong expansion in Datagrid’s broader category. [^pp0vb4] [^eyr5dp] [^7tv8lj] [^76flug]
+
+---
+
+## Pricing
+
+Datagrid AI’s own site and release notes do not publish detailed per‑seat or usage‑based pricing tiers for its standalone platform; instead, external commentary notes the existence of a **free Datagrid plan** and references bundled **Procore AI Starter Pack** offerings. [^wxs3et] [^5cfe21] [^xwpzu1]  
+
+### Pricing Table
+
+| Tier / Plan        | Price details        | Notes |
+|--------------------|----------------------|-------|
+| Datagrid Free Plan | no public pricing    | Mentioned as a free plan to connect “a couple of things” and experiment. |
+| Paid Datagrid plans| no public pricing    | Implied via “once you move to a paid plan” but not quantified. |
+| Procore AI Starter Pack | no public pricing | Bundled pack with five agents and six months of use; pricing not disclosed. |
+Sources for Table: [^5cfe21] [^xwpzu1] [^wxs3et] [^pw15xb]
+
+**Note:** *no public pricing* — detailed standalone Datagrid AI pricing is not published in accessible sources. [^wxs3et] [^5cfe21] [^xwpzu1]
+
+---
+
+## Competitive Landscape
+
+### Who it’s for
+
+Datagrid AI is designed for **construction and engineering organizations** that manage complex, document‑heavy projects and already use platforms like Procore, Autodesk Construction Cloud, and Primavera. [^0ie25m] [^ae2x2t] [^3co8ke] Ideal customers include specialty contractors, general contractors, and owner‑operators seeking governed, multi‑agent workflows for bid management, compliance, safety, and scheduling, with tight integration into existing project management stacks. [^0ie25m] [^k9djpd] [^ae2x2t] [^wxs3et] [^5cfe21]
+
+### Who it’s not for
+
+Datagrid AI is less suited for organizations seeking **generic, cross‑industry AI assistants** without construction workflows, or teams that are not using Procore or similar construction platforms where Datagrid’s value is deeply integrated. [^ys8x51] [^3co8ke] [^5cfe21] It is also not targeted at software engineering teams building code‑focused agents or at industries like retail or pure software delivery, where broader agent platforms and developer‑centric frameworks are a better fit. [^adyz3t] [^vmvor1] [^479u1u] [^1qm2aw]
+
+### Viable Alternatives (3–5)
+
+- **Procore AI (native)** — For Procore customers, Procore AI’s embedded Digital Coworkers offer many Datagrid‑powered capabilities directly inside the core project management interface and may be sufficient without separate Datagrid administration. [^szhsa4] [^44omsz] [^5cfe21] [^pw15xb]  
+- **Generic AI agent platforms (e.g., LangGraph, CrewAI)** — Engineering‑led teams could build custom workflows with generalized agent frameworks, trading construction‑specific templates and governance for flexibility. [^35nhbc] [^479u1u] [^1qm2aw]  
+- **[[ONES.com]]** — Provides governed project and delivery workflows with AI agents for software and product teams, suited to organizations whose primary work is software projects rather than construction. [^cnn1gz] [^479u1u] [^v48o79]  
+- **Amazon Bedrock / Google Gemini Enterprise / Azure AI Foundry agents** — Cloud‑native agent platforms with strong governance and integration into AWS, Google Cloud, or Azure ecosystems, more appropriate when infrastructure and workloads are primarily software or data‑platform centric. [^479u1u] [^1qm2aw] [^vz8uab] [^h2eoyb]  
+
+### Competitor Table (GFM)
+
+| Competitor                               | Description |
+|------------------------------------------|-------------|
+| [Procore AI](https://www.procore.com/)   | Construction project management platform’s native AI layer that embeds Datagrid intelligence to power Digital Coworker agents across drawings, RFIs, submittals, and photos. |
+| [LangGraph](https://langchain.ai/)       | Agentic workflow framework for engineering teams, offering explicit state machines, branching, retries, and approvals for complex multi‑agent applications. |
+| [CrewAI](https://www.crewai.com/)        | Role‑based multi‑agent platform for building production‑grade AI pipelines, focused on engineering teams requiring flexible, code‑level control. |
+| [ONES.com](https://ones.com/)            | Governed software delivery workspace combining project, knowledge, test, and CI/CD management with AI agents to assist across software lifecycle workflows. |
+| [Google Gemini Enterprise](https://cloud.google.com/) | Unified enterprise AI platform that merges Vertex AI Agent Builder and Agentspace into one agent orchestration system for Google Cloud customers. |
+
+Sources for Table: [^szhsa4] [^44omsz] [^5cfe21] [^pw15xb] [^479u1u] [^1qm2aw] [^35nhbc] [^e4kteg] [^cnn1gz] [^v48o79] [^h2eoyb]
+
+
+***
+
+# Sources
+
+[1]: [Elsewedy Electric to build transformers for NZ AI data centre](https://www.linkedin.com/posts/billionaires-africa_elsewedyfamily-elsewedyelectric-datagrid-activity-7493283051301683202-sNz7)
+[2]: [Datagrid pledges less water, generator use at Southland AI factory](https://www.nzherald.co.nz/business/datagrid-pledges-less-water-generator-use-at-southland-ai-factory/YI2CFI7PFVFWHLIXIMIRT6ABAA/)
+[3]: [Horizontal works begin on Datagrid's AI data centre campus in ...](https://www.datagrid.nz/pr1-rc/horizontal-works-begin-on-datagrids-ai-data-centre-campus-in-makarewa)
+[4]: [Protesters target Data Centre Leaders Summit in Auckland, plan nationwide action against ‘AI factories'](https://www.nzherald.co.nz/business/protesters-target-data-centre-leaders-summit-in-auckland-plan-nationwide-action-against-ai-factories/premium/IKSB2TYSIZF3PG227OXHR3FNXI/)
+[5]: [Datagrid takes another step toward giant Southland data centre - reaches deal with Transpower to buy transformers](https://www.nzherald.co.nz/business/datagrid-reaches-paid-upfront-deal-with-transpower-but-theres-a-warning-over-lead-times/premium/VCTFSNI5BZF2PBXOJK2AVX7KJE/)
+[6]: [Datagrid begains ‘horizontal constuction' in Southland, partnering with HEB](https://www.nzherald.co.nz/business/datagrid-begains-horizontal-constuction-in-southland-partnering-with-heb/premium/5ZSWD6CVUZGTPI4O7HEJT56HBY/)
+[7]: [Admin: Set Up Your Datagrid Environment](https://en-au.support.procore.com/products/online/procore-ai/tutorials/admin-set-up-your-datagrid-environment)
+[8]: [Datagrid bets on Southland's AI boom](https://www.nzherald.co.nz/video/herald-now/herald-now-business/datagrid-bets-on-southlands-ai-boom-herald-now-business/GSIRLVCGXGZ4LBHUF4V7AKXL5Q/)
+[9]: [Works start on Datagrid's Southland AI data centre campus](https://www.linkedin.com/posts/reseller-news_works-start-on-datagrids-southland-ai-data-activity-7495245244234555392-V2cz)
+[10]: [Transformational Project Delivery in New Zealand](https://www.linkedin.com/posts/vincent-vince-hawksworth-b07a40145_a-critical-step-for-delivery-of-this-exciting-activity-7493167023015780352-p8r9)
+[11]: [OneWave AI in the Wild — Podcasts, Talks & Open Source](https://www.onewave-ai.com/media)
+[12]: [Data centres: Why New Zealand's digital backbone is at risk](https://www.nzherald.co.nz/business/business-reports/infrastructure-report/data-centres-why-new-zealands-digital-backbone-needs-more-than-power/premium/NRD3SEJJVVAGJCJF55LI5YFVI4/)
+[13]: [Rémi Galasso's Post - Datagrid bets on Southland's AI boom](https://www.linkedin.com/posts/r%C3%A9mi-galasso-126763b6_datagrid-bets-on-southlands-ai-boom-herald-activity-7496292288940290048-mPeq)
+[14]: [DataGrid Magazine](https://www.linkedin.com/company/datagridmagazine)
+[15]: [Perrine DHALLUIN's Post](https://www.linkedin.com/posts/perrine-dhalluin-0913433_datagrid-is-starting-the-work-what-a-fantastic-activity-7495367583274004480-67i-)
+[16]: [Datagrid New Zealand Signs PPA for Grid-Connected ...](https://www.linkedin.com/posts/r%C3%A9mi-galasso-126763b6_southland-transformers-bushings-activity-7493037632445116416-S97e)
+[17]: [Datagrid begins work on Southland site](https://www.thepress.co.nz/nz-news/361063908/datagrid-begins-work-southland-site)
+[18]: [Procore Is Closing the Loop: DroneDeploy, Digital ...](https://bricks-bytes.com/ai/procore-is-closing-the-loop-dronedeploy-digital-coworkers-and-the-price-question/)
+[19]: [New Zealand's AI infrastructure enters its gigawatt decade](https://datacentresnz.com/insights/new-zealand-gigawatt-decade)
+[20]: [Hringvarmi's Post](https://www.linkedin.com/posts/hringvarmi_iceland-hvpod-hvpod-activity-7495850167238184960-DqbV)
+[21]: [BCG puts NZ$70 billion on New Zealand's data centre decade](https://datacentresnz.com/insights/new-zealand-gigawatt-cost)
+[22]: [Company behind AI factory pitches case to local businesses](https://www.rnz.co.nz/national/programmes/checkpoint/audio/2019048151/company-behind-ai-factory-pitches-case-to-local-businesses)
+[23]: [China's Infiforce Raises Nearly $150M in Funding to Develop 'Ego Native World Model' for Robots](https://theaiinsider.tech/2026/08/15/chinas-infiforce-raises-nearly-150m-in-funding-to-develop-ego-native-world-model-for-robots/)
+[24]: [Southland AI factory reaches grid interconnection deal with Transpower (New Zealand).](https://slicast.com/article/5i5thl)
+[25]: [Southlanders not buying Datagrid's promises of scaled- ...](https://www.rnz.co.nz/news/business/1062579/southlanders-not-buying-datagrid-s-promises-of-scaled-back-ai-factory)
+[^hfzj0m]: [Why having an AI hub is no guarantee of wealth](https://www.auckland.ac.nz/en/news/2026/08/20/NZ-AI-hub-no-guarantee-of-wealth.html)
+[27]: [Datagrid resource consent conditions not to be reviewed ...](https://www.odt.co.nz/news/southland/datagrid-resource-consent-conditions-not-to-be-reviewed-independent-commissioner-decides-u61u26kk)
+[28]: [Datagrid pledges less water, generator use at Southland AI data center](https://www.vespernews.com/en/news/cdbed0b9-6c73-472c-bca7-be9ff175fff0)
+[29]: [NZ AI Infrastructure Index's Post](https://www.linkedin.com/posts/nz-ai-infrastructure-index_datagrid-begins-construction-at-its-280mw-activity-7495294791581151232-IbNb)
+[30]: [Southland locals have heard new details about Datagrid's ...](https://www.threads.com/@nzherald/post/DcMm9oSjvU-/southland-locals-have-heard-new-details-about-datagrids-scaled-back-ai-factory/)
+[31]: [Bid Management Software and AI Agents for Construction ...](https://datagrid.com/blog/ai-agents-bid-management-data-analysis)
+[^3tcfwm]: [Chemical Compliance Software for Construction Workflows](https://datagrid.com/blog/ai-chemical-storage-compliance-monitoring-hazardous-materials)
+[^szhsa4]: [Procore AI - Starter Pack For Specialty Contractors | Release Notes | Datagrid | Datagrid](https://datagrid.com/release-notes/procore-ai-starter-pack-for-specialty-contractors)
+[34]: [Procore AI & Datagrid - Simplified Chat Controls and a Smarter Default Mode | Release Notes | Datagrid | Datagrid](https://datagrid.com/release-notes/procore-ai-and-datagrid-simplified-chat-controls-and-a-smarter-default-mode)
+[35]: [Procore AI is here](https://knight-solutions.com/en/procore-how-to-guides-updates/procore-ai-is-here)
+[36]: [4 best leed certification software for 2026 - Guideflow Blog](https://www.guideflow.com/blog/leed-certification-software)
+[^6x091b]: [About Procore AI](https://en-au.support.procore.com/products/online/procore-ai/tutorials/about-procore-ai)
+[38]: [Get Started with Datagrid](https://en-au.support.procore.com/products/online/procore-ai/tutorials/get-started-with-datagrid)
+[39]: [AI Agent Software for Construction Document Review](https://provision.com/blog/7-best-ai-agent-software-tools-for-construction-document-review-in-2026)
+[40]: [Create an Agent in Procore](https://en-au.support.procore.com/products/online/procore-ai/tutorials/create-an-agent-in-procore)
+[41]: [Powering Data-Driven Construction: Key Takeaways From ...](https://www.procore.com/en-au/blog/powering-data-driven-construction-key-takeaways-from-procore-ai-foundations-sydney)
+[42]: [datagrid.com source evidence | Rank.ai](https://www.rank.ai/sources/datagrid.com)
+[43]: [Customise an Agent](https://en-au.support.procore.com/products/online/procore-ai/tutorials/customize-an-agent)
+[44]: [Optimise AI Results Using Prompt Controls](https://en-au.support.procore.com/products/online/procore-ai/tutorials/optimize-ai-results-using-prompt-controls)
+[45]: [Hands-On with the Modern Data Grid Control | Dynamics 365 Update](https://www.linkedin.com/posts/d365-update_your-gallery-was-never-a-grid-hands-on-with-activity-7496339897360728064-neGy)
+[^0ie25m]: [Top 22 AI Product Photography Prompts (Free Examples) - Promer AI](https://promer.ai/blog/ai-product-photography-prompts)
+[^k9djpd]: [How to Bring AI Into Your Restaurant | DataGrid Resources](https://datagrid.sa/resources/ai-for-restaurants)
+[^sm20x2]: [I Used React DataGrid to Build a Real Space Mission Explorer](https://dev.to/hadil/i-used-react-datagrid-to-build-a-real-space-mission-explorer-4g8b)
+[49]: [AI-Ready .NET MAUI App Development Solutions](https://www.syncfusion.com/explore/ai/maui/)
+[^ys8x51]: [DataGrids Are For Financial Analysts](https://www.telerik.com/blogs/datagrids-are-for-financial-analysts)
+
+## Sources (retrieved)
+
+[^E1]: [Exa.ai](https://exa.ai) API response for data on [Datagrid AI](https://datagrid.com/)
+

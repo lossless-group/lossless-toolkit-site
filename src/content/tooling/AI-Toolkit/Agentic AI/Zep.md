@@ -1,19 +1,27 @@
 ---
-url: "https://www.getzep.com/"
-og_title: "Context Engineering & Agent Memory Platform for AI Agents - Zep"
-og_description: "Agents fail without the right context. Getting it right is hard. We fixed it. Goes beyond agent memory with unified context graph, Graph RAG, and automated context assembly. Works with any framework. Three lines of code. 200ms retrieval."
-og_image: "https://www.getzep.com/og-image.png"
-og_favicon: "https://www.getzep.com/zep-logo-icon-gradient-rgb-circle-favicon-32.png"
+url: https://www.getzep.com/
+og_title: Context Engineering & Agent Memory Platform for AI Agents - Zep
+og_description: Agents fail without the right context. Getting it right is hard. We fixed it. Goes beyond agent memory with unified context graph, Graph RAG, and automated context assembly. Works with any framework. Three lines of code. 200ms retrieval.
+og_image: https://www.getzep.com/og-image.png
+og_favicon: https://www.getzep.com/zep-logo-icon-gradient-rgb-circle-favicon-32.png
 og_type: website
 authors:
   - Zep Software, Inc.
-og_last_fetch: "2026-05-17T20:05:12.818Z"
+og_last_fetch: 2026-05-17T20:05:12.818Z
 date_created: 2026-05-17
-date_modified: 2026-08-15
-github_profle_url: "https://github.com/getzep"
-tags: [Memory-Layers, Context-Layers, Knowledge-Graphs, Agent-Memory, Must-Have, Solutions-For-Scale, Context-Engineering, Context-Engineering-Kits]
-cf_last_run: "2026-08-15T01:43:05.787Z"
-cf_last_run_model: "Perplexity sonar-pro"
+date_modified: 2026-10-14
+github_profile_url: https://github.com/getzep
+tags:
+  - Memory-Layers
+  - Context-Layers
+  - Knowledge-Graphs
+  - Agent-Memory
+  - Must-Have
+  - Solutions-For-Scale
+  - Context-Engineering
+  - Context-Engineering-Kits
+cf_last_run: 2026-08-15T01:43:05.787Z
+cf_last_run_model: Perplexity sonar-pro
 for_clients:
   - Laerdal
   - Lossless
@@ -32,7 +40,7 @@ at_semantic_version: 0.0.0.1
 
 # Value Proposition & Features
 
-Zep is a **[[Context Engineering Platforms]] for AI agents** that provides persistent, temporally-aware memory as a managed cloud service built on a temporal **Context Graph** (knowledge graph) architecture. [^d3o7bu] [^r1ze78] [^gl9kme] It targets developers and enterprises building AI agents that need sub-200ms retrieval, governed long‑term memory, and compliance-grade provenance rather than ad‑hoc vector stores. [^k9jjmf] [^r1ze78] [^ear82x] [^gl9kme] Zep’s commercial platform sits on top of its open‑source **Graphiti** engine, delivering enterprise controls, multi-tenant context graphs, and integrations with agent frameworks and MCP-based tools. [^r1ze78] [^s34gjv] [^dnww73]
+Zep is a **[[concepts/Market-Categories/Context Engineering Platforms]] for AI agents** that provides persistent, temporally-aware memory as a managed cloud service built on a temporal **Context Graph** (knowledge graph) architecture. [^d3o7bu] [^r1ze78] [^gl9kme] It targets developers and enterprises building AI agents that need sub-200ms retrieval, governed long‑term memory, and compliance-grade provenance rather than ad‑hoc vector stores. [^k9jjmf] [^r1ze78] [^ear82x] [^gl9kme] Zep’s commercial platform sits on top of its open‑source **Graphiti** engine, delivering enterprise controls, multi-tenant context graphs, and integrations with agent frameworks and MCP-based tools. [^r1ze78] [^s34gjv] [^dnww73]
 
 Core product features:
 
@@ -89,7 +97,7 @@ Markdown table (rounds, dates, amounts, lead investor):
 
 Investors (alphabetical, from known data):
 
-- [[vertical-toolkits/Venture-Capital-Firms/Y Combinator|Y Combinator]] [^83i6as]
+- [[vertical-toolkits/Alternatives/Venture-Capital-Firms/Y Combinator|Y Combinator]] [^83i6as]
 
 ## Notable Team Members
 

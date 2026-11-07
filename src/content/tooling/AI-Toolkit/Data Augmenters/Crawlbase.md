@@ -9,13 +9,14 @@ og_type: website
 og_last_fetch: 2026-06-02T06:13:23.700Z
 site_name: Crawlbase
 date_created: 2026-01-04
-date_modified: 2026-08-21
+date_modified: 2026-10-30
 tags:
   - Data-Augmenters
   - AI-Toolkit
   - Web-Scrapers
   - Check-It-Out
   - Must-Have
+  - Lossless-Toolkit
 site_uuid: 21b482ad-5a2f-4bd4-9013-b9212ef2523f
 publish: true
 title: Crawlbase
@@ -29,13 +30,14 @@ for_clients:
   - Parslee
   - Dynamiq
   - FullStackVC
-github_profle_url: https://github.com/crawlbase
+  - Lossless
+github_profile_url: https://github.com/crawlbase
 ---
 
 [[concepts/Explainers for AI/AI Web Crawlers|AI-Powered Web Crawling]]
 [[Vocabulary/Web Scraping|Web Scraping]]
 [[concepts/Explainers for AI/MCP Servers|MCP Servers]]
-[[concepts/Data Augmentation Workflow|Data-Augmenters]]
+[[concepts/Data Augmentation Workflows|Data-Augmenters]]
 
 # Value Proposition & Features
 Crawlbase is a **developer-focused web data access platform** for anti-bot bypass, crawling, and live extraction through APIs. [^x7fxtl] [^nio7si] [^ctxvn7] Its public positioning emphasizes “**Crawling APIs, smart proxies, managed scrapers, and an MCP server for Claude**,” and its OG description says it helps users “start free in minutes” and “scale to billions with enterprise-grade reliability.”[^x7fxtl]
@@ -80,7 +82,7 @@ It is less suited to users who want a **no-code workflow platform**, a large mar
 | Competitor                                                    | Description                                                                                 |
 | ------------------------------------------------------------- | ------------------------------------------------------------------------------------------- |
 | [[Tooling/AI-Toolkit/Data Augmenters/Apify\|Apify]]           | A more extensible scraping workflow platform with a stronger actor marketplace. [^x7fxtl]          |
-| [[Tooling/AI-Toolkit/Data Augmenters/BrightData\|BrightData]] | Enterprise-focused proxy and unblocker infrastructure with broader managed data options. [^x7fxtl] |
+| [[Tooling/AI-Toolkit/Data Augmenters/Bright Data\|BrightData]] | Enterprise-focused proxy and unblocker infrastructure with broader managed data options. [^x7fxtl] |
 | [ScrapingBee](/)                                              | Managed scraping API with headless browser and proxy handling for dynamic sites. [^ctxvn7]         |
 | [[Tooling/AI-Toolkit/Agentic AI/Firecrawl\|Firecrawl]]        | Web-to-LLM data API for markdown and structured JSON extraction. [^ctxvn7]                         |
 | [ScraperAPI](/)                                               | Lightweight API-first scraping tool for fetching pages with minimal setup. [^x7fxtl]               |

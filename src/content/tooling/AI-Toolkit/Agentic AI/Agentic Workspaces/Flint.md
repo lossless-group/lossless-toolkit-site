@@ -12,7 +12,7 @@ tags:
   - Marketing-AI
   - Marketing-Agents
 date_created: 2026-08-17
-date_modified: 2026-08-20
+date_modified: 2026-09-11
 site_uuid: 274b1b5e-ff87-4973-a209-43a5a1042a8b
 publish: true
 title: Flint
@@ -49,7 +49,7 @@ Core features include natural-language page creation, spreadsheet/CSV-driven bul
 - **Natural-language** page creation and editing. [^det17b] [^hs4vg7] [^x9n0dt]
 - **Spreadsheet / CSV-driven** bulk page generation. [^hs4vg7] [^5v317z] [^w36unh]
 - **MCP integrations** for Claude and other compatible tools. [^maql71] [^hs4vg7] [^v7c8be]
-- **API and workflow-tool integrations** including Clay, Airtable, CRMs, Slack, [[Relay.app]], and Zapier. [^v86x74] [^5v317z] [^r3xrzz]
+- **API and workflow-tool integrations** including [[Tooling/AI-Toolkit/Data Augmenters/Clay|Clay]], Airtable, CRMs, Slack, and [[Tooling/Software Development/Developer Experience/DevOps/Zapier|Zapier]]. [^v86x74] [^5v317z] [^r3xrzz]
 - **Custom-domain / subdomain publishing** with hosting included. [^x9n0dt] [^2f3guh]
 - **Analytics and tracking setup** including GA4 and Google Tag Manager. [^x9n0dt] [^2f3guh]
 - **[[Vocabulary/Search Engine Optimization|SEO]] and accessibility-oriented output** with semantic HTML and SSR. [^x9n0dt]
@@ -104,7 +104,7 @@ Flint is for **marketing and GTM teams** that need to generate many on-brand lan
 It is not primarily for teams seeking a general-purpose website builder, a blank-canvas design tool, or a full application-development platform. [^hs4vg7] [^x9n0dt] Flint’s own comparisons frame it as a specialized landing-page generator rather than a broad website platform. [^hs4vg7] [^2f3guh]
 
 ## Viable Alternatives
-- **[[Webflow]]** — broader visual website builder with stronger general-site design workflows, but not Flint’s brand-extraction-first page generation. [^migc80] [^k1x7ia] [^x9n0dt]
+- **[[Tooling/Enterprise Jobs-to-be-Done/Webflow]]** — broader visual website builder with stronger general-site design workflows, but not Flint’s brand-extraction-first page generation. [^migc80] [^k1x7ia] [^x9n0dt]
 - **[[Framer]]** — design-led site builder; Flint positions itself as better for high-volume marketing pages with automatic brand consistency. [^k1x7ia] [^qd2gps] [^2f3guh]
 - **[[Tooling/AI-Toolkit/Generative AI/Code Generators/Lovable|Lovable]]** — AI builder for general page/app creation; Flint argues it is stronger for brand-matched marketing pages. [^lov82v] [^7pg1yb]
 - **[[Tooling/AI-Toolkit/Generative AI/Code Generators/Bolt.new|Bolt.new]]** — general AI site/app builder; Flint contrasts itself as more specialized for marketing websites and campaign pages. [^c6r5z7] [^2g1ffu] [^679iqr]

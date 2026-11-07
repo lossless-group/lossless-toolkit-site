@@ -8,9 +8,13 @@ og_screenshot_url: https://ik.imagekit.io/xvpgfijuw/uploads/lossless/screenshots
 jina_last_request: 2025-03-09T06:45:06.973Z
 jina_error: Error occurred
 og_last_fetch: 2025-09-05T13:13:45.574Z
-date_modified: 2026-07-07
+date_modified: 2026-11-06
 date_created: 2025-03-30
-tags: [AI-Toolkit, Models, Desktop-App]
+tags:
+  - AI-Toolkit
+  - Desktop-Apps
+  - Foundation-Models
+  - AI-Models
 og_title: Claude
 og_description: Talk with Claude, an AI assistant from Anthropic
 og_image: https://claude.ai/images/claude_ogimage.png
@@ -19,7 +23,12 @@ og_favicon: https://ik.imagekit.io/xvpgfijuw/lossless-content-embeds/appIcon__Cl
 
 Models by [[Anthropic]].
 
+[[concepts/Explainers for AI/Conversational AI|Conversational AI]]
+
+
 https://claude.com/blog/introducing-citations-api
+
+https://youtu.be/en0GuyhieQk?is=YWYbAEdlJkis5_JN
 
 https://youtu.be/9psY4d-JjLY?is=47pd-ts3sNEX7xN1
 ### >> 2025-10-30 Claude Announces Memory
