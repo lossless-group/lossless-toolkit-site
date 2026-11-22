@@ -116,15 +116,16 @@ img { max-width: 100%; display: block; }
 }
 
 .wordmark {
-  font-family: var(--font-display);
-  font-size: var(--step-1);
-  font-weight: 700;
-  letter-spacing: -0.02em;
-  color: var(--clr-ink);
+  display: inline-flex;
+  align-items: center;
+  gap: 0.6rem;
+  flex: none;
   text-decoration: none;
-  white-space: nowrap;
 }
-.wordmark b { color: var(--clr-accent); font-weight: 700; }
+.wordmark img { display: block; }
+.wordmark__icon { width: 2.5rem; height: 2.5rem; }
+/* The wordmark file is 3.18:1; height drives it. */
+.wordmark__word { height: 3.1rem; width: auto; }
 
 .site-nav {
   display: flex;
@@ -150,7 +151,8 @@ img { max-width: 100%; display: block; }
    the width at which it becomes unreadable. Base.astro's search rule uses the
    same query and must be changed with it. */
 @container head (max-width: 52rem) {
-  .wordmark {
+  /* The word collapses; the icon stays as the home link, since it costs 40px. */
+  .wordmark .wordmark__word {
     display: none;
   }
 

@@ -79,7 +79,13 @@ const { title, description, image, category, jsonLd, noindex, ogType } = Astro.p
 
     <header class="site-head">
       <div class="shell site-head__inner">
-        <a class="wordmark" href="/">Lossless<b>·</b>Toolkit</a>
+        <!-- The house pack: the tools appIcon plus "The lossless. Toolkit." (The
+             Lossless Group wordmark with "Group." re-set). Its gradient reads on
+             every mode's ground, so one file serves light, dark and vibrant. -->
+        <a class="wordmark" href="/" aria-label="The Lossless Toolkit, home">
+          <img class="wordmark__icon" src="/appIcon__Lossless-Toolkit.svg" alt="" width="40" height="40" />
+          <img class="wordmark__word" src="/wordmark__The-Lossless-Toolkit.svg" alt="" width="158" height="50" />
+        </a>
 
         <button
           type="button"
