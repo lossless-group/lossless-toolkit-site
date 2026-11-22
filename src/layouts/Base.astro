@@ -35,8 +35,12 @@ const { title, description, image, category, jsonLd, noindex, ogType } = Astro.p
       ogType={ogType}
     />
 
+    <!-- .ico for crawlers and tools that only ask for /favicon.ico (Vercel's
+         project avatar among them); browsers that read SVG take the second. -->
+    <link rel="icon" href="/favicon.ico" sizes="32x32" />
     <link rel="icon" type="image/svg+xml" href="/favicon.svg" />
-    <link rel="apple-touch-icon" href="/appIcon__Lossless-Toolkit.svg" />
+    <!-- iOS needs a PNG for the home screen; it ignores SVG here. -->
+    <link rel="apple-touch-icon" href="/apple-touch-icon.png" />
     <link rel="sitemap" href="/sitemap-index.xml" />
     <link rel="preconnect" href="https://fonts.googleapis.com" />
     <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin />
